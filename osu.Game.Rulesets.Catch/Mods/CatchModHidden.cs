@@ -7,6 +7,6 @@ namespace osu.Game.Rulesets.Catch.Mods
 {
     public class CatchModHidden : ModHidden
     {
-        public override string Description => @"Play with fading fruit.";
+        public override string Description => @"Play with fading fruits.";
     }
 }
