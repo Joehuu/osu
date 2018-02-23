@@ -17,7 +17,6 @@ namespace osu.Game.Rulesets.Mods
         public override bool Ranked => true;
         public override Type[] IncompatibleMods => new[] { typeof(ModDoubleTime) };
 
-        public override double ScoreMultiplier => 1.12;
 
         public virtual void ApplyToClock(IAdjustableClock clock)
         {
