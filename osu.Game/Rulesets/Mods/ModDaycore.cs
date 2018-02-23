@@ -13,6 +13,8 @@ namespace osu.Game.Rulesets.Mods
         public override string ShortenedName => "DC";
         public override FontAwesome Icon => FontAwesome.fa_question;
         public override string Description => "whoaaaaa";
+        public override bool Ranked => true;
+        public override Type[] IncompatibleMods => new[] { typeof(ModDoubleTime) };
 
         public override void ApplyToClock(IAdjustableClock clock)
         {
