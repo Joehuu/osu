@@ -8,5 +8,7 @@ namespace osu.Game.Rulesets.Mania.Mods
         public override int KeyCount => 1;
         public override string Name => "One Key";
         public override string ShortenedName => "1K";
+        public override FontAwesome Icon => FontAwesome.fa_question;
+        public override string Description => "Play with one key.";
     }
 }
