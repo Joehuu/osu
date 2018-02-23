@@ -9,6 +9,7 @@ namespace osu.Game.Rulesets.Osu.Mods
 {
     public class OsuModSuddenDeath : ModSuddenDeath
     {
+        public override Double ScoreMultiplier => 0
         public override Type[] IncompatibleMods => base.IncompatibleMods.Concat(new[] { typeof(OsuModAutopilot) }).ToArray();
     }
 }
