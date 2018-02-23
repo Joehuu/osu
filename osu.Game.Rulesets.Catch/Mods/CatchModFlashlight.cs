@@ -7,5 +7,6 @@ namespace osu.Game.Rulesets.Catch.Mods
 {
     public class CatchModFlashlight : ModFlashlight
     {
+        public override double ScoreMultiplier => 1.12;
     }
 }
