@@ -7,6 +7,6 @@ namespace osu.Game.Rulesets.Catch.Mods
 {
     public class CatchModDaycore : ModDaycore
     {
-        public override double ScoreMultiplier => 0.30;
+        public override double ScoreMultiplier => 0.3;
     }
 }
