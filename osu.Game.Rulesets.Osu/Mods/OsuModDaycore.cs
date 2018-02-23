@@ -7,6 +7,6 @@ namespace osu.Game.Rulesets.Osu.Mods
 {
     public class OsuModDaycore : ModDaycore
     {
-      public override double ScoreMultiplier => 0.30;
+       public override double ScoreMultiplier => 0.3;
     }
 }
