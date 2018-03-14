@@ -11,6 +11,6 @@ namespace osu.Game.Rulesets.Mania.Mods
         public override string Name => "Five Keys";
         public override string ShortenedName => "5K";
         public override FontAwesome Icon => FontAwesome.fa_question;
-        public override string Description => "Play with five keys.";
+        public override string Description => @"Play with five keys.";
     }
 }

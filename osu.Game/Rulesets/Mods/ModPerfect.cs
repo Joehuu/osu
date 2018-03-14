@@ -11,7 +11,7 @@ namespace osu.Game.Rulesets.Mods
         public override string Name => "Perfect";
         public override string ShortenedName => "PF";
         public override FontAwesome Icon => FontAwesome.fa_question;
-        public override string Description => "SS or quit.";
+        public override string Description => @"SS or quit.";
 
         protected override bool FailCondition(ScoreProcessor scoreProcessor) => scoreProcessor.Accuracy.Value != 1;
     }
