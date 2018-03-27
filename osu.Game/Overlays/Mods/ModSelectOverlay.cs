@@ -27,10 +27,12 @@ namespace osu.Game.Overlays.Mods
     {
         private const float content_width = 0.8f;
 
-        protected Color4 LowMultiplierColour, HighMultiplierColour;
+        protected Color4 LowMultiplierColour, HighMultiplierColour, RankedColour;
 
         protected readonly TriangleButton DeselectAllButton;
+        protected readonly OsuSpriteText ScoreLabel;
         protected readonly OsuSpriteText MultiplierLabel;
+        protected readonly OsuSpriteText RankedLabel;
         private readonly FillFlowContainer footerContainer;
 
         protected override bool BlockPassThroughKeyboard => false;
@@ -57,6 +59,7 @@ namespace osu.Game.Overlays.Mods
 
             LowMultiplierColour = colours.Red;
             HighMultiplierColour = colours.Green;
+            RankedColour = colours.Blue;
 
             if (osu != null)
                 Ruleset.BindTo(osu.Ruleset);
@@ -97,16 +100,30 @@ namespace osu.Game.Overlays.Mods
                 ranked &= mod.Ranked;
             }
 
-            MultiplierLabel.Text = $"{multiplier:N2}x";
-            if (!ranked)
-                MultiplierLabel.Text += " (Unranked)";
+            ScoreLabel.Text = "Score Multiplier:";
+            if (multiplier > 1.0)
+                ScoreLabel.FadeColour(HighMultiplierColour, 200);
+            else if (multiplier < 1.0)
+                ScoreLabel.FadeColour(LowMultiplierColour, 200);
+            else
+                ScoreLabel.FadeColour(Color4.White, 200);
 
+            MultiplierLabel.Text = $"{multiplier:N2}x";
             if (multiplier > 1.0)
                 MultiplierLabel.FadeColour(HighMultiplierColour, 200);
             else if (multiplier < 1.0)
                 MultiplierLabel.FadeColour(LowMultiplierColour, 200);
             else
                 MultiplierLabel.FadeColour(Color4.White, 200);
+
+            RankedLabel.Text = null;
+            if (!ranked)
+            {
+                RankedLabel.Text = "(Unranked)";
+                RankedLabel.FadeColour(RankedColour, 200);
+            }
+            else
+                RankedLabel.FadeColour(Color4.White, 200);
         }
 
         protected override void PopOut()
@@ -351,14 +368,14 @@ namespace osu.Game.Overlays.Mods
                                                 Right = 20
                                             }
                                         },
-                                        new OsuSpriteText
+                                        ScoreLabel = new OsuSpriteText
                                         {
-                                            Text = @"Score Multiplier: ",
                                             TextSize = 30,
                                             Shadow = true,
                                             Margin = new MarginPadding
                                             {
-                                                Top = 5
+                                                Top = 5,
+                                                Right = 10
                                             }
                                         },
                                         MultiplierLabel = new OsuSpriteText
@@ -369,6 +386,17 @@ namespace osu.Game.Overlays.Mods
                                             Margin = new MarginPadding
                                             {
                                                 Top = 5
+                                            }
+                                        },
+                                        RankedLabel = new OsuSpriteText
+                                        {
+                                            Font = @"Exo2.0-Bold",
+                                            TextSize = 30,
+                                            Shadow = true,
+                                            Margin = new MarginPadding
+                                            {
+                                                Top = 5,
+                                                Left = 10
                                             }
                                         }
                                     }
