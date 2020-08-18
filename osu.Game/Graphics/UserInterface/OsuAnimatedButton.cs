@@ -42,6 +42,7 @@ namespace osu.Game.Graphics.UserInterface
 
         private readonly Container content;
         private readonly Box hover;
+        private readonly Box flash;
 
         public OsuAnimatedButton()
         {
@@ -64,6 +65,13 @@ namespace osu.Game.Graphics.UserInterface
                     {
                         RelativeSizeAxes = Axes.Both,
                         Colour = HoverColour,
+                        Blending = BlendingParameters.Additive,
+                        Alpha = 0,
+                    },
+                    flash = new Box
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Colour = FlashColour,
                         Blending = BlendingParameters.Additive,
                         Alpha = 0,
                     },
@@ -97,7 +105,7 @@ namespace osu.Game.Graphics.UserInterface
 
         protected override bool OnClick(ClickEvent e)
         {
-            hover.FlashColour(FlashColour, 800, Easing.OutQuint);
+            flash.FadeOutFromOne(800, Easing.OutQuint);
             return base.OnClick(e);
         }
 
