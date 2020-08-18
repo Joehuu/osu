@@ -22,6 +22,7 @@ using osu.Game.Graphics.UserInterface;
 using osu.Game.Overlays.Music;
 using osuTK;
 using osuTK.Graphics;
+using osuTK.Input;
 
 namespace osu.Game.Overlays
 {
@@ -275,6 +276,36 @@ namespace osu.Game.Overlays
             }
         }
 
+        protected override bool OnKeyDown(KeyDownEvent e)
+        {
+            switch (e.Key)
+            {
+                case Key.Space:
+                    playButton.Click();
+                    return true;
+
+                case Key.Left:
+                    if (e.ControlPressed)
+                    {
+                        prevButton.Click();
+                        return true;
+                    }
+
+                    break;
+
+                case Key.Right:
+                    if (e.ControlPressed)
+                    {
+                        nextButton.Click();
+                        return true;
+                    }
+
+                    break;
+            }
+
+            return base.OnKeyDown(e);
+        }
+
         private Action pendingBeatmapSwitch;
 
         private void trackChanged(WorkingBeatmap beatmap, TrackChangeDirection direction = TrackChangeDirection.None)
@@ -436,6 +467,7 @@ namespace osu.Game.Overlays
             {
             }
 
+            protected override bool AllowKeyboardInputWhenNotHovered => true;
             protected override bool OnHover(HoverEvent e)
             {
                 this.ResizeHeightTo(progress_height, 500, Easing.OutQuint);
