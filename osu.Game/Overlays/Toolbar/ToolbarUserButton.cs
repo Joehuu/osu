@@ -6,6 +6,7 @@ using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Effects;
 using osu.Game.Graphics;
+using osu.Game.Input.Bindings;
 using osu.Game.Online.API;
 using osu.Game.Users;
 using osu.Game.Users.Drawables;
@@ -18,8 +19,19 @@ namespace osu.Game.Overlays.Toolbar
     {
         private readonly UpdateableAvatar avatar;
 
+        [Resolved(CanBeNull = true)]
+        private UserProfileOverlay profileOverlay { get; set; }
+
+        [Resolved]
+        private IAPIProvider api { get; set; }
+
         public ToolbarUserButton()
         {
+            TooltipMain = "Profile";
+            TooltipSub = "See your stats";
+
+            Hotkey = GlobalAction.ToggleUserProfile;
+
             AutoSizeAxes = Axes.X;
 
             DrawableText.Font = OsuFont.GetFont(italics: true);
@@ -44,7 +56,7 @@ namespace osu.Game.Overlays.Toolbar
         }
 
         [BackgroundDependencyLoader(true)]
-        private void load(IAPIProvider api, LoginOverlay login)
+        private void load(LoginOverlay login)
         {
             api.Register(this);
 
@@ -65,6 +77,14 @@ namespace osu.Game.Overlays.Toolbar
                     avatar.User = api.LocalUser.Value;
                     break;
             }
+        }
+
+        public override bool OnPressed(GlobalAction action)
+        {
+            if (action == Hotkey && api.IsLoggedIn)
+                profileOverlay?.ShowUser(api.LocalUser.Value);
+
+            return false;
         }
     }
 }

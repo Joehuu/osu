@@ -205,7 +205,7 @@ namespace osu.Game.Overlays.Toolbar
             tooltipContainer.FadeOut(100);
         }
 
-        public bool OnPressed(GlobalAction action)
+        public virtual bool OnPressed(GlobalAction action)
         {
             if (action == Hotkey)
             {

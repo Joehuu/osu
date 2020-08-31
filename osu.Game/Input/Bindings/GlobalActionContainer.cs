@@ -36,6 +36,7 @@ namespace osu.Game.Input.Bindings
             new KeyBinding(new[] { InputKey.Control, InputKey.O }, GlobalAction.ToggleSettings),
             new KeyBinding(new[] { InputKey.Control, InputKey.D }, GlobalAction.ToggleDirect),
             new KeyBinding(new[] { InputKey.Control, InputKey.N }, GlobalAction.ToggleNotifications),
+            new KeyBinding(new[] { InputKey.Control, InputKey.P }, GlobalAction.ToggleUserProfile),
 
             new KeyBinding(InputKey.Escape, GlobalAction.Back),
             new KeyBinding(InputKey.ExtraMouseButton1, GlobalAction.Back),
@@ -166,5 +167,8 @@ namespace osu.Game.Input.Bindings
 
         [Description("Pause")]
         PauseGameplay,
+
+        [Description("Toggle user profile")]
+        ToggleUserProfile,
     }
 }
