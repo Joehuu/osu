@@ -79,6 +79,8 @@ namespace osu.Game.Overlays
         [BackgroundDependencyLoader]
         private void load()
         {
+            float padding = 10;
+
             Children = new Drawable[]
             {
                 dragContainer = new DragContainer
@@ -92,7 +94,6 @@ namespace osu.Game.Overlays
                         RowDimensions = new[]
                         {
                             new Dimension(GridSizeMode.AutoSize),
-                            new Dimension(GridSizeMode.Absolute, 10),
                             new Dimension(maxSize: PlaylistOverlay.MAXIMUM_HEIGHT),
                         },
                         Content = new[]
@@ -102,9 +103,10 @@ namespace osu.Game.Overlays
                                 playerContainer = new Container
                                 {
                                     RelativeSizeAxes = Axes.X,
-                                    Height = player_height,
+                                    Height = player_height + padding,
                                     Masking = true,
                                     CornerRadius = 5,
+                                    Padding = new MarginPadding { Bottom = padding },
                                     EdgeEffect = new EdgeEffectParameters
                                     {
                                         Type = EdgeEffectType.Shadow,
@@ -197,7 +199,6 @@ namespace osu.Game.Overlays
                                     },
                                 },
                             },
-                            null,
                             new Drawable[]
                             {
                                 playlist = new PlaylistOverlay { RelativeSizeAxes = Axes.Both },
