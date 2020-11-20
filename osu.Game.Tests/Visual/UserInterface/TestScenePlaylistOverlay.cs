@@ -34,7 +34,7 @@ namespace osu.Game.Tests.Visual.UserInterface
                 {
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
-                    RelativeSizeAxes = Axes.X,
+                    RelativeSizeAxes = Axes.Both,
                     State = { Value = Visibility.Visible }
                 }
             };

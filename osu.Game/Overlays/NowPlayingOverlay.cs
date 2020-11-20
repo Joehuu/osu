@@ -20,6 +20,7 @@ using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Overlays.Music;
+using osu.Game.Screens.Select;
 using osuTK;
 using osuTK.Graphics;
 
@@ -65,9 +66,13 @@ namespace osu.Game.Overlays
         [Resolved]
         private OsuColour colours { get; set; }
 
+        public override bool Contains(Vector2 screenSpacePos) => playerContainer.ReceivePositionalInputAt(screenSpacePos) || playlist.ReceivePositionalInputAt(screenSpacePos);
+
         public NowPlayingOverlay()
         {
             Width = 400;
+            RelativeSizeAxes = Axes.Y;
+
             Margin = new MarginPadding(10);
         }
 
@@ -78,112 +83,124 @@ namespace osu.Game.Overlays
             {
                 dragContainer = new DragContainer
                 {
-                    Anchor = Anchor.Centre,
-                    Origin = Anchor.Centre,
-                    RelativeSizeAxes = Axes.X,
-                    AutoSizeAxes = Axes.Y,
-                    Children = new Drawable[]
+                    Anchor = Anchor.TopCentre,
+                    Origin = Anchor.TopCentre,
+                    RelativeSizeAxes = Axes.Both,
+                    Child = new GridContainer
                     {
-                        playlist = new PlaylistOverlay
+                        RelativeSizeAxes = Axes.Both,
+                        RowDimensions = new[]
                         {
-                            RelativeSizeAxes = Axes.X,
-                            Y = player_height + 10,
+                            new Dimension(GridSizeMode.AutoSize),
+                            new Dimension(GridSizeMode.Absolute, 10),
+                            new Dimension(maxSize: PlaylistOverlay.MAXIMUM_HEIGHT),
                         },
-                        playerContainer = new Container
+                        Content = new[]
                         {
-                            RelativeSizeAxes = Axes.X,
-                            Height = player_height,
-                            Masking = true,
-                            CornerRadius = 5,
-                            EdgeEffect = new EdgeEffectParameters
+                            new Drawable[]
                             {
-                                Type = EdgeEffectType.Shadow,
-                                Colour = Color4.Black.Opacity(40),
-                                Radius = 5,
-                            },
-                            Children = new[]
-                            {
-                                background = new Background(),
-                                title = new OsuSpriteText
+                                playerContainer = new Container
                                 {
-                                    Origin = Anchor.BottomCentre,
-                                    Anchor = Anchor.TopCentre,
-                                    Position = new Vector2(0, 40),
-                                    Font = OsuFont.GetFont(size: 25, italics: true),
-                                    Colour = Color4.White,
-                                    Text = @"Nothing to play",
-                                },
-                                artist = new OsuSpriteText
-                                {
-                                    Origin = Anchor.TopCentre,
-                                    Anchor = Anchor.TopCentre,
-                                    Position = new Vector2(0, 45),
-                                    Font = OsuFont.GetFont(size: 15, weight: FontWeight.Bold, italics: true),
-                                    Colour = Color4.White,
-                                    Text = @"Nothing to play",
-                                },
-                                new Container
-                                {
-                                    Padding = new MarginPadding { Bottom = progress_height },
-                                    Height = bottom_black_area_height,
                                     RelativeSizeAxes = Axes.X,
-                                    Origin = Anchor.BottomCentre,
-                                    Anchor = Anchor.BottomCentre,
-                                    Children = new Drawable[]
+                                    Height = player_height,
+                                    Masking = true,
+                                    CornerRadius = 5,
+                                    EdgeEffect = new EdgeEffectParameters
                                     {
-                                        new FillFlowContainer<IconButton>
+                                        Type = EdgeEffectType.Shadow,
+                                        Colour = Color4.Black.Opacity(40),
+                                        Radius = 5,
+                                    },
+                                    Children = new[]
+                                    {
+                                        background = new Background(),
+                                        title = new OsuSpriteText
                                         {
-                                            AutoSizeAxes = Axes.Both,
-                                            Direction = FillDirection.Horizontal,
-                                            Spacing = new Vector2(5),
-                                            Origin = Anchor.Centre,
-                                            Anchor = Anchor.Centre,
-                                            Children = new[]
+                                            Origin = Anchor.BottomCentre,
+                                            Anchor = Anchor.TopCentre,
+                                            Position = new Vector2(0, 40),
+                                            Font = OsuFont.GetFont(size: 25, italics: true),
+                                            Colour = Color4.White,
+                                            Text = @"Nothing to play",
+                                        },
+                                        artist = new OsuSpriteText
+                                        {
+                                            Origin = Anchor.TopCentre,
+                                            Anchor = Anchor.TopCentre,
+                                            Position = new Vector2(0, 45),
+                                            Font = OsuFont.GetFont(size: 15, weight: FontWeight.Bold, italics: true),
+                                            Colour = Color4.White,
+                                            Text = @"Nothing to play",
+                                        },
+                                        new Container
+                                        {
+                                            Padding = new MarginPadding { Bottom = progress_height },
+                                            Height = bottom_black_area_height,
+                                            RelativeSizeAxes = Axes.X,
+                                            Origin = Anchor.BottomCentre,
+                                            Anchor = Anchor.BottomCentre,
+                                            Children = new Drawable[]
                                             {
-                                                prevButton = new MusicIconButton
+                                                new FillFlowContainer<IconButton>
                                                 {
-                                                    Anchor = Anchor.Centre,
+                                                    AutoSizeAxes = Axes.Both,
+                                                    Direction = FillDirection.Horizontal,
+                                                    Spacing = new Vector2(5),
                                                     Origin = Anchor.Centre,
-                                                    Action = () => musicController.PreviousTrack(),
-                                                    Icon = FontAwesome.Solid.StepBackward,
+                                                    Anchor = Anchor.Centre,
+                                                    Children = new[]
+                                                    {
+                                                        prevButton = new MusicIconButton
+                                                        {
+                                                            Anchor = Anchor.Centre,
+                                                            Origin = Anchor.Centre,
+                                                            Action = () => musicController.PreviousTrack(),
+                                                            Icon = FontAwesome.Solid.StepBackward,
+                                                        },
+                                                        playButton = new MusicIconButton
+                                                        {
+                                                            Anchor = Anchor.Centre,
+                                                            Origin = Anchor.Centre,
+                                                            Scale = new Vector2(1.4f),
+                                                            IconScale = new Vector2(1.4f),
+                                                            Action = () => musicController.TogglePause(),
+                                                            Icon = FontAwesome.Regular.PlayCircle,
+                                                        },
+                                                        nextButton = new MusicIconButton
+                                                        {
+                                                            Anchor = Anchor.Centre,
+                                                            Origin = Anchor.Centre,
+                                                            Action = () => musicController.NextTrack(),
+                                                            Icon = FontAwesome.Solid.StepForward,
+                                                        },
+                                                    }
                                                 },
-                                                playButton = new MusicIconButton
+                                                playlistButton = new MusicIconButton
                                                 {
-                                                    Anchor = Anchor.Centre,
                                                     Origin = Anchor.Centre,
-                                                    Scale = new Vector2(1.4f),
-                                                    IconScale = new Vector2(1.4f),
-                                                    Action = () => musicController.TogglePause(),
-                                                    Icon = FontAwesome.Regular.PlayCircle,
-                                                },
-                                                nextButton = new MusicIconButton
-                                                {
-                                                    Anchor = Anchor.Centre,
-                                                    Origin = Anchor.Centre,
-                                                    Action = () => musicController.NextTrack(),
-                                                    Icon = FontAwesome.Solid.StepForward,
+                                                    Anchor = Anchor.CentreRight,
+                                                    Position = new Vector2(-bottom_black_area_height / 2, 0),
+                                                    Icon = FontAwesome.Solid.Bars,
+                                                    Action = () => playlist.ToggleVisibility(),
                                                 },
                                             }
                                         },
-                                        playlistButton = new MusicIconButton
+                                        progressBar = new HoverableProgressBar
                                         {
-                                            Origin = Anchor.Centre,
-                                            Anchor = Anchor.CentreRight,
-                                            Position = new Vector2(-bottom_black_area_height / 2, 0),
-                                            Icon = FontAwesome.Solid.Bars,
-                                            Action = () => playlist.ToggleVisibility(),
-                                        },
-                                    }
+                                            Origin = Anchor.BottomCentre,
+                                            Anchor = Anchor.BottomCentre,
+                                            Height = progress_height / 2,
+                                            FillColour = colours.Yellow,
+                                            BackgroundColour = colours.YellowDarker.Opacity(0.5f),
+                                            OnSeek = musicController.SeekTo
+                                        }
+                                    },
                                 },
-                                progressBar = new HoverableProgressBar
-                                {
-                                    Origin = Anchor.BottomCentre,
-                                    Anchor = Anchor.BottomCentre,
-                                    Height = progress_height / 2,
-                                    FillColour = colours.Yellow,
-                                    BackgroundColour = colours.YellowDarker.Opacity(0.5f),
-                                    OnSeek = musicController.SeekTo
-                                }
+                            },
+                            null,
+                            new Drawable[]
+                            {
+                                playlist = new PlaylistOverlay { RelativeSizeAxes = Axes.Both },
                             },
                         },
                     }
@@ -224,8 +241,7 @@ namespace osu.Game.Overlays
         {
             base.UpdateAfterChildren();
 
-            Height = dragContainer.Height;
-            dragContainer.Padding = new MarginPadding { Top = GetToolbarHeight?.Invoke() ?? 0 };
+            dragContainer.Padding = new MarginPadding { Top = GetToolbarHeight?.Invoke() ?? 0, Bottom = Footer.HEIGHT };
         }
 
         protected override void Update()
@@ -387,9 +403,21 @@ namespace osu.Game.Overlays
 
         private class DragContainer : Container
         {
+            private bool clickedOverlay;
+
+            protected override bool OnMouseDown(MouseDownEvent e)
+            {
+                clickedOverlay = Parent.Contains(e.ScreenSpaceMousePosition);
+
+                return base.OnMouseDown(e);
+            }
+
             protected override bool OnDragStart(DragStartEvent e)
             {
-                return true;
+                if (clickedOverlay)
+                    return true;
+
+                return false;
             }
 
             protected override void OnDrag(DragEvent e)

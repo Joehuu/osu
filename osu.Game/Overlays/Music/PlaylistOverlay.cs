@@ -19,7 +19,7 @@ namespace osu.Game.Overlays.Music
     public class PlaylistOverlay : VisibilityContainer
     {
         private const float transition_duration = 600;
-        private const float playlist_height = 510;
+        public const float MAXIMUM_HEIGHT = 510;
 
         public IBindableList<BeatmapSetInfo> BeatmapSets => beatmapSets;
 
@@ -100,7 +100,7 @@ namespace osu.Game.Overlays.Music
             filter.Search.HoldFocus = true;
             Schedule(() => filter.Search.TakeFocus());
 
-            this.ResizeTo(new Vector2(1, playlist_height), transition_duration, Easing.OutQuint);
+            this.ResizeTo(new Vector2(1), transition_duration, Easing.OutQuint);
             this.FadeIn(transition_duration, Easing.OutQuint);
         }
 
