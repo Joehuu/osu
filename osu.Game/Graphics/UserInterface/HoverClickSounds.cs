@@ -37,9 +37,14 @@ namespace osu.Game.Graphics.UserInterface
         protected override bool OnClick(ClickEvent e)
         {
             if (buttons.Contains(e.Button) && Contains(e.ScreenSpaceMousePosition))
-                sampleClick?.Play();
+                PlayClickSample();
 
             return base.OnClick(e);
+        }
+
+        protected virtual void PlayClickSample()
+        {
+            sampleClick?.Play();
         }
 
         [BackgroundDependencyLoader]

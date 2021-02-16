@@ -177,8 +177,9 @@ namespace osu.Game.Screens.Edit.Components.Menus
             private class DrawableSpacer : DrawableOsuMenuItem
             {
                 public DrawableSpacer(MenuItem item)
-                    : base(item)
+                    : base(item, false)
                 {
+                    item.Action.Disabled = true;
                 }
 
                 protected override bool OnHover(HoverEvent e) => true;
