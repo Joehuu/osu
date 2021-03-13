@@ -4,6 +4,7 @@
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Cursor;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
@@ -43,6 +44,7 @@ namespace osu.Game.Overlays.BeatmapSet
 
             var rate = playCount != 0 ? (float)passCount / playCount : 0;
             successPercent.Text = rate.ToString("0.#%");
+            successPercent.TooltipText = $"{passCount:N0} / {playCount:N0}";
             successRate.Length = rate;
             percentContainer.ResizeWidthTo(successRate.Length, 250, Easing.InOutCubic);
 
