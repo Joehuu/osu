@@ -82,10 +82,18 @@ namespace osu.Game.Online.Leaderboards
 
             Children = new Drawable[]
             {
-                new RankLabel(rank)
+                new Container
                 {
                     RelativeSizeAxes = Axes.Y,
                     Width = rank_width,
+                    Child = new OsuSpriteText
+                    {
+                        Anchor = Anchor.Centre,
+                        Origin = Anchor.Centre,
+                        Font = OsuFont.GetFont(size: 20, italics: true),
+                        Text = rank == null ? "-" : rank.Value.FormatRank(),
+                        TooltipText = rank >= 1000 ? $"#{rank:N0}" : null,
+                    },
                 },
                 content = new Container
                 {
@@ -344,25 +352,6 @@ namespace osu.Game.Online.Leaderboards
                     },
                 };
             }
-        }
-
-        private class RankLabel : Container, IHasTooltip
-        {
-            public RankLabel(int? rank)
-            {
-                if (rank >= 1000)
-                    TooltipText = $"#{rank:N0}";
-
-                Child = new OsuSpriteText
-                {
-                    Anchor = Anchor.Centre,
-                    Origin = Anchor.Centre,
-                    Font = OsuFont.GetFont(size: 20, italics: true),
-                    Text = rank == null ? "-" : rank.Value.FormatRank()
-                };
-            }
-
-            public string TooltipText { get; }
         }
 
         public class LeaderboardScoreStatistic

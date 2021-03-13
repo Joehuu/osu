@@ -16,6 +16,8 @@ namespace osu.Game.Overlays.Profile.Header.Components
 {
     public class LevelProgressBar : CompositeDrawable, IHasTooltip
     {
+        private const string tooltip_text = "progress to next level";
+
         public readonly Bindable<User> User = new Bindable<User>();
 
         public string TooltipText { get; }
@@ -25,7 +27,7 @@ namespace osu.Game.Overlays.Profile.Header.Components
 
         public LevelProgressBar()
         {
-            TooltipText = "progress to next level";
+            TooltipText = tooltip_text;
         }
 
         [BackgroundDependencyLoader]
@@ -49,7 +51,8 @@ namespace osu.Game.Overlays.Profile.Header.Components
                 {
                     Anchor = Anchor.BottomRight,
                     Origin = Anchor.TopRight,
-                    Font = OsuFont.GetFont(size: 12, weight: FontWeight.Bold)
+                    Font = OsuFont.GetFont(size: 12, weight: FontWeight.Bold),
+                    TooltipText = tooltip_text,
                 }
             };
 
