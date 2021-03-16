@@ -50,6 +50,9 @@ namespace osu.Game.Input.Bindings
             new KeyBinding(InputKey.KeypadEnter, GlobalAction.Select),
 
             new KeyBinding(new[] { InputKey.Control, InputKey.Shift, InputKey.R }, GlobalAction.RandomSkin),
+
+            new KeyBinding(new[] { InputKey.Control, InputKey.Plus }, GlobalAction.IncreaseUIScaling),
+            new KeyBinding(new[] { InputKey.Control, InputKey.Minus }, GlobalAction.DecreaseUIScaling),
         };
 
         public IEnumerable<KeyBinding> EditorKeyBindings => new[]
@@ -204,5 +207,11 @@ namespace osu.Game.Input.Bindings
 
         [Description("Toggle in-game interface")]
         ToggleInGameInterface,
+
+        [Description("Increase UI scaling")]
+        IncreaseUIScaling,
+
+        [Description("Decrease UI scaling")]
+        DecreaseUIScaling,
     }
 }

@@ -195,7 +195,8 @@ namespace osu.Game.Configuration
                 {
                     string skinName = LookupSkinName(m) ?? string.Empty;
                     return new SettingDescription(skinName, "skin", skinName, $"random: {LookupKeyBindings(GlobalAction.RandomSkin)}");
-                })
+                }),
+                new TrackedSetting<float>(OsuSetting.UIScale, m => new SettingDescription(m, "ui scaling", m.ToString("N2"), $"increase: {LookupKeyBindings(GlobalAction.IncreaseUIScaling)} decrease: {LookupKeyBindings(GlobalAction.DecreaseUIScaling)}")),
             };
         }
 

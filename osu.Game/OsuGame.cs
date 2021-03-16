@@ -52,6 +52,7 @@ using osu.Game.Utils;
 using LogLevel = osu.Framework.Logging.LogLevel;
 using osu.Game.Database;
 using osu.Game.IO;
+using osu.Game.Extensions;
 
 namespace osu.Game
 {
@@ -893,9 +894,27 @@ namespace osu.Game
                 case GlobalAction.RandomSkin:
                     SkinManager.SelectRandomSkin();
                     return true;
+
+                case GlobalAction.IncreaseUIScaling:
+                    scheduleUiScalingAdjustment(1);
+                    return true;
+
+                case GlobalAction.DecreaseUIScaling:
+                    scheduleUiScalingAdjustment(-1);
+                    return true;
             }
 
             return false;
+        }
+
+        private ScheduledDelegate scheduledUIScalingAdjustment;
+
+        private void scheduleUiScalingAdjustment(int amount)
+        {
+            var uiScale = LocalConfig.GetBindable<float>(OsuSetting.UIScale);
+
+            scheduledUIScalingAdjustment?.Cancel();
+            scheduledUIScalingAdjustment = this.BeginKeyRepeat(Scheduler, () => uiScale.Value += amount * 0.01f);
         }
 
         #region Inactive audio dimming
@@ -914,6 +933,8 @@ namespace osu.Game
 
         public void OnReleased(GlobalAction action)
         {
+            scheduledUIScalingAdjustment?.Cancel();
+            scheduledUIScalingAdjustment = null;
         }
 
         private Container overlayContent;
