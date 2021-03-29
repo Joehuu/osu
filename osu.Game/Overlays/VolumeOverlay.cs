@@ -26,6 +26,7 @@ namespace osu.Game.Overlays
     public class VolumeOverlay : VisibilityContainer
     {
         private const float offset = 10;
+        private const float pop_out_delay = 1000;
 
         private VolumeMeter volumeMeterMaster;
         private VolumeMeter volumeMeterEffect;
@@ -165,6 +166,12 @@ namespace osu.Game.Overlays
             this.FadeIn(100);
 
             schedulePopOut();
+
+            foreach (VolumeMeter meter in volumeMeters.Children)
+            {
+                meter.DisplayVolume = 0;
+                meter.TransformTo("DisplayVolume", meter.Volume, pop_out_delay / 2, Easing.OutSine);
+            }
         }
 
         protected override void PopOut()
@@ -218,7 +225,7 @@ namespace osu.Game.Overlays
         private void schedulePopOut()
         {
             popOutDelegate?.Cancel();
-            this.Delay(1000).Schedule(() =>
+            this.Delay(pop_out_delay).Schedule(() =>
             {
                 if (!IsHovered)
                     Hide();

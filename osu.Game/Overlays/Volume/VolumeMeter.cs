@@ -240,7 +240,7 @@ namespace osu.Game.Overlays.Volume
 
         private double displayVolume;
 
-        protected double DisplayVolume
+        public double DisplayVolume
         {
             get => displayVolume;
             set
