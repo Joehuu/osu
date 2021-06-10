@@ -57,12 +57,24 @@ namespace osu.Game.Overlays.Settings.Sections.UserInterface
         {
             base.LoadComplete();
 
-            user.BindValueChanged(u =>
-            {
-                const string not_supporter_note = "Changes to this setting will only apply with an active osu!supporter tag.";
+            backgroundSourceDropdown.Current.BindValueChanged(_ => updateBackgroundSourceWarning(), true);
 
-                backgroundSourceDropdown.WarningText = u.NewValue?.IsSupporter != true ? not_supporter_note : string.Empty;
-            }, true);
+            user.BindValueChanged(_ => updateBackgroundSourceWarning());
+        }
+
+        private void updateBackgroundSourceWarning()
+        {
+            const string not_supporter_note = "Changes to this setting will only apply with an active osu!supporter tag.";
+            const string epilepsy_warning = "Storyboard / video may contain scenes with rapidly flashing colours. Please take caution if you are affected by epilepsy.";
+
+            string warningText = string.Empty;
+
+            if (user.Value?.IsSupporter != true)
+                warningText = not_supporter_note;
+            else if (backgroundSourceDropdown.Current.Value == BackgroundSource.BeatmapWithStoryboard)
+                warningText = epilepsy_warning;
+
+            backgroundSourceDropdown.WarningText = warningText;
         }
     }
 }
