@@ -12,6 +12,7 @@ using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Online.API;
+using osu.Game.Overlays.Dialog;
 using osu.Game.Users;
 using osuTK;
 using RectangleF = osu.Framework.Graphics.Primitives.RectangleF;
@@ -39,6 +40,9 @@ namespace osu.Game.Overlays.Login
 
         [Resolved]
         private IAPIProvider api { get; set; }
+
+        [Resolved(canBeNull: true)]
+        private DialogOverlay dialogOverlay { get; set; }
 
         public override RectangleF BoundingBox => bounding ? base.BoundingBox : RectangleF.Empty;
 
@@ -176,7 +180,8 @@ namespace osu.Game.Overlays.Login
                                 break;
 
                             case UserAction.SignOut:
-                                api.Logout();
+                                dropdown.Current.Value = action.OldValue;
+                                dialogOverlay?.Push(new ConfirmDialog(@"Are you sure you want to sign out? :(", () => api.Logout()));
                                 break;
                         }
                     }, true);
