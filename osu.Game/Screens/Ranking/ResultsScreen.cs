@@ -311,10 +311,10 @@ namespace osu.Game.Screens.Ranking
                 ScorePanelList.Attach(detachedPanel);
 
                 // Move into its original location in the attached container first, then to the final location.
-                float origLocation = detachedPanel.Parent.ToLocalSpace(screenSpacePos).X;
-                detachedPanel.MoveToX(origLocation)
+                var origLocation = detachedPanel.Parent.ToLocalSpace(screenSpacePos);
+                detachedPanel.MoveTo(origLocation)
                              .Then()
-                             .MoveToX(0, 150, Easing.OutQuint);
+                             .MoveTo(new Vector2(0, origLocation.Y), 150, Easing.OutQuint);
 
                 // Show contracted panels.
                 foreach (var contracted in ScorePanelList.GetScorePanels().Where(p => p.State == PanelState.Contracted))
