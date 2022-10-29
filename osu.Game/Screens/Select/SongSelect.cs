@@ -609,6 +609,9 @@ namespace osu.Game.Screens.Select
                     music.ResetTrackAdjustments();
                     music.Play(requestedByUser: true);
                 }
+
+                if (music.CurrentTrack.CurrentTime < 10000)
+                    music.CurrentTrack.Restart();
             }
 
             this.FadeIn(250);
