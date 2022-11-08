@@ -98,7 +98,7 @@ namespace osu.Desktop
 
             if (status.Value is UserStatusOnline && activity.Value != null)
             {
-                presence.State = truncate(activity.Value.Status);
+                presence.State = truncate(activity.Value.Status.ToString());
                 presence.Details = truncate(getDetails(activity.Value));
 
                 if (getBeatmap(activity.Value) is IBeatmapInfo beatmap && beatmap.OnlineID > 0)

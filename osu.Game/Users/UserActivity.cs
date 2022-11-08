@@ -3,28 +3,31 @@
 
 #nullable disable
 
+using osu.Framework.Extensions.LocalisationExtensions;
+using osu.Framework.Localisation;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics;
 using osu.Game.Online.Rooms;
 using osu.Game.Rulesets;
 using osuTK.Graphics;
+using osu.Game.Localisation;
 
 namespace osu.Game.Users
 {
     public abstract class UserActivity
     {
-        public abstract string Status { get; }
+        public abstract LocalisableString Status { get; }
         public virtual Color4 GetAppropriateColour(OsuColour colours) => colours.GreenDarker;
 
         public class Modding : UserActivity
         {
-            public override string Status => "Modding a map";
+            public override LocalisableString Status => UserActivityStrings.ModdingAMap;
             public override Color4 GetAppropriateColour(OsuColour colours) => colours.PurpleDark;
         }
 
         public class ChoosingBeatmap : UserActivity
         {
-            public override string Status => "Choosing a beatmap";
+            public override LocalisableString Status => UserActivityStrings.ChoosingABeatmap;
         }
 
         public abstract class InGame : UserActivity
@@ -39,7 +42,7 @@ namespace osu.Game.Users
                 Ruleset = ruleset;
             }
 
-            public override string Status => Ruleset.CreateInstance().PlayingVerb;
+            public override LocalisableString Status => Ruleset.CreateInstance().PlayingVerb;
         }
 
         public class InMultiplayerGame : InGame
@@ -49,7 +52,7 @@ namespace osu.Game.Users
             {
             }
 
-            public override string Status => $@"{base.Status} with others";
+            public override LocalisableString Status => UserActivityStrings.WithOthers(base.Status);
         }
 
         public class SpectatingMultiplayerGame : InGame
@@ -59,7 +62,7 @@ namespace osu.Game.Users
             {
             }
 
-            public override string Status => $"Watching others {base.Status.ToLowerInvariant()}";
+            public override LocalisableString Status => UserActivityStrings.WatchingOthers(base.Status.ToLower());
         }
 
         public class InPlaylistGame : InGame
@@ -87,22 +90,22 @@ namespace osu.Game.Users
                 BeatmapInfo = info;
             }
 
-            public override string Status => @"Editing a beatmap";
+            public override LocalisableString Status => UserActivityStrings.EditingABeatmap;
         }
 
         public class Spectating : UserActivity
         {
-            public override string Status => @"Spectating a game";
+            public override LocalisableString Status => UserActivityStrings.SpectatingAGame;
         }
 
         public class SearchingForLobby : UserActivity
         {
-            public override string Status => @"Looking for a lobby";
+            public override LocalisableString Status => UserActivityStrings.LookingForALobby;
         }
 
         public class InLobby : UserActivity
         {
-            public override string Status => @"In a lobby";
+            public override LocalisableString Status => UserActivityStrings.InALobby;
 
             public readonly Room Room;
 
