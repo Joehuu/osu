@@ -334,7 +334,7 @@ namespace osu.Game.Screens.OnlinePlay.Match
 
         public override bool OnExiting(ScreenExitEvent e)
         {
-            if (!ensureExitConfirmed())
+            if (!ensureExitConfirmed(e.Destination))
                 return true;
 
             if (settingsOverlay.State.Value == Visibility.Visible)
@@ -348,7 +348,7 @@ namespace osu.Game.Screens.OnlinePlay.Match
             return base.OnExiting(e);
         }
 
-        private bool ensureExitConfirmed()
+        private bool ensureExitConfirmed(IScreen destination)
         {
             if (ExitConfirmed)
                 return true;
@@ -363,7 +363,7 @@ namespace osu.Game.Screens.OnlinePlay.Match
             dialogOverlay.Push(new ConfirmDiscardChangesDialog(() =>
             {
                 ExitConfirmed = true;
-                this.Exit();
+                destination.MakeCurrent();
             }));
 
             return false;

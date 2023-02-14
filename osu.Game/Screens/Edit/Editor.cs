@@ -680,7 +680,7 @@ namespace osu.Game.Screens.Edit
                 // dialog overlay may not be available in visual tests.
                 if (dialogOverlay == null)
                 {
-                    confirmExit();
+                    confirmExit(e.Destination);
                     return true;
                 }
 
@@ -691,7 +691,7 @@ namespace osu.Game.Screens.Edit
                 if (isNewBeatmap || HasUnsavedChanges)
                 {
                     updateSampleDisabledState();
-                    dialogOverlay?.Push(new PromptForSaveDialog(confirmExit, confirmExitWithSave, cancelExit));
+                    dialogOverlay?.Push(new PromptForSaveDialog(() => confirmExit(e.Destination), () => confirmExitWithSave(e.Destination), cancelExit));
                     return true;
                 }
             }
@@ -729,15 +729,15 @@ namespace osu.Game.Screens.Edit
             }
         }
 
-        private void confirmExitWithSave()
+        private void confirmExitWithSave(IScreen destination)
         {
             Save();
 
             ExitConfirmed = true;
-            this.Exit();
+            destination.MakeCurrent();
         }
 
-        private void confirmExit()
+        private void confirmExit(IScreen destination)
         {
             // stop the track if playing to allow the parent screen to choose a suitable playback mode.
             Beatmap.Value.Track.Stop();
@@ -757,7 +757,7 @@ namespace osu.Game.Screens.Edit
             }
 
             ExitConfirmed = true;
-            this.Exit();
+            destination.MakeCurrent();
         }
 
         #region Clipboard support
