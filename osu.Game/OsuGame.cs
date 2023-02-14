@@ -895,13 +895,7 @@ namespace osu.Game
 
             loadComponentSingleFile(Toolbar = new Toolbar
             {
-                OnHome = delegate
-                {
-                    CloseAllOverlays(false);
-
-                    if (menuScreen?.GetChildScreen() != null)
-                        menuScreen.MakeCurrent();
-                },
+                OnHome = () => PerformFromScreen(_ => { }),
             }, topMostOverlayContent.Add);
 
             loadComponentSingleFile(volume = new VolumeOverlay(), leftFloatingOverlayContent.Add, true);
@@ -1303,7 +1297,10 @@ namespace osu.Game
 
             if (introScreen?.DidLoadMenu == true && !(ScreenStack.CurrentScreen is IntroScreen))
             {
-                Scheduler.Add(introScreen.MakeCurrent);
+                if (menuScreen.IsCurrentScreen())
+                    Scheduler.Add(introScreen.MakeCurrent);
+                else
+                    PerformFromScreen(_ => Scheduler.Add(introScreen.MakeCurrent));
                 return true;
             }
 
