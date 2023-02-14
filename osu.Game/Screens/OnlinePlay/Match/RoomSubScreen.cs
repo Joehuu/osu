@@ -287,13 +287,7 @@ namespace osu.Game.Screens.OnlinePlay.Match
         public override bool OnBackButton()
         {
             if (Room.RoomID.Value == null)
-            {
-                if (!ensureExitConfirmed())
-                    return true;
-
-                settingsOverlay.Hide();
                 return base.OnBackButton();
-            }
 
             if (UserModsSelectOverlay.State.Value == Visibility.Visible)
             {
@@ -343,6 +337,9 @@ namespace osu.Game.Screens.OnlinePlay.Match
             if (!ensureExitConfirmed())
                 return true;
 
+            if (settingsOverlay.State.Value == Visibility.Visible)
+                settingsOverlay.Hide();
+
             RoomManager?.PartRoom();
             Mods.Value = Array.Empty<Mod>();
 
@@ -366,7 +363,6 @@ namespace osu.Game.Screens.OnlinePlay.Match
             dialogOverlay.Push(new ConfirmDiscardChangesDialog(() =>
             {
                 ExitConfirmed = true;
-                settingsOverlay.Hide();
                 this.Exit();
             }));
 
