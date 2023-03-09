@@ -26,24 +26,8 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
 
         public PreviewTrack Preview { get; private set; }
 
-        private APIBeatmapSet beatmapSet;
-
-        public APIBeatmapSet BeatmapSet
-        {
-            get => beatmapSet;
-            set
-            {
-                if (value == beatmapSet) return;
-
-                beatmapSet = value;
-
-                Preview?.Stop();
-                Preview?.Expire();
-                Preview = null;
-
-                playing.Value = false;
-            }
-        }
+        [Resolved]
+        private Bindable<APIBeatmapSet> beatmapSet { get; set; } = null!;
 
         private Color4 hoverColour;
         private readonly SpriteIcon icon;
@@ -68,9 +52,8 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
             }
         }
 
-        public PlayButton(APIBeatmapSet setInfo = null)
+        public PlayButton()
         {
-            BeatmapSet = setInfo;
             AddRange(new Drawable[]
             {
                 icon = new SpriteIcon
@@ -99,6 +82,20 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
             hoverColour = colour.Yellow;
         }
 
+        protected override void LoadComplete()
+        {
+            base.LoadComplete();
+
+            beatmapSet.BindValueChanged(_ =>
+            {
+                Preview?.Stop();
+                Preview?.Expire();
+                Preview = null;
+
+                playing.Value = false;
+            });
+        }
+
         protected override bool OnClick(ClickEvent e)
         {
             playing.Toggle();
@@ -125,7 +122,7 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
 
             if (e.NewValue)
             {
-                if (BeatmapSet == null)
+                if (beatmapSet.Value == null)
                 {
                     playing.Value = false;
                     return;
@@ -139,7 +136,7 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
 
                 loading = true;
 
-                LoadComponentAsync(Preview = previewTrackManager.Get(beatmapSet), preview =>
+                LoadComponentAsync(Preview = previewTrackManager.Get(beatmapSet.Value), preview =>
                 {
                     // Make sure that we schedule to after the next audio frame to fix crashes in single-threaded execution.
                     // See: https://github.com/ppy/osu-framework/issues/4692

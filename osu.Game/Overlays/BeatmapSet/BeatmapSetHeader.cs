@@ -19,6 +19,7 @@ namespace osu.Game.Overlays.BeatmapSet
 {
     public partial class BeatmapSetHeader : TabControlOverlayHeader<BeatmapSetTabs>
     {
+        [Cached]
         public readonly Bindable<APIBeatmapSet> BeatmapSet = new Bindable<APIBeatmapSet>();
 
         public BeatmapSetHeaderContent HeaderContent { get; private set; }
@@ -42,10 +43,7 @@ namespace osu.Game.Overlays.BeatmapSet
             };
         }
 
-        protected override Drawable CreateContent() => HeaderContent = new BeatmapSetHeaderContent
-        {
-            BeatmapSet = { BindTarget = BeatmapSet }
-        };
+        protected override Drawable CreateContent() => HeaderContent = new BeatmapSetHeaderContent();
 
         protected override Drawable CreateTabControlContent() => RulesetSelector = new BeatmapRulesetSelector
         {

@@ -12,7 +12,6 @@ using osu.Framework.Input.Events;
 using osu.Game.Audio;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
-using osu.Game.Online.API.Requests.Responses;
 using osuTK;
 
 namespace osu.Game.Overlays.BeatmapSet.Buttons
@@ -25,12 +24,6 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
         private PreviewTrack preview => playButton.Preview;
 
         public IBindable<bool> Playing => playButton.Playing;
-
-        public APIBeatmapSet BeatmapSet
-        {
-            get => playButton.BeatmapSet;
-            set => playButton.BeatmapSet = value;
-        }
 
         public PreviewButton()
         {

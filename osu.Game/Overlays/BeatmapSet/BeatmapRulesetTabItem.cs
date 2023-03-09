@@ -19,7 +19,8 @@ namespace osu.Game.Overlays.BeatmapSet
 {
     public partial class BeatmapRulesetTabItem : OverlayRulesetTabItem
     {
-        public readonly Bindable<APIBeatmapSet> BeatmapSet = new Bindable<APIBeatmapSet>();
+        [Resolved]
+        private Bindable<APIBeatmapSet> beatmapSet { get; set; } = null!;
 
         [Resolved]
         private OverlayColourProvider colourProvider { get; set; }
@@ -65,7 +66,7 @@ namespace osu.Game.Overlays.BeatmapSet
         {
             base.LoadComplete();
 
-            BeatmapSet.BindValueChanged(setInfo =>
+            beatmapSet.BindValueChanged(setInfo =>
             {
                 int beatmapsCount = setInfo.NewValue?.Beatmaps.Count(b => b.Ruleset.MatchesOnlineID(Value)) ?? 0;
                 int osuBeatmaps = setInfo.NewValue?.Beatmaps.Count(b => b.Ruleset.OnlineID == 0) ?? 0;

@@ -37,19 +37,9 @@ namespace osu.Game.Overlays.BeatmapSet
         public readonly DifficultiesContainer Difficulties;
 
         public readonly Bindable<APIBeatmap?> Beatmap = new Bindable<APIBeatmap?>();
-        private APIBeatmapSet? beatmapSet;
 
-        public APIBeatmapSet? BeatmapSet
-        {
-            get => beatmapSet;
-            set
-            {
-                if (value == beatmapSet) return;
-
-                beatmapSet = value;
-                updateDisplay();
-            }
-        }
+        [Resolved]
+        private Bindable<APIBeatmapSet> beatmapSet { get; set; } = null!;
 
         public BeatmapPicker()
         {
@@ -158,15 +148,17 @@ namespace osu.Game.Overlays.BeatmapSet
 
             // done here so everything can bind in intialization and get the first trigger
             Beatmap.TriggerChange();
+
+            beatmapSet.BindValueChanged(_ => updateDisplay(), true);
         }
 
         private void updateDisplay()
         {
             Difficulties.Clear();
 
-            if (BeatmapSet != null)
+            if (beatmapSet.Value != null)
             {
-                Difficulties.ChildrenEnumerable = BeatmapSet.Beatmaps.Concat(BeatmapSet.Converts ?? Array.Empty<APIBeatmap>())
+                Difficulties.ChildrenEnumerable = beatmapSet.Value.Beatmaps.Concat(beatmapSet.Value.Converts ?? Array.Empty<APIBeatmap>())
                                                             .Where(b => b.Ruleset.MatchesOnlineID(ruleset.Value))
                                                             .OrderBy(b => !b.Convert)
                                                             .ThenBy(b => b.StarRating)
@@ -192,8 +184,8 @@ namespace osu.Game.Overlays.BeatmapSet
             // Else just choose the first available difficulty for now.
             Beatmap.Value ??= Difficulties.FirstOrDefault()?.Beatmap;
 
-            plays.Value = BeatmapSet?.PlayCount ?? 0;
-            favourites.Value = BeatmapSet?.FavouriteCount ?? 0;
+            plays.Value = beatmapSet.Value?.PlayCount ?? 0;
+            favourites.Value = beatmapSet.Value?.FavouriteCount ?? 0;
 
             updateDifficultyButtons();
         }

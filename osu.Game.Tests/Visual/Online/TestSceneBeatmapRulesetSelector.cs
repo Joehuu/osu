@@ -6,6 +6,7 @@
 using System.Linq;
 using NUnit.Framework;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Testing;
 using osu.Game.Online.API.Requests.Responses;
@@ -19,6 +20,9 @@ namespace osu.Game.Tests.Visual.Online
         [Cached]
         private OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Blue);
 
+        [Cached]
+        private readonly Bindable<APIBeatmapSet> beatmapSet = new Bindable<APIBeatmapSet>(new APIBeatmapSet());
+
         private BeatmapRulesetSelector selector;
 
         [SetUp]
@@ -26,7 +30,6 @@ namespace osu.Game.Tests.Visual.Online
         {
             Anchor = Anchor.Centre,
             Origin = Anchor.Centre,
-            BeatmapSet = new APIBeatmapSet(),
         });
 
         [Test]
@@ -42,12 +45,12 @@ namespace osu.Game.Tests.Visual.Online
                 if (selector == null)
                     return;
 
-                selector.BeatmapSet = new APIBeatmapSet
+                beatmapSet.Value = new APIBeatmapSet
                 {
-                    Beatmaps = selector.BeatmapSet.Beatmaps
-                                       .Where(b => b.Ruleset.OnlineID != ruleset)
-                                       .Concat(Enumerable.Range(0, count).Select(_ => new APIBeatmap { RulesetID = ruleset }))
-                                       .ToArray(),
+                    Beatmaps = beatmapSet.Value.Beatmaps
+                                         .Where(b => b.Ruleset.OnlineID != ruleset)
+                                         .Concat(Enumerable.Range(0, count).Select(_ => new APIBeatmap { RulesetID = ruleset }))
+                                         .ToArray(),
                 };
             }
         }
@@ -57,7 +60,7 @@ namespace osu.Game.Tests.Visual.Online
         {
             AddStep("load multiple rulesets beatmapset", () =>
             {
-                selector.BeatmapSet = new APIBeatmapSet
+                beatmapSet.Value = new APIBeatmapSet
                 {
                     Beatmaps = new[]
                     {
@@ -78,7 +81,7 @@ namespace osu.Game.Tests.Visual.Online
         {
             AddStep("load single ruleset beatmapset", () =>
             {
-                selector.BeatmapSet = new APIBeatmapSet
+                beatmapSet.Value = new APIBeatmapSet
                 {
                     Beatmaps = new[] { new APIBeatmap { RulesetID = 3 } }
                 };
@@ -90,14 +93,14 @@ namespace osu.Game.Tests.Visual.Online
         [Test]
         public void TestEmptyBeatmapSet()
         {
-            AddStep("load empty beatmapset", () => selector.BeatmapSet = new APIBeatmapSet());
+            AddStep("load empty beatmapset", () => beatmapSet.Value = new APIBeatmapSet());
             AddAssert("all rulesets disabled", () => selector.ChildrenOfType<BeatmapRulesetTabItem>().All(t => !t.Active.Value && !t.Enabled.Value));
         }
 
         [Test]
         public void TestNullBeatmapSet()
         {
-            AddStep("load null beatmapset", () => selector.BeatmapSet = null);
+            AddStep("load null beatmapset", () => beatmapSet.Value = null);
             AddAssert("all rulesets disabled", () => selector.ChildrenOfType<BeatmapRulesetTabItem>().All(t => !t.Active.Value && !t.Enabled.Value));
         }
     }

@@ -6,6 +6,7 @@
 using System.Linq;
 using NUnit.Framework;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Utils;
 using osu.Game.Beatmaps;
@@ -23,6 +24,9 @@ namespace osu.Game.Tests.Visual.Online
         [Cached]
         private OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Blue);
 
+        [Cached]
+        private readonly Bindable<APIBeatmapSet> beatmapSet = new Bindable<APIBeatmapSet>();
+
         [SetUp]
         public void Setup() => Schedule(() =>
         {
@@ -39,10 +43,10 @@ namespace osu.Game.Tests.Visual.Online
             var firstSet = createSet();
             var secondSet = createSet();
 
-            AddStep("set first set", () => details.BeatmapSet = firstSet);
+            AddStep("set first set", () => beatmapSet.Value = firstSet);
             AddAssert("ratings set", () => details.Ratings.Ratings == firstSet.Ratings);
 
-            AddStep("set second set", () => details.BeatmapSet = secondSet);
+            AddStep("set second set", () => beatmapSet.Value = secondSet);
             AddAssert("ratings set", () => details.Ratings.Ratings == secondSet.Ratings);
 
             static APIBeatmapSet createSet() => new APIBeatmapSet

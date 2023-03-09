@@ -4,6 +4,7 @@
 #nullable disable
 
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
@@ -19,26 +20,12 @@ namespace osu.Game.Overlays.BeatmapSet
     {
         protected readonly UserRatings Ratings;
 
-        private readonly PreviewButton preview;
         private readonly BasicStats basic;
         private readonly AdvancedStats advanced;
         private readonly DetailBox ratingBox;
 
-        private APIBeatmapSet beatmapSet;
-
-        public APIBeatmapSet BeatmapSet
-        {
-            get => beatmapSet;
-            set
-            {
-                if (value == beatmapSet) return;
-
-                beatmapSet = value;
-
-                basic.BeatmapSet = preview.BeatmapSet = BeatmapSet;
-                updateDisplay();
-            }
-        }
+        [Resolved]
+        private Bindable<APIBeatmapSet> beatmapSet { get; set; } = null!;
 
         private IBeatmapInfo beatmapInfo;
 
@@ -55,8 +42,8 @@ namespace osu.Game.Overlays.BeatmapSet
 
         private void updateDisplay()
         {
-            Ratings.Ratings = BeatmapSet?.Ratings;
-            ratingBox.Alpha = BeatmapSet?.Status > 0 ? 1 : 0;
+            Ratings.Ratings = beatmapSet.Value?.Ratings;
+            ratingBox.Alpha = beatmapSet.Value?.Status > 0 ? 1 : 0;
         }
 
         public Details()
@@ -67,7 +54,7 @@ namespace osu.Game.Overlays.BeatmapSet
 
             Children = new Drawable[]
             {
-                preview = new PreviewButton
+                new PreviewButton
                 {
                     RelativeSizeAxes = Axes.X,
                 },
@@ -101,10 +88,11 @@ namespace osu.Game.Overlays.BeatmapSet
             };
         }
 
-        [BackgroundDependencyLoader]
-        private void load()
+        protected override void LoadComplete()
         {
-            updateDisplay();
+            base.LoadComplete();
+
+            beatmapSet.BindValueChanged(_ => updateDisplay(), true);
         }
 
         private partial class DetailBox : Container

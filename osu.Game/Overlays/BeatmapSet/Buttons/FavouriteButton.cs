@@ -23,7 +23,8 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
 {
     public partial class FavouriteButton : HeaderButton, IHasTooltip
     {
-        public readonly Bindable<APIBeatmapSet> BeatmapSet = new Bindable<APIBeatmapSet>();
+        [Resolved]
+        private Bindable<APIBeatmapSet> beatmapSet { get; set; } = null!;
 
         private readonly BindableBool favourited = new BindableBool();
 
@@ -63,13 +64,13 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
             Action = () =>
             {
                 // guaranteed by disabled state above.
-                Debug.Assert(BeatmapSet.Value.OnlineID > 0);
+                Debug.Assert(beatmapSet.Value.OnlineID > 0);
 
                 loading.Show();
 
                 request?.Cancel();
 
-                request = new PostBeatmapFavouriteRequest(BeatmapSet.Value.OnlineID, favourited.Value ? BeatmapFavouriteAction.UnFavourite : BeatmapFavouriteAction.Favourite);
+                request = new PostBeatmapFavouriteRequest(beatmapSet.Value.OnlineID, favourited.Value ? BeatmapFavouriteAction.UnFavourite : BeatmapFavouriteAction.Favourite);
 
                 request.Success += () =>
                 {
@@ -97,14 +98,14 @@ namespace osu.Game.Overlays.BeatmapSet.Buttons
             localUser.BindValueChanged(_ => updateEnabled());
 
             // must be run after setting the Action to ensure correct enabled state (setting an Action forces a button to be enabled).
-            BeatmapSet.BindValueChanged(setInfo =>
+            beatmapSet.BindValueChanged(setInfo =>
             {
                 updateEnabled();
                 favourited.Value = setInfo.NewValue?.HasFavourited ?? false;
             }, true);
         }
 
-        private void updateEnabled() => Enabled.Value = !(localUser.Value is GuestUser) && BeatmapSet.Value?.OnlineID > 0;
+        private void updateEnabled() => Enabled.Value = !(localUser.Value is GuestUser) && beatmapSet.Value?.OnlineID > 0;
 
         protected override void UpdateAfterChildren()
         {

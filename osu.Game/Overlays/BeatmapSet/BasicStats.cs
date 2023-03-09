@@ -5,6 +5,7 @@
 
 using System;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Extensions.LocalisationExtensions;
 using osu.Framework.Graphics;
@@ -26,20 +27,8 @@ namespace osu.Game.Overlays.BeatmapSet
     {
         private readonly Statistic length, bpm, circleCount, sliderCount;
 
-        private APIBeatmapSet beatmapSet;
-
-        public APIBeatmapSet BeatmapSet
-        {
-            get => beatmapSet;
-            set
-            {
-                if (value == beatmapSet) return;
-
-                beatmapSet = value;
-
-                updateDisplay();
-            }
-        }
+        [Resolved]
+        private Bindable<APIBeatmapSet> beatmapSet { get; set; } = null!;
 
         private IBeatmapInfo beatmapInfo;
 
@@ -58,7 +47,7 @@ namespace osu.Game.Overlays.BeatmapSet
 
         private void updateDisplay()
         {
-            bpm.Value = BeatmapSet?.BPM.ToLocalisableString(@"0.##") ?? (LocalisableString)"-";
+            bpm.Value = beatmapSet.Value?.BPM.ToLocalisableString(@"0.##") ?? (LocalisableString)"-";
 
             if (beatmapInfo == null)
             {
@@ -111,10 +100,11 @@ namespace osu.Game.Overlays.BeatmapSet
             };
         }
 
-        [BackgroundDependencyLoader]
-        private void load()
+        protected override void LoadComplete()
         {
-            updateDisplay();
+            base.LoadComplete();
+
+            beatmapSet.BindValueChanged(_ => updateDisplay(), true);
         }
 
         private partial class Statistic : Container, IHasTooltip

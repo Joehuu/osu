@@ -5,6 +5,7 @@
 
 using System;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -28,19 +29,8 @@ namespace osu.Game.Overlays.BeatmapSet
         private UpdateableAvatar avatar;
         private FillFlowContainer fields;
 
-        private APIBeatmapSet beatmapSet;
-
-        public APIBeatmapSet BeatmapSet
-        {
-            get => beatmapSet;
-            set
-            {
-                if (value == beatmapSet) return;
-
-                beatmapSet = value;
-                Scheduler.AddOnce(updateDisplay);
-            }
-        }
+        [Resolved]
+        private Bindable<APIBeatmapSet> beatmapSet { get; set; } = null!;
 
         [BackgroundDependencyLoader]
         private void load()
@@ -74,34 +64,39 @@ namespace osu.Game.Overlays.BeatmapSet
                     Padding = new MarginPadding { Left = height + 5 },
                 },
             };
+        }
 
-            Scheduler.AddOnce(updateDisplay);
+        protected override void LoadComplete()
+        {
+            base.LoadComplete();
+
+            beatmapSet.BindValueChanged(_ => Scheduler.AddOnce(updateDisplay), true);
         }
 
         private void updateDisplay()
         {
-            avatar.User = BeatmapSet?.Author;
+            avatar.User = beatmapSet.Value?.Author;
 
             fields.Clear();
-            if (BeatmapSet == null)
+            if (beatmapSet.Value == null)
                 return;
 
             fields.Children = new Drawable[]
             {
-                new Field("mapped by", BeatmapSet.Author, OsuFont.GetFont(weight: FontWeight.Regular, italics: true)),
-                new Field("submitted", BeatmapSet.Submitted, OsuFont.GetFont(weight: FontWeight.Bold))
+                new Field("mapped by", beatmapSet.Value.Author, OsuFont.GetFont(weight: FontWeight.Regular, italics: true)),
+                new Field("submitted", beatmapSet.Value.Submitted, OsuFont.GetFont(weight: FontWeight.Bold))
                 {
                     Margin = new MarginPadding { Top = 5 },
                 },
             };
 
-            if (BeatmapSet.Ranked.HasValue)
+            if (beatmapSet.Value.Ranked.HasValue)
             {
-                fields.Add(new Field(BeatmapSet.Status.ToString().ToLowerInvariant(), BeatmapSet.Ranked.Value, OsuFont.GetFont(weight: FontWeight.Bold)));
+                fields.Add(new Field(beatmapSet.Value.Status.ToString().ToLowerInvariant(), beatmapSet.Value.Ranked.Value, OsuFont.GetFont(weight: FontWeight.Bold)));
             }
-            else if (BeatmapSet.LastUpdated.HasValue)
+            else if (beatmapSet.Value.LastUpdated.HasValue)
             {
-                fields.Add(new Field("last updated", BeatmapSet.LastUpdated.Value, OsuFont.GetFont(weight: FontWeight.Bold)));
+                fields.Add(new Field("last updated", beatmapSet.Value.LastUpdated.Value, OsuFont.GetFont(weight: FontWeight.Bold)));
             }
         }
 

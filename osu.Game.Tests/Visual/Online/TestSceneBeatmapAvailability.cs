@@ -4,6 +4,8 @@
 #nullable disable
 
 using NUnit.Framework;
+using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Game.Beatmaps;
 using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Overlays.BeatmapSet;
@@ -15,6 +17,9 @@ namespace osu.Game.Tests.Visual.Online
     {
         private readonly BeatmapAvailability container;
 
+        [Cached]
+        private readonly Bindable<APIBeatmapSet> beatmapSet = new Bindable<APIBeatmapSet>();
+
         public TestSceneBeatmapAvailability()
         {
             Add(container = new BeatmapAvailability());
@@ -23,7 +28,7 @@ namespace osu.Game.Tests.Visual.Online
         [Test]
         public void TestUndownloadableWithLink()
         {
-            AddStep("set undownloadable beatmapset with link", () => container.BeatmapSet = new APIBeatmapSet
+            AddStep("set undownloadable beatmapset with link", () => beatmapSet.Value = new APIBeatmapSet
             {
                 Availability = new BeatmapSetOnlineAvailability
                 {
@@ -38,7 +43,7 @@ namespace osu.Game.Tests.Visual.Online
         [Test]
         public void TestUndownloadableNoLink()
         {
-            AddStep("set undownloadable beatmapset without link", () => container.BeatmapSet = new APIBeatmapSet
+            AddStep("set undownloadable beatmapset without link", () => beatmapSet.Value = new APIBeatmapSet
             {
                 Availability = new BeatmapSetOnlineAvailability
                 {
@@ -52,7 +57,7 @@ namespace osu.Game.Tests.Visual.Online
         [Test]
         public void TestPartsRemovedWithLink()
         {
-            AddStep("set parts-removed beatmapset with link", () => container.BeatmapSet = new APIBeatmapSet
+            AddStep("set parts-removed beatmapset with link", () => beatmapSet.Value = new APIBeatmapSet
             {
                 Availability = new BeatmapSetOnlineAvailability
                 {
@@ -67,7 +72,7 @@ namespace osu.Game.Tests.Visual.Online
         [Test]
         public void TestNormal()
         {
-            AddStep("set normal beatmapset", () => container.BeatmapSet = new APIBeatmapSet
+            AddStep("set normal beatmapset", () => beatmapSet.Value = new APIBeatmapSet
             {
                 Availability = new BeatmapSetOnlineAvailability
                 {

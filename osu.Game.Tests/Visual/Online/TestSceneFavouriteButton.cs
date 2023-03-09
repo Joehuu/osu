@@ -4,6 +4,8 @@
 #nullable disable
 
 using NUnit.Framework;
+using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Testing;
 using osu.Game.Online.API.Requests.Responses;
@@ -15,6 +17,9 @@ namespace osu.Game.Tests.Visual.Online
     public partial class TestSceneFavouriteButton : OsuTestScene
     {
         private FavouriteButton favourite;
+
+        [Cached]
+        private readonly Bindable<APIBeatmapSet> beatmapSet = new Bindable<APIBeatmapSet>();
 
         [SetUpSteps]
         public void SetUpSteps()
@@ -31,7 +36,7 @@ namespace osu.Game.Tests.Visual.Online
         [Test]
         public void TestLoggedOutIn()
         {
-            AddStep("set valid beatmap", () => favourite.BeatmapSet.Value = new APIBeatmapSet { OnlineID = 88 });
+            AddStep("set valid beatmap", () => beatmapSet.Value = new APIBeatmapSet { OnlineID = 88 });
             AddStep("log out", () => API.Logout());
             checkEnabled(false);
             AddStep("log in", () => API.Login("test", "test"));
@@ -42,9 +47,9 @@ namespace osu.Game.Tests.Visual.Online
         public void TestBeatmapChange()
         {
             AddStep("log in", () => API.Login("test", "test"));
-            AddStep("set valid beatmap", () => favourite.BeatmapSet.Value = new APIBeatmapSet { OnlineID = 88 });
+            AddStep("set valid beatmap", () => beatmapSet.Value = new APIBeatmapSet { OnlineID = 88 });
             checkEnabled(true);
-            AddStep("set invalid beatmap", () => favourite.BeatmapSet.Value = new APIBeatmapSet());
+            AddStep("set invalid beatmap", () => beatmapSet.Value = new APIBeatmapSet());
             checkEnabled(false);
         }
 
