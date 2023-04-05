@@ -41,6 +41,9 @@ namespace osu.Game.Rulesets.Osu.Mods
 
         public override BindableBool ComboBasedSize { get; } = new BindableBool(true);
 
+        [SettingSource("Dim on tracking sliders", "Whether to lower the brightness when holding sliders")]
+        public BindableBool DimOnTrackingSliders { get; } = new BindableBool(true);
+
         public override float DefaultFlashlightSize => 200;
 
         private OsuFlashlight flashlight = null!;
@@ -49,6 +52,8 @@ namespace osu.Game.Rulesets.Osu.Mods
 
         public void ApplyToDrawableHitObject(DrawableHitObject drawable)
         {
+            if (!DimOnTrackingSliders.Value) return;
+
             if (drawable is DrawableSlider s)
                 s.Tracking.ValueChanged += flashlight.OnSliderTrackingChange;
         }
