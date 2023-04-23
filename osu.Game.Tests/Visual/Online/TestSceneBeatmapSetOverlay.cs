@@ -142,11 +142,11 @@ namespace osu.Game.Tests.Visual.Online
         [Test]
         public void TestMultipleRulesets()
         {
-            AddStep("show multiple rulesets beatmap", () =>
+            AddStep("show taiko difficulty from multiple rulesets beatmap", () =>
             {
                 var beatmaps = new List<APIBeatmap>();
 
-                foreach (var ruleset in rulesets.AvailableRulesets.Skip(1))
+                foreach (var ruleset in rulesets.AvailableRulesets)
                 {
                     beatmaps.Add(new APIBeatmap
                     {
@@ -165,8 +165,11 @@ namespace osu.Game.Tests.Visual.Online
                 set.Beatmaps = beatmaps.ToArray();
 
                 overlay.ShowBeatmapSet(set);
+
+                overlay.Header.HeaderContent.Picker.Beatmap.Value = beatmaps.First(b => b.RulesetID == 1);
             });
 
+            AddAssert("ruleset is taiko", () => overlay.Header.RulesetSelector.Current.Value.OnlineID == 1);
             AddAssert("shown beatmaps of current ruleset", () => overlay.Header.HeaderContent.Picker.Difficulties.All(b => b.Beatmap.Ruleset.OnlineID == overlay.Header.RulesetSelector.Current.Value.OnlineID));
             AddAssert("left-most beatmap selected", () => overlay.Header.HeaderContent.Picker.Difficulties.First().State == BeatmapPicker.DifficultySelectorState.Selected);
         }
