@@ -49,7 +49,8 @@ namespace osu.Game.Overlays.BeatmapSet
 
         protected override Drawable CreateTabControlContent() => RulesetSelector = new BeatmapRulesetSelector
         {
-            Current = ruleset
+            Current = ruleset,
+            Beatmap = { BindTarget = HeaderContent.Picker.Beatmap }
         };
 
         protected override OverlayTitle CreateTitle() => new BeatmapHeaderTitle();

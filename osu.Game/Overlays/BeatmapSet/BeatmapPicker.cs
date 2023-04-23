@@ -156,14 +156,13 @@ namespace osu.Game.Overlays.BeatmapSet
         {
             starRating.Colour = colours.Yellow;
             starRatingText.Colour = colours.Yellow;
-            updateDisplay();
         }
 
         protected override void LoadComplete()
         {
             base.LoadComplete();
 
-            ruleset.ValueChanged += _ => updateDisplay();
+            ruleset.BindValueChanged(_ => updateDisplay(), true);
 
             // done here so everything can bind in intialization and get the first trigger
             Beatmap.TriggerChange();

@@ -27,6 +27,19 @@ namespace osu.Game.Overlays.BeatmapSet
             }
         }
 
+        public readonly Bindable<APIBeatmap> Beatmap = new Bindable<APIBeatmap>();
+
+        protected override void LoadComplete()
+        {
+            base.LoadComplete();
+
+            Beatmap.BindValueChanged(b =>
+            {
+                if (b.NewValue != null)
+                    SelectTab(TabContainer.TabItems.FirstOrDefault(t => t.Value.OnlineID == b.NewValue.RulesetID));
+            });
+        }
+
         protected override TabItem<RulesetInfo> CreateTabItem(RulesetInfo value) => new BeatmapRulesetTabItem(value)
         {
             BeatmapSet = { BindTarget = beatmapSet }
