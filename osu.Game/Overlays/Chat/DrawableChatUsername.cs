@@ -57,12 +57,6 @@ namespace osu.Game.Overlays.Chat
             set => drawableText.Text = value;
         }
 
-        public override float Width
-        {
-            get => base.Width;
-            set => base.Width = drawableText.MaxWidth = value;
-        }
-
         [Resolved]
         private IAPIProvider api { get; set; } = null!;
 

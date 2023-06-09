@@ -1,6 +1,8 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
+using osu.Framework.Graphics;
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Localisation;
@@ -24,6 +26,20 @@ namespace osu.Game.Graphics.Sprites
         public TruncatingSpriteText()
         {
             ((SpriteText)this).Truncate = true;
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+
+            // MaxWidth is used instead of RelativeSizeAxes for cases where we need to centre the text.
+            MaxWidth = Parent.DrawWidth - Parent.Padding.Left - Parent.Padding.Right - X;
+        }
+
+        public override Axes RelativeSizeAxes
+        {
+            // For consistency, disable RelativeSizeAxes as normal left-anchored text also works with MaxWidth.
+            set => throw new InvalidOperationException($"{nameof(RelativeSizeAxes)} is replaced by MaxWidth logic in {nameof(Update)}.");
         }
     }
 }
