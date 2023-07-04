@@ -70,9 +70,9 @@ namespace osu.Game.Localisation
         public static LocalisableString AlwaysConfine => new TranslatableString(getKey(@"always_confine"), @"Always");
 
         /// <summary>
-        /// "During Gameplay"
+        /// "During gameplay"
         /// </summary>
-        public static LocalisableString ConfineDuringGameplay => new TranslatableString(getKey(@"confine_during_gameplay"), @"During Gameplay");
+        public static LocalisableString ConfineDuringGameplay => new TranslatableString(getKey(@"confine_during_gameplay"), @"During gameplay");
 
         /// <summary>
         /// "Never"
