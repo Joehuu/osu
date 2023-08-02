@@ -215,6 +215,7 @@ namespace osu.Game.Screens.Select
             base.LoadComplete();
 
             subscriptionSets = realm.RegisterForNotifications(getBeatmapSets, beatmapSetsChanged);
+            signalBeatmapsLoaded();
             subscriptionBeatmaps = realm.RegisterForNotifications(r => r.All<BeatmapInfo>().Where(b => !b.Hidden), beatmapsChanged);
 
             // Can't use main subscriptions because we can't lookup deleted indices.

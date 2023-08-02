@@ -2,6 +2,8 @@
   <Import Project="..\osu.TestProject.props" />
   <PropertyGroup>
     <StartupObject>osu.Game.Tournament.Tests.TournamentTestRunner</StartupObject>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
   <ItemGroup Label="Package References">
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />

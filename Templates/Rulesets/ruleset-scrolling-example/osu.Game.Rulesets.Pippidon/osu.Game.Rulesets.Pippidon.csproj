@@ -5,6 +5,8 @@
     <OutputType>Library</OutputType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <RootNamespace>osu.Game.Rulesets.Pippidon</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
+    <Platforms>AnyCPU;x86;x64</Platforms>
   </PropertyGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\**" />
