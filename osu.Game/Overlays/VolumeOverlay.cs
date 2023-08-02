@@ -7,6 +7,7 @@ using osu.Framework.Allocation;
 using osu.Framework.Audio;
 using osu.Framework.Bindables;
 using osu.Framework.Extensions.Color4Extensions;
+using osu.Framework.Extensions.LocalisationExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
@@ -16,6 +17,7 @@ using osu.Framework.Threading;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
 using osu.Game.Input.Bindings;
+using osu.Game.Localisation;
 using osu.Game.Overlays.Volume;
 using osuTK;
 using osuTK.Graphics;
@@ -69,9 +71,9 @@ namespace osu.Game.Overlays
                     Margin = new MarginPadding { Left = offset },
                     Children = new[]
                     {
-                        volumeMeterEffect = new VolumeMeter("EFFECTS", 125, colours.BlueDarker),
-                        volumeMeterMaster = new VolumeMeter("MASTER", 150, colours.PinkDarker),
-                        volumeMeterMusic = new VolumeMeter("MUSIC", 125, colours.BlueDarker),
+                        volumeMeterEffect = new VolumeMeter(AudioSettingsStrings.EffectVolume.ToUpper(), 125, colours.BlueDarker),
+                        volumeMeterMaster = new VolumeMeter(AudioSettingsStrings.MasterVolume.ToUpper(), 150, colours.PinkDarker),
+                        volumeMeterMusic = new VolumeMeter(AudioSettingsStrings.MusicVolume.ToUpper(), 125, colours.BlueDarker),
                     }
                 }
             });
