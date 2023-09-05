@@ -107,7 +107,7 @@ namespace osu.Game.Screens.Select
 
         protected Container LeftArea { get; private set; } = null!;
 
-        private BeatmapInfoWedge beatmapInfoWedge = null!;
+        private BeatmapInfoWedgeV2 beatmapInfoWedge = null!;
 
         [Resolved]
         private IDialogOverlay? dialogOverlay { get; set; }
@@ -246,15 +246,9 @@ namespace osu.Game.Screens.Select
                                             {
                                                 RelativeSizeAxes = Axes.Both,
                                             },
-                                            beatmapInfoWedge = new BeatmapInfoWedge
+                                            beatmapInfoWedge = new BeatmapInfoWedgeV2
                                             {
-                                                Height = WEDGE_HEIGHT,
                                                 RelativeSizeAxes = Axes.X,
-                                                Margin = new MarginPadding
-                                                {
-                                                    Right = left_area_padding,
-                                                    Left = -BeatmapInfoWedge.BORDER_THICKNESS, // Hide the left border
-                                                },
                                             },
                                             new Container
                                             {
@@ -833,6 +827,7 @@ namespace osu.Game.Screens.Select
             }
 
             beatmapInfoWedge.Beatmap = beatmap;
+            beatmapInfoWedge.Show();
 
             BeatmapDetails.Beatmap = beatmap;
 
