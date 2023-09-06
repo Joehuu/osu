@@ -13,7 +13,7 @@ using osu.Framework.Bindables;
 using osu.Framework.Extensions.ObjectExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Framework.Graphics.Sprites;
+using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Bindings;
 using osu.Framework.Input.Events;
@@ -21,9 +21,7 @@ using osu.Framework.Logging;
 using osu.Framework.Screens;
 using osu.Framework.Threading;
 using osu.Game.Beatmaps;
-using osu.Game.Collections;
 using osu.Game.Configuration;
-using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Input.Bindings;
@@ -35,7 +33,7 @@ using osu.Game.Screens.Backgrounds;
 using osu.Game.Screens.Edit;
 using osu.Game.Screens.Menu;
 using osu.Game.Screens.Play;
-using osu.Game.Screens.Select.Options;
+using osu.Game.Screens.Select.FooterV2;
 using osu.Game.Skinning;
 using osuTK;
 using osuTK.Graphics;
@@ -45,6 +43,9 @@ namespace osu.Game.Screens.Select
 {
     public abstract partial class SongSelect : ScreenWithBeatmapBackground, IKeyBindingHandler<GlobalAction>
     {
+        [Cached]
+        private readonly OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Aquamarine);
+
         public static readonly float WEDGE_HEIGHT = 245;
 
         protected const float BACKGROUND_BLUR = 20;
@@ -65,12 +66,7 @@ namespace osu.Game.Screens.Select
         /// <summary>
         /// Can be null if <see cref="ShowFooter"/> is false.
         /// </summary>
-        protected BeatmapOptionsOverlay BeatmapOptions { get; private set; } = null!;
-
-        /// <summary>
-        /// Can be null if <see cref="ShowFooter"/> is false.
-        /// </summary>
-        protected Footer? Footer { get; private set; }
+        protected FooterV2.FooterV2? Footer { get; private set; }
 
         /// <summary>
         /// Contains any panel which is triggered by a footer button.
@@ -124,7 +120,7 @@ namespace osu.Game.Screens.Select
 
         protected BeatmapDetailArea BeatmapDetails { get; private set; } = null!;
 
-        private FooterButtonOptions beatmapOptionsButton = null!;
+        protected FooterButtonOptionsV2 BeatmapOptionsButton = null!;
 
         private readonly Bindable<RulesetInfo> decoupledRuleset = new Bindable<RulesetInfo>();
 
@@ -141,7 +137,7 @@ namespace osu.Game.Screens.Select
         private Bindable<bool> configBackgroundBlur { get; set; } = new BindableBool();
 
         [BackgroundDependencyLoader(true)]
-        private void load(AudioManager audio, OsuColour colours, ManageCollectionsDialog? manageCollectionsDialog, DifficultyRecommender? recommender, OsuConfigManager config)
+        private void load(AudioManager audio, DifficultyRecommender? recommender, OsuConfigManager config)
         {
             configBackgroundBlur = config.GetBindable<bool>(OsuSetting.SongSelectBackgroundBlur);
             configBackgroundBlur.BindValueChanged(e =>
@@ -159,7 +155,7 @@ namespace osu.Game.Screens.Select
                 Origin = Anchor.CentreRight,
                 RelativeSizeAxes = Axes.Both,
                 BleedTop = FilterControl.HEIGHT,
-                BleedBottom = Footer.HEIGHT,
+                BleedBottom = FooterV2.FooterV2.HEIGHT,
                 SelectionChanged = updateSelectedBeatmap,
                 BeatmapSetsChanged = carouselBeatmapsLoaded,
                 FilterApplied = updateVisibleBeatmapCount,
@@ -211,7 +207,7 @@ namespace osu.Game.Screens.Select
                                         Padding = new MarginPadding
                                         {
                                             Top = FilterControl.HEIGHT,
-                                            Bottom = Footer.HEIGHT
+                                            Bottom = FooterV2.FooterV2.HEIGHT
                                         },
                                         Child = new LoadingSpinner(true) { State = { Value = Visibility.Visible } }
                                     }
@@ -258,7 +254,7 @@ namespace osu.Game.Screens.Select
                                                 RelativeSizeAxes = Axes.Both,
                                                 Padding = new MarginPadding
                                                 {
-                                                    Bottom = Footer.HEIGHT,
+                                                    Bottom = FooterV2.FooterV2.HEIGHT,
                                                     Top = WEDGE_HEIGHT,
                                                     Left = left_area_padding,
                                                     Right = left_area_padding * 2,
@@ -291,13 +287,13 @@ namespace osu.Game.Screens.Select
                         Anchor = Anchor.BottomLeft,
                         Origin = Anchor.BottomLeft,
                         RelativeSizeAxes = Axes.Both,
-                        Padding = new MarginPadding { Bottom = Footer.HEIGHT },
-                        Children = new Drawable[]
-                        {
-                            BeatmapOptions = new BeatmapOptionsOverlay(),
-                        }
+                        Padding = new MarginPadding { Bottom = FooterV2.FooterV2.HEIGHT },
                     },
-                    Footer = new Footer()
+                    new PopoverContainer
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Child = Footer = new FooterV2.FooterV2()
+                    }
                 });
             }
 
@@ -309,11 +305,6 @@ namespace osu.Game.Screens.Select
             {
                 foreach (var (button, overlay) in CreateFooterButtons())
                     Footer.AddButton(button, overlay);
-
-                BeatmapOptions.AddButton(@"Manage", @"collections", FontAwesome.Solid.Book, colours.Green, () => manageCollectionsDialog?.Show());
-                BeatmapOptions.AddButton(@"Delete", @"all difficulties", FontAwesome.Solid.Trash, colours.Pink, () => DeleteBeatmap(Beatmap.Value.BeatmapSetInfo));
-                BeatmapOptions.AddButton(@"Remove", @"from unplayed", FontAwesome.Regular.TimesCircle, colours.Purple, null);
-                BeatmapOptions.AddButton(@"Clear", @"local scores", FontAwesome.Solid.Eraser, colours.Purple, () => ClearScores(Beatmap.Value.BeatmapInfo));
             }
 
             sampleChangeDifficulty = audio.Samples.Get(@"SongSelect/select-difficulty");
@@ -342,15 +333,15 @@ namespace osu.Game.Screens.Select
         /// Creates the buttons to be displayed in the footer.
         /// </summary>
         /// <returns>A set of <see cref="FooterButton"/> and an optional <see cref="OverlayContainer"/> which the button opens when pressed.</returns>
-        protected virtual IEnumerable<(FooterButton, OverlayContainer?)> CreateFooterButtons() => new (FooterButton, OverlayContainer?)[]
+        protected virtual IEnumerable<(FooterButtonV2, OverlayContainer?)> CreateFooterButtons() => new (FooterButtonV2, OverlayContainer?)[]
         {
-            (new FooterButtonMods { Current = Mods }, ModSelect),
-            (new FooterButtonRandom
+            (new FooterButtonModsV2(), ModSelect),
+            (new FooterButtonRandomV2
             {
                 NextRandom = () => Carousel.SelectNextRandom(),
                 PreviousRandom = Carousel.SelectPreviousRandom
             }, null),
-            (beatmapOptionsButton = new FooterButtonOptions(), BeatmapOptions)
+            (BeatmapOptionsButton = new FooterButtonOptionsV2(), null)
         };
 
         protected virtual ModSelectOverlay CreateModSelectOverlay() => new SoloModSelectOverlay();
@@ -687,8 +678,6 @@ namespace osu.Game.Screens.Select
         {
             ModSelect.Hide();
 
-            BeatmapOptions.Hide();
-
             Carousel.AllowSelection = false;
 
             endLooping();
@@ -786,11 +775,11 @@ namespace osu.Game.Screens.Select
             bool beatmapSelected = beatmap is not DummyWorkingBeatmap;
 
             if (beatmapSelected)
-                beatmapOptionsButton.Enabled.Value = true;
+                BeatmapOptionsButton.Enabled.Value = true;
             else
             {
-                beatmapOptionsButton.Enabled.Value = false;
-                BeatmapOptions.Hide();
+                BeatmapOptionsButton.Enabled.Value = false;
+                BeatmapOptionsButton.IsActive.Value = false;
             }
         }
 

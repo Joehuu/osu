@@ -16,7 +16,7 @@ namespace osu.Game.Screens.Select.FooterV2
     public partial class FooterV2 : InputBlockingContainer
     {
         //Should be 60, setting to 50 for now for the sake of matching the current BackButton height.
-        private const int height = 50;
+        public const int HEIGHT = 50;
         private const int padding = 80;
 
         private readonly List<OverlayContainer> overlays = new List<OverlayContainer>();
@@ -51,7 +51,7 @@ namespace osu.Game.Screens.Select.FooterV2
         public FooterV2()
         {
             RelativeSizeAxes = Axes.X;
-            Height = height;
+            Height = HEIGHT;
             Anchor = Anchor.BottomLeft;
             Origin = Anchor.BottomLeft;
         }

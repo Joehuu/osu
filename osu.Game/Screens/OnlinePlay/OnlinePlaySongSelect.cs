@@ -173,16 +173,6 @@ namespace osu.Game.Screens.OnlinePlay
             IsValidMod = IsValidMod
         };
 
-        protected override IEnumerable<(FooterButton, OverlayContainer?)> CreateFooterButtons()
-        {
-            var baseButtons = base.CreateFooterButtons().ToList();
-            var freeModsButton = new FooterButtonFreeMods(freeModSelectOverlay) { Current = FreeMods };
-
-            baseButtons.Insert(baseButtons.FindIndex(b => b.Item1 is FooterButtonMods) + 1, (freeModsButton, freeModSelectOverlay));
-
-            return baseButtons;
-        }
-
         /// <summary>
         /// Checks whether a given <see cref="Mod"/> is valid for global selection.
         /// </summary>
