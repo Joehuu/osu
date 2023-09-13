@@ -66,53 +66,10 @@ namespace osu.Game.Tests.Visual.SongSelect
 
             AddStep("no mods selected", () => SelectedMods.Value = Array.Empty<Mod>());
 
-            AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsCs);
             AddAssert("circle size bar is white", () => barIsWhite(barAtElement(0)));
             AddAssert("HP drain bar is white", () => barIsWhite(barAtElement(1)));
             AddAssert("accuracy bar is white", () => barIsWhite(barAtElement(2)));
             AddAssert("approach rate bar is white", () => barIsWhite(barAtElement(3)));
-        }
-
-        [Test]
-        public void TestManiaFirstBarTextManiaBeatmap()
-        {
-            AddStep("set game ruleset to mania", () => Ruleset.Value = new ManiaRuleset().RulesetInfo);
-
-            AddStep("set beatmap", () => advancedStats.BeatmapInfo = new BeatmapInfo
-            {
-                Ruleset = rulesets.GetRuleset(3) ?? throw new InvalidOperationException("osu!mania ruleset not found"),
-                Difficulty = new BeatmapDifficulty
-                {
-                    CircleSize = 5,
-                    DrainRate = 4.3f,
-                    OverallDifficulty = 4.5f,
-                    ApproachRate = 3.1f
-                },
-                StarRating = 8
-            });
-
-            AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsCsMania);
-        }
-
-        [Test]
-        public void TestManiaFirstBarTextConvert()
-        {
-            AddStep("set game ruleset to mania", () => Ruleset.Value = new ManiaRuleset().RulesetInfo);
-
-            AddStep("set beatmap", () => advancedStats.BeatmapInfo = new BeatmapInfo
-            {
-                Ruleset = new OsuRuleset().RulesetInfo,
-                Difficulty = new BeatmapDifficulty
-                {
-                    CircleSize = 5,
-                    DrainRate = 4.3f,
-                    OverallDifficulty = 4.5f,
-                    ApproachRate = 3.1f
-                },
-                StarRating = 8
-            });
-
-            AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsCsMania);
         }
 
         [Test]
@@ -189,6 +146,28 @@ namespace osu.Game.Tests.Visual.SongSelect
             AddAssert("drain rate bar is blue", () => barIsBlue(barAtElement(1)));
             AddAssert("accuracy bar is white", () => barIsWhite(barAtElement(2)));
             AddAssert("approach rate bar is red", () => barIsRed(barAtElement(3)));
+        }
+
+        [Test]
+        public void TestRulesetDifficultySettings()
+        {
+            AddStep("set beatmap", () => advancedStats.BeatmapInfo = exampleBeatmapInfo);
+
+            AddStep("select osu ruleset", () => Ruleset.Value = rulesets.GetRuleset(0));
+            AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsCs);
+            AddAssert("bar count is 5", () => advancedStats.ChildrenOfType<AdvancedStats.StatisticRow>().Count() == 5);
+
+            AddStep("select taiko ruleset", () => Ruleset.Value = rulesets.GetRuleset(1));
+            AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsDrain);
+            AddAssert("bar count is 3", () => advancedStats.ChildrenOfType<AdvancedStats.StatisticRow>().Count() == 3);
+
+            AddStep("select catch ruleset", () => Ruleset.Value = rulesets.GetRuleset(2));
+            AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsCs);
+            AddAssert("bar count is 5", () => advancedStats.ChildrenOfType<AdvancedStats.StatisticRow>().Count() == 5);
+
+            AddStep("select mania ruleset", () => Ruleset.Value = rulesets.GetRuleset(3));
+            AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsCsMania);
+            AddAssert("bar count is 4", () => advancedStats.ChildrenOfType<AdvancedStats.StatisticRow>().Count() == 4);
         }
 
         private bool barIsWhite(AdvancedStats.StatisticRow row) => row.ModBar.AccentColour == Color4.White;
