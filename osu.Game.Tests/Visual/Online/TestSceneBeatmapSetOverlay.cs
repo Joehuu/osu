@@ -10,6 +10,7 @@ using osu.Game.Rulesets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using osu.Framework.Graphics.Sprites;
 using osu.Framework.Testing;
 using osu.Game.Beatmaps.Drawables;
 using osu.Game.Graphics.Sprites;
@@ -220,7 +221,7 @@ namespace osu.Game.Tests.Visual.Online
         public void TestSelectedModsDontAffectStatistics()
         {
             AddStep("show map", () => overlay.ShowBeatmapSet(getBeatmapSet()));
-            AddAssert("AR displayed as 0", () => overlay.ChildrenOfType<AdvancedStats.StatisticRow>().Single(s => s.Title == BeatmapsetsStrings.ShowStatsAr).Value, () => Is.EqualTo((0, 0)));
+            AddAssert("AR displayed as 0", () => overlay.ChildrenOfType<AdvancedStats.StatisticRow>().Single(s => s.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsAr).Value, () => Is.EqualTo((0, 0)));
             AddStep("set AR10 diff adjust", () => SelectedMods.Value = new[]
             {
                 new OsuModDifficultyAdjust
@@ -228,7 +229,7 @@ namespace osu.Game.Tests.Visual.Online
                     ApproachRate = { Value = 10 }
                 }
             });
-            AddAssert("AR still displayed as 0", () => overlay.ChildrenOfType<AdvancedStats.StatisticRow>().Single(s => s.Title == BeatmapsetsStrings.ShowStatsAr).Value, () => Is.EqualTo((0, 0)));
+            AddAssert("AR still displayed as 0", () => overlay.ChildrenOfType<AdvancedStats.StatisticRow>().Single(s => s.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsAr).Value, () => Is.EqualTo((0, 0)));
         }
 
         [Test]

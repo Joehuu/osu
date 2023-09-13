@@ -26,7 +26,7 @@ namespace osu.Game.Tests.Visual.SongSelect
     [System.ComponentModel.Description("Advanced beatmap statistics display")]
     public partial class TestSceneAdvancedStats : OsuTestScene
     {
-        private TestAdvancedStats advancedStats;
+        private AdvancedStats advancedStats;
 
         [Resolved]
         private RulesetStore rulesets { get; set; }
@@ -35,7 +35,7 @@ namespace osu.Game.Tests.Visual.SongSelect
         private OsuColour colours { get; set; }
 
         [SetUp]
-        public void Setup() => Schedule(() => Child = advancedStats = new TestAdvancedStats
+        public void Setup() => Schedule(() => Child = advancedStats = new AdvancedStats
         {
             Width = 500
         });
@@ -67,10 +67,10 @@ namespace osu.Game.Tests.Visual.SongSelect
             AddStep("no mods selected", () => SelectedMods.Value = Array.Empty<Mod>());
 
             AddAssert("first bar text is correct", () => advancedStats.ChildrenOfType<SpriteText>().First().Text == BeatmapsetsStrings.ShowStatsCs);
-            AddAssert("circle size bar is white", () => barIsWhite(advancedStats.FirstValue));
-            AddAssert("HP drain bar is white", () => barIsWhite(advancedStats.HpDrain));
-            AddAssert("accuracy bar is white", () => barIsWhite(advancedStats.Accuracy));
-            AddAssert("approach rate bar is white", () => barIsWhite(advancedStats.ApproachRate));
+            AddAssert("circle size bar is white", () => barIsWhite(barAtElement(0)));
+            AddAssert("HP drain bar is white", () => barIsWhite(barAtElement(1)));
+            AddAssert("accuracy bar is white", () => barIsWhite(barAtElement(2)));
+            AddAssert("approach rate bar is white", () => barIsWhite(barAtElement(3)));
         }
 
         [Test]
@@ -126,10 +126,10 @@ namespace osu.Game.Tests.Visual.SongSelect
                 SelectedMods.Value = new[] { ruleset.CreateMod<ModEasy>() };
             });
 
-            AddAssert("circle size bar is blue", () => barIsBlue(advancedStats.FirstValue));
-            AddAssert("HP drain bar is blue", () => barIsBlue(advancedStats.HpDrain));
-            AddAssert("accuracy bar is blue", () => barIsBlue(advancedStats.Accuracy));
-            AddAssert("approach rate bar is blue", () => barIsBlue(advancedStats.ApproachRate));
+            AddAssert("circle size bar is blue", () => barIsBlue(barAtElement(0)));
+            AddAssert("HP drain bar is blue", () => barIsBlue(barAtElement(1)));
+            AddAssert("accuracy bar is blue", () => barIsBlue(barAtElement(2)));
+            AddAssert("approach rate bar is blue", () => barIsBlue(barAtElement(3)));
         }
 
         [Test]
@@ -143,10 +143,10 @@ namespace osu.Game.Tests.Visual.SongSelect
                 SelectedMods.Value = new[] { ruleset.CreateMod<ModHardRock>() };
             });
 
-            AddAssert("circle size bar is red", () => barIsRed(advancedStats.FirstValue));
-            AddAssert("HP drain bar is red", () => barIsRed(advancedStats.HpDrain));
-            AddAssert("accuracy bar is red", () => barIsRed(advancedStats.Accuracy));
-            AddAssert("approach rate bar is red", () => barIsRed(advancedStats.ApproachRate));
+            AddAssert("circle size bar is red", () => barIsRed(barAtElement(0)));
+            AddAssert("HP drain bar is red", () => barIsRed(barAtElement(1)));
+            AddAssert("accuracy bar is red", () => barIsRed(barAtElement(2)));
+            AddAssert("approach rate bar is red", () => barIsRed(barAtElement(3)));
         }
 
         [Test]
@@ -162,10 +162,10 @@ namespace osu.Game.Tests.Visual.SongSelect
                 SelectedMods.Value = new[] { difficultyAdjustMod };
             });
 
-            AddAssert("circle size bar is white", () => barIsWhite(advancedStats.FirstValue));
-            AddAssert("HP drain bar is white", () => barIsWhite(advancedStats.HpDrain));
-            AddAssert("accuracy bar is white", () => barIsWhite(advancedStats.Accuracy));
-            AddAssert("approach rate bar is white", () => barIsWhite(advancedStats.ApproachRate));
+            AddAssert("circle size bar is white", () => barIsWhite(barAtElement(0)));
+            AddAssert("HP drain bar is white", () => barIsWhite(barAtElement(1)));
+            AddAssert("accuracy bar is white", () => barIsWhite(barAtElement(2)));
+            AddAssert("approach rate bar is white", () => barIsWhite(barAtElement(3)));
         }
 
         [Test]
@@ -185,22 +185,16 @@ namespace osu.Game.Tests.Visual.SongSelect
                 SelectedMods.Value = new[] { difficultyAdjustMod };
             });
 
-            AddAssert("circle size bar is white", () => barIsWhite(advancedStats.FirstValue));
-            AddAssert("drain rate bar is blue", () => barIsBlue(advancedStats.HpDrain));
-            AddAssert("accuracy bar is white", () => barIsWhite(advancedStats.Accuracy));
-            AddAssert("approach rate bar is red", () => barIsRed(advancedStats.ApproachRate));
+            AddAssert("circle size bar is white", () => barIsWhite(barAtElement(0)));
+            AddAssert("drain rate bar is blue", () => barIsBlue(barAtElement(1)));
+            AddAssert("accuracy bar is white", () => barIsWhite(barAtElement(2)));
+            AddAssert("approach rate bar is red", () => barIsRed(barAtElement(3)));
         }
 
         private bool barIsWhite(AdvancedStats.StatisticRow row) => row.ModBar.AccentColour == Color4.White;
         private bool barIsBlue(AdvancedStats.StatisticRow row) => row.ModBar.AccentColour == colours.BlueDark;
         private bool barIsRed(AdvancedStats.StatisticRow row) => row.ModBar.AccentColour == colours.Red;
 
-        private partial class TestAdvancedStats : AdvancedStats
-        {
-            public new StatisticRow FirstValue => base.FirstValue;
-            public new StatisticRow HpDrain => base.HpDrain;
-            public new StatisticRow Accuracy => base.Accuracy;
-            public new StatisticRow ApproachRate => base.ApproachRate;
-        }
+        private AdvancedStats.StatisticRow barAtElement(int index) => advancedStats.ChildrenOfType<AdvancedStats.StatisticRow>().ElementAt(index);
     }
 }
