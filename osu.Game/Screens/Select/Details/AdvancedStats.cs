@@ -1,8 +1,6 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-#nullable disable
-
 using osuTK.Graphics;
 using osu.Framework.Allocation;
 using osu.Framework.Extensions.Color4Extensions;
@@ -33,15 +31,15 @@ namespace osu.Game.Screens.Select.Details
     public partial class AdvancedStats : Container, IHasCustomTooltip<AdjustedAttributesTooltip.Data>
     {
         [Resolved]
-        private BeatmapDifficultyCache difficultyCache { get; set; }
+        private BeatmapDifficultyCache difficultyCache { get; set; } = null!;
 
         [Resolved]
-        private IBindable<IReadOnlyList<Mod>> mods { get; set; }
+        private IBindable<IReadOnlyList<Mod>> mods { get; set; } = null!;
 
         [Resolved]
-        private OsuGameBase game { get; set; }
+        private OsuGameBase game { get; set; } = null!;
 
-        private IBindable<RulesetInfo> gameRuleset;
+        private IBindable<RulesetInfo>? gameRuleset;
 
         protected readonly StatisticRow FirstValue, HpDrain, Accuracy, ApproachRate;
         private readonly StatisticRow starDifficulty;
@@ -49,9 +47,9 @@ namespace osu.Game.Screens.Select.Details
         public ITooltip<AdjustedAttributesTooltip.Data> GetCustomTooltip() => new AdjustedAttributesTooltip();
         public AdjustedAttributesTooltip.Data TooltipContent { get; private set; }
 
-        private IBeatmapInfo beatmapInfo;
+        private IBeatmapInfo? beatmapInfo;
 
-        public IBeatmapInfo BeatmapInfo
+        public IBeatmapInfo? BeatmapInfo
         {
             get => beatmapInfo;
             set
@@ -147,8 +145,8 @@ namespace osu.Game.Screens.Select.Details
             mods.BindValueChanged(modsChanged, true);
         }
 
-        private ModSettingChangeTracker modSettingChangeTracker;
-        private ScheduledDelegate debouncedStatisticsUpdate;
+        private ModSettingChangeTracker? modSettingChangeTracker;
+        private ScheduledDelegate? debouncedStatisticsUpdate;
 
         private void modsChanged(ValueChangedEvent<IReadOnlyList<Mod>> mods)
         {
@@ -166,8 +164,8 @@ namespace osu.Game.Screens.Select.Details
 
         private void updateStatistics()
         {
-            IBeatmapDifficultyInfo baseDifficulty = BeatmapInfo?.Difficulty;
-            BeatmapDifficulty adjustedDifficulty = null;
+            IBeatmapDifficultyInfo? baseDifficulty = BeatmapInfo?.Difficulty;
+            BeatmapDifficulty? adjustedDifficulty = null;
 
             IRulesetInfo ruleset = gameRuleset?.Value ?? beatmapInfo.Ruleset;
 
@@ -222,7 +220,7 @@ namespace osu.Game.Screens.Select.Details
             updateStarDifficulty();
         }
 
-        private CancellationTokenSource starDifficultyCancellationSource;
+        private CancellationTokenSource? starDifficultyCancellationSource;
 
         /// <summary>
         /// Updates the displayed star difficulty statistics with the values provided by the currently-selected beatmap, ruleset, and selected mods.
@@ -240,8 +238,8 @@ namespace osu.Game.Screens.Select.Details
 
             starDifficultyCancellationSource = new CancellationTokenSource();
 
-            var normalStarDifficultyTask = difficultyCache.GetDifficultyAsync(BeatmapInfo, gameRuleset.Value, null, starDifficultyCancellationSource.Token);
-            var moddedStarDifficultyTask = difficultyCache.GetDifficultyAsync(BeatmapInfo, gameRuleset.Value, mods.Value, starDifficultyCancellationSource.Token);
+            var normalStarDifficultyTask = difficultyCache.GetDifficultyAsync(BeatmapInfo, gameRuleset?.Value, null, starDifficultyCancellationSource.Token);
+            var moddedStarDifficultyTask = difficultyCache.GetDifficultyAsync(BeatmapInfo, gameRuleset?.Value, mods.Value, starDifficultyCancellationSource.Token);
 
             Task.WhenAll(normalStarDifficultyTask, moddedStarDifficultyTask).ContinueWith(_ => Schedule(() =>
             {
@@ -274,7 +272,7 @@ namespace osu.Game.Screens.Select.Details
             public readonly Bar ModBar;
 
             [Resolved]
-            private OsuColour colours { get; set; }
+            private OsuColour colours { get; set; } = null!;
 
             public LocalisableString Title
             {
