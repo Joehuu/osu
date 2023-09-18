@@ -34,6 +34,8 @@ using osu.Game.Screens.Ranking.Statistics;
 using osu.Game.Skinning;
 using osu.Game.Rulesets.Configuration;
 using osu.Game.Configuration;
+using osu.Game.Localisation;
+using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets.Scoring.Legacy;
 using osu.Game.Rulesets.Taiko.Configuration;
 
@@ -226,6 +228,28 @@ namespace osu.Game.Rulesets.Taiko
             }
 
             return base.GetDisplayNameForHitResult(result);
+        }
+
+        public override IEnumerable<BeatmapDifficultySetting> GetDifficultySettings(IBeatmapDifficultyInfo difficulty, BeatmapDifficulty? adjustedDifficulty = null,
+                                                                                    IBeatmapConverter? converter = null)
+        {
+            return new[]
+            {
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsDrain,
+                    Value = (difficulty.DrainRate, adjustedDifficulty?.DrainRate),
+                    Description = EditorSetupStrings.DrainRateDescription,
+                    Acronym = @"HP",
+                },
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsAccuracy,
+                    Value = (difficulty.OverallDifficulty, adjustedDifficulty?.OverallDifficulty),
+                    Description = EditorSetupStrings.OverallDifficultyDescription,
+                    Acronym = @"OD",
+                },
+            };
         }
 
         public override StatisticItem[] CreateStatisticsForScore(ScoreInfo score, IBeatmap playableBeatmap)

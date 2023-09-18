@@ -10,6 +10,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Localisation;
 using osu.Framework.Utils;
+using osu.Game.Beatmaps;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Graphics.UserInterface;
@@ -37,6 +38,7 @@ namespace osu.Game.Overlays.Mods
 
         private readonly EffectCounter counter;
         private readonly OsuSpriteText text;
+        private readonly BeatmapDifficultySetting statistic;
 
         [Resolved]
         private OsuColour colours { get; set; } = null!;
@@ -67,9 +69,11 @@ namespace osu.Game.Overlays.Mods
             counter.Colour = newColor;
         }
 
-        public VerticalAttributeDisplay(LocalisableString label)
+        public VerticalAttributeDisplay(BeatmapDifficultySetting statistic)
         {
-            Label = label;
+            this.statistic = statistic;
+
+            Label = statistic.Acronym;
 
             AutoSizeAxes = Axes.X;
 
@@ -103,6 +107,13 @@ namespace osu.Game.Overlays.Mods
                     }
                 }
             };
+        }
+
+        [BackgroundDependencyLoader]
+        private void load()
+        {
+            Current.Value = statistic.Value.adjustedValue ?? statistic.Value.baseValue;
+            AdjustType.Value = CalculateEffect(statistic.Value.baseValue, statistic.Value.adjustedValue ?? statistic.Value.baseValue);
         }
 
         public static ModEffect CalculateEffect(double oldValue, double newValue)

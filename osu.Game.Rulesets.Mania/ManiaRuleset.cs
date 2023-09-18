@@ -13,7 +13,9 @@ using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.Legacy;
 using osu.Game.Configuration;
 using osu.Game.Graphics;
+using osu.Game.Localisation;
 using osu.Game.Overlays.Settings;
+using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets.Configuration;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Edit;
@@ -423,6 +425,41 @@ namespace osu.Game.Rulesets.Mania
 
         public int GetKeyCount(IBeatmapInfo beatmapInfo)
             => ManiaBeatmapConverter.GetColumnCount(LegacyBeatmapConversionDifficultyInfo.FromBeatmapInfo(beatmapInfo));
+
+        public override IEnumerable<BeatmapDifficultySetting> GetDifficultySettings(IBeatmapDifficultyInfo difficulty, BeatmapDifficulty? adjustedDifficulty = null, IBeatmapConverter? converter = null)
+        {
+            var maniaConverter = converter as ManiaBeatmapConverter;
+
+            return new[]
+            {
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsCsMania,
+                    Value = (maniaConverter?.IsForCurrentRuleset == false
+                            ? maniaConverter.OriginalTargetColumns
+                            : difficulty.CircleSize,
+                        maniaConverter?.IsForCurrentRuleset == false
+                            ? maniaConverter.TargetColumns
+                            : null),
+                    Description = "The number of columns in the beatmap",
+                    Acronym = @"XK",
+                },
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsDrain,
+                    Value = (difficulty.DrainRate, adjustedDifficulty?.DrainRate),
+                    Description = EditorSetupStrings.DrainRateDescription,
+                    Acronym = @"HP",
+                },
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsAccuracy,
+                    Value = (difficulty.OverallDifficulty, adjustedDifficulty?.OverallDifficulty),
+                    Description = EditorSetupStrings.OverallDifficultyDescription,
+                    Acronym = @"OD",
+                },
+            };
+        }
     }
 
     public enum PlayfieldType

@@ -402,5 +402,7 @@ namespace osu.Game.Rulesets
         /// Can be overridden to alter the difficulty section to the editor beatmap setup screen.
         /// </summary>
         public virtual DifficultySection? CreateEditorDifficultySection() => null;
+
+        public virtual IEnumerable<BeatmapDifficultySetting> GetDifficultySettings(IBeatmapDifficultyInfo difficulty, BeatmapDifficulty? adjustedDifficulty = null, IBeatmapConverter? converter = null) => Array.Empty<BeatmapDifficultySetting>();
     }
 }

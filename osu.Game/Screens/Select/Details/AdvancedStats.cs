@@ -18,10 +18,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using osu.Framework.Extensions;
-using osu.Framework.Localisation;
 using osu.Framework.Threading;
 using osu.Framework.Utils;
 using osu.Game.Configuration;
+using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets;
 using osu.Game.Overlays.Mods;
@@ -39,13 +39,25 @@ namespace osu.Game.Screens.Select.Details
         [Resolved]
         private OsuGameBase game { get; set; } = null!;
 
+        [Resolved]
+        private RulesetStore rulesets { get; set; } = null!;
+
+        [Resolved]
+        private IBindable<WorkingBeatmap> workingBeatmap { get; set; } = null!;
+
+        [Resolved]
+        private OsuColour colours { get; set; } = null!;
+
         private IBindable<RulesetInfo>? gameRuleset;
 
-        protected readonly StatisticRow FirstValue, HpDrain, Accuracy, ApproachRate;
-        private readonly StatisticRow starDifficulty;
+        private IRulesetInfo? rulesetInfoWhenUpdated;
+
+        private Ruleset ruleset = null!;
+
+        private StatisticRow starDifficulty = null!;
 
         public ITooltip<AdjustedAttributesTooltip.Data> GetCustomTooltip() => new AdjustedAttributesTooltip();
-        public AdjustedAttributesTooltip.Data TooltipContent { get; private set; }
+        public AdjustedAttributesTooltip.Data TooltipContent { get; private set; } = null!;
 
         private IBeatmapInfo? beatmapInfo;
 
@@ -62,73 +74,17 @@ namespace osu.Game.Screens.Select.Details
             }
         }
 
+        private readonly FillFlowContainer settingsFlow;
+
         public AdvancedStats(int columns = 1)
         {
-            switch (columns)
+            this.columns = columns;
+
+            Child = settingsFlow = new FillFlowContainer
             {
-                case 1:
-                    Child = new FillFlowContainer
-                    {
-                        RelativeSizeAxes = Axes.X,
-                        AutoSizeAxes = Axes.Y,
-                        Children = new[]
-                        {
-                            FirstValue = new StatisticRow(), // circle size/key amount
-                            HpDrain = new StatisticRow { Title = BeatmapsetsStrings.ShowStatsDrain },
-                            Accuracy = new StatisticRow { Title = BeatmapsetsStrings.ShowStatsAccuracy },
-                            ApproachRate = new StatisticRow { Title = BeatmapsetsStrings.ShowStatsAr },
-                            starDifficulty = new StatisticRow(10, true) { Title = BeatmapsetsStrings.ShowStatsStars },
-                        },
-                    };
-                    break;
-
-                case 2:
-                    Child = new FillFlowContainer
-                    {
-                        RelativeSizeAxes = Axes.X,
-                        AutoSizeAxes = Axes.Y,
-                        Direction = FillDirection.Full,
-                        Children = new[]
-                        {
-                            FirstValue = new StatisticRow
-                            {
-                                Width = 0.5f,
-                                Padding = new MarginPadding { Right = 5, Vertical = 2.5f },
-                            }, // circle size/key amount
-                            HpDrain = new StatisticRow
-                            {
-                                Title = BeatmapsetsStrings.ShowStatsDrain,
-                                Width = 0.5f,
-                                Padding = new MarginPadding { Left = 5, Vertical = 2.5f },
-                            },
-                            Accuracy = new StatisticRow
-                            {
-                                Title = BeatmapsetsStrings.ShowStatsAccuracy,
-                                Width = 0.5f,
-                                Padding = new MarginPadding { Right = 5, Vertical = 2.5f },
-                            },
-                            ApproachRate = new StatisticRow
-                            {
-                                Title = BeatmapsetsStrings.ShowStatsAr,
-                                Width = 0.5f,
-                                Padding = new MarginPadding { Left = 5, Vertical = 2.5f },
-                            },
-                            starDifficulty = new StatisticRow(10, true)
-                            {
-                                Title = BeatmapsetsStrings.ShowStatsStars,
-                                Width = 0.5f,
-                                Padding = new MarginPadding { Right = 5, Vertical = 2.5f },
-                            },
-                        },
-                    };
-                    break;
-            }
-        }
-
-        [BackgroundDependencyLoader]
-        private void load(OsuColour colours)
-        {
-            starDifficulty.AccentColour = colours.Yellow;
+                RelativeSizeAxes = Axes.X,
+                AutoSizeAxes = Axes.Y,
+            };
         }
 
         protected override void LoadComplete()
@@ -162,65 +118,72 @@ namespace osu.Game.Screens.Select.Details
             updateStatistics();
         }
 
-        private void updateStatistics()
+        private void updateStatistics() => Scheduler.AddOnce(() =>
         {
-            IBeatmapDifficultyInfo? baseDifficulty = BeatmapInfo?.Difficulty;
-            BeatmapDifficulty? adjustedDifficulty = null;
+            if (BeatmapInfo == null || gameRuleset == null) return;
 
-            IRulesetInfo ruleset = gameRuleset?.Value ?? beatmapInfo.Ruleset;
+            IRulesetInfo rulesetInfo = BeatmapInfo is APIBeatmap ? BeatmapInfo.Ruleset : gameRuleset.Value;
 
-            if (baseDifficulty != null)
+            if (rulesetInfoWhenUpdated?.OnlineID != rulesetInfo.OnlineID)
+                ruleset = rulesets.GetRuleset(rulesetInfo.OnlineID)!.CreateInstance();
+
+            List<BeatmapDifficultySetting> difficultySettings;
+
+            if (BeatmapInfo is APIBeatmap)
+                difficultySettings = ruleset.GetDifficultySettings(BeatmapInfo.Difficulty).ToList();
+            else
             {
-                BeatmapDifficulty originalDifficulty = new BeatmapDifficulty(baseDifficulty);
+                var localBeatmap = workingBeatmap.Value.Beatmap;
+
+                BeatmapDifficulty difficulty = new BeatmapDifficulty(BeatmapInfo.Difficulty);
 
                 foreach (var mod in mods.Value.OfType<IApplicableToDifficulty>())
-                    mod.ApplyToDifficulty(originalDifficulty);
+                    mod.ApplyToDifficulty(difficulty);
 
-                adjustedDifficulty = originalDifficulty;
+                var adjustedConverter = ruleset.CreateBeatmapConverter(localBeatmap);
 
-                if (gameRuleset != null)
+                foreach (var mod in mods.Value.OfType<IApplicableToBeatmapConverter>())
+                    mod.ApplyToBeatmapConverter(adjustedConverter);
+
+                difficultySettings = ruleset
+                                     .GetDifficultySettings(localBeatmap.Difficulty, difficulty, adjustedConverter)
+                                     .ToList();
+            }
+
+            if (rulesetInfoWhenUpdated?.OnlineID != rulesetInfo.OnlineID)
+            {
+                // only reconstruct difficulty settings if the ruleset changed
+                settingsFlow.Children = difficultySettings.Select(s => new StatisticRow(s)
                 {
-                    double rate = 1;
-                    foreach (var mod in mods.Value.OfType<IApplicableToRate>())
-                        rate = mod.ApplyToRate(0, rate);
+                    Width = 1f / columns,
+                    Padding = new MarginPadding { Horizontal = columns == 2 ? 5 : 0, Vertical = 2.5f },
+                }).ToList();
 
-                    adjustedDifficulty = ruleset.CreateInstance().GetRateAdjustedDisplayDifficulty(originalDifficulty, rate);
-
-                    TooltipContent = new AdjustedAttributesTooltip.Data(originalDifficulty, adjustedDifficulty);
+                settingsFlow.Add(starDifficulty = new StatisticRow(new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsStars,
+                }, forceDecimalPlaces: true)
+                {
+                    Width = 1f / columns,
+                    Padding = new MarginPadding { Horizontal = columns == 2 ? 5 : 0, Vertical = 2.5f },
+                    AccentColour = colours.Yellow
+                });
+            }
+            else
+            {
+                for (int i = 0; i < difficultySettings.Count; i++)
+                {
+                    ((StatisticRow)settingsFlow[i]).Value = difficultySettings[i].Value;
                 }
             }
 
-            switch (ruleset.OnlineID)
-            {
-                case 3:
-                    // Account for mania differences locally for now.
-                    // Eventually this should be handled in a more modular way, allowing rulesets to return arbitrary difficulty attributes.
-                    ILegacyRuleset legacyRuleset = (ILegacyRuleset)ruleset.CreateInstance();
-
-                    // For the time being, the key count is static no matter what, because:
-                    // a) The method doesn't have knowledge of the active keymods. Doing so may require considerations for filtering.
-                    // b) Using the difficulty adjustment mod to adjust OD doesn't have an effect on conversion.
-                    int keyCount = baseDifficulty == null ? 0 : legacyRuleset.GetKeyCount(BeatmapInfo);
-
-                    FirstValue.Title = BeatmapsetsStrings.ShowStatsCsMania;
-                    FirstValue.Value = (keyCount, keyCount);
-
-                    break;
-
-                default:
-                    FirstValue.Title = BeatmapsetsStrings.ShowStatsCs;
-                    FirstValue.Value = (baseDifficulty?.CircleSize ?? 0, adjustedDifficulty?.CircleSize);
-                    break;
-            }
-
-            HpDrain.Value = (baseDifficulty?.DrainRate ?? 0, adjustedDifficulty?.DrainRate);
-            Accuracy.Value = (baseDifficulty?.OverallDifficulty ?? 0, adjustedDifficulty?.OverallDifficulty);
-            ApproachRate.Value = (baseDifficulty?.ApproachRate ?? 0, adjustedDifficulty?.ApproachRate);
-
             updateStarDifficulty();
-        }
+
+            rulesetInfoWhenUpdated = rulesetInfo;
+        });
 
         private CancellationTokenSource? starDifficultyCancellationSource;
+        private readonly int columns;
 
         /// <summary>
         /// Updates the displayed star difficulty statistics with the values provided by the currently-selected beatmap, ruleset, and selected mods.
@@ -267,20 +230,15 @@ namespace osu.Game.Screens.Select.Details
 
             private readonly float maxValue;
             private readonly bool forceDecimalPlaces;
-            private readonly OsuSpriteText name, valueText;
+            private readonly OsuSpriteText valueText;
             private readonly Bar bar;
             public readonly Bar ModBar;
 
             [Resolved]
             private OsuColour colours { get; set; } = null!;
 
-            public LocalisableString Title
-            {
-                get => name.Text;
-                set => name.Text = value;
-            }
-
             private (float baseValue, float? adjustedValue)? value;
+            private readonly BeatmapDifficultySetting statistic;
 
             public (float baseValue, float? adjustedValue) Value
             {
@@ -312,8 +270,9 @@ namespace osu.Game.Screens.Select.Details
                 set => bar.AccentColour = value;
             }
 
-            public StatisticRow(float maxValue = 10, bool forceDecimalPlaces = false)
+            public StatisticRow(BeatmapDifficultySetting statistic, float maxValue = 10, bool forceDecimalPlaces = false)
             {
+                this.statistic = statistic;
                 this.maxValue = maxValue;
                 this.forceDecimalPlaces = forceDecimalPlaces;
                 RelativeSizeAxes = Axes.X;
@@ -328,8 +287,9 @@ namespace osu.Game.Screens.Select.Details
                         AutoSizeAxes = Axes.Y,
                         // osu-web uses 1.25 line-height, which at 12px font size makes the element 14px tall - this compentates that difference
                         Padding = new MarginPadding { Vertical = 1 },
-                        Child = name = new OsuSpriteText
+                        Child = new OsuSpriteText
                         {
+                            Text = statistic.Name,
                             Font = OsuFont.GetFont(size: 12)
                         },
                     },
@@ -378,6 +338,12 @@ namespace osu.Game.Screens.Select.Details
                         },
                     },
                 };
+            }
+
+            [BackgroundDependencyLoader]
+            private void load()
+            {
+                Value = statistic.Value;
             }
         }
     }

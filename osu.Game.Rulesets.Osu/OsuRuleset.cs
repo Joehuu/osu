@@ -13,7 +13,9 @@ using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.Legacy;
 using osu.Game.Configuration;
 using osu.Game.Graphics;
+using osu.Game.Localisation;
 using osu.Game.Overlays.Settings;
+using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets.Configuration;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Edit;
@@ -346,6 +348,41 @@ namespace osu.Game.Rulesets.Osu
             adjustedDifficulty.OverallDifficulty = (float)IBeatmapDifficultyInfo.InverseDifficultyRange(greatHitWindow, greatHitWindowRange.Min, greatHitWindowRange.Average, greatHitWindowRange.Max);
 
             return adjustedDifficulty;
+        }
+
+        public override IEnumerable<BeatmapDifficultySetting> GetDifficultySettings(IBeatmapDifficultyInfo difficulty, BeatmapDifficulty? adjustedDifficulty, IBeatmapConverter? converter)
+        {
+            return new[]
+            {
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsCs,
+                    Value = (difficulty.CircleSize, adjustedDifficulty?.CircleSize),
+                    Description = EditorSetupStrings.CircleSizeDescription,
+                    Acronym = @"CS",
+                },
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsDrain,
+                    Value = (difficulty.DrainRate, adjustedDifficulty?.DrainRate),
+                    Description = EditorSetupStrings.DrainRateDescription,
+                    Acronym = @"HP",
+                },
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsAccuracy,
+                    Value = (difficulty.OverallDifficulty, adjustedDifficulty?.OverallDifficulty),
+                    Description = EditorSetupStrings.OverallDifficultyDescription,
+                    Acronym = @"OD",
+                },
+                new BeatmapDifficultySetting
+                {
+                    Name = BeatmapsetsStrings.ShowStatsAr,
+                    Value = (difficulty.ApproachRate, adjustedDifficulty?.ApproachRate),
+                    Description = EditorSetupStrings.ApproachRateDescription,
+                    Acronym = @"AR",
+                },
+            };
         }
     }
 }

@@ -32,12 +32,10 @@ namespace osu.Game.Overlays.Mods
         private StarRatingDisplay starRatingDisplay = null!;
         private BPMDisplay bpmDisplay = null!;
 
-        private VerticalAttributeDisplay circleSizeDisplay = null!;
-        private VerticalAttributeDisplay drainRateDisplay = null!;
-        private VerticalAttributeDisplay approachRateDisplay = null!;
-        private VerticalAttributeDisplay overallDifficultyDisplay = null!;
-
         public Bindable<IBeatmapInfo?> BeatmapInfo { get; } = new Bindable<IBeatmapInfo?>();
+
+        [Resolved]
+        private IBindable<WorkingBeatmap> workingBeatmap { get; set; } = null!;
 
         [Resolved]
         private Bindable<IReadOnlyList<Mod>> mods { get; set; } = null!;
@@ -54,8 +52,13 @@ namespace osu.Game.Overlays.Mods
 
         private IBindable<RulesetInfo> gameRuleset = null!;
 
+        [Resolved]
+        private IRulesetStore rulesets { get; set; } = null!;
+
         private CancellationTokenSource? cancellationSource;
         private IBindable<StarDifficulty?> starDifficulty = null!;
+        private IRulesetInfo? rulesetInfoWhenUpdated;
+        private Ruleset ruleset = null!;
 
         public ITooltip<AdjustedAttributesTooltip.Data?> GetCustomTooltip() => new AdjustedAttributesTooltip();
 
@@ -66,34 +69,25 @@ namespace osu.Game.Overlays.Mods
         [BackgroundDependencyLoader]
         private void load()
         {
-            const float shear = ShearedOverlayContainer.SHEAR;
-
             LeftContent.AddRange(new Drawable[]
             {
                 starRatingDisplay = new StarRatingDisplay(default, animated: true)
                 {
                     Origin = Anchor.CentreLeft,
                     Anchor = Anchor.CentreLeft,
-                    Shear = new Vector2(-shear, 0),
+                    Shear = new Vector2(-ShearedOverlayContainer.SHEAR, 0),
                 },
                 bpmDisplay = new BPMDisplay
                 {
                     Origin = Anchor.CentreLeft,
                     Anchor = Anchor.CentreLeft,
-                    Shear = new Vector2(-shear, 0),
+                    Shear = new Vector2(-ShearedOverlayContainer.SHEAR, 0),
                     AutoSizeAxes = Axes.Y,
                     Width = 75,
                 }
             });
 
             RightContent.Alpha = 0;
-            RightContent.AddRange(new Drawable[]
-            {
-                circleSizeDisplay = new VerticalAttributeDisplay("CS") { Shear = new Vector2(-shear, 0), },
-                drainRateDisplay = new VerticalAttributeDisplay("HP") { Shear = new Vector2(-shear, 0), },
-                overallDifficultyDisplay = new VerticalAttributeDisplay("OD") { Shear = new Vector2(-shear, 0), },
-                approachRateDisplay = new VerticalAttributeDisplay("AR") { Shear = new Vector2(-shear, 0), },
-            });
         }
 
         protected override void LoadComplete()
@@ -170,23 +164,49 @@ namespace osu.Game.Overlays.Mods
 
             bpmDisplay.Current.Value = BeatmapInfo.Value.BPM * rate;
 
+            IRulesetInfo rulesetInfo = game.Ruleset.Value;
+
+            if (rulesetInfoWhenUpdated?.OnlineID != rulesetInfo.OnlineID)
+                ruleset = rulesets.GetRuleset(rulesetInfo.OnlineID)!.CreateInstance();
+
+            var localBeatmap = workingBeatmap.Value.Beatmap;
+
             BeatmapDifficulty originalDifficulty = new BeatmapDifficulty(BeatmapInfo.Value.Difficulty);
 
-            foreach (var mod in mods.Value.OfType<IApplicableToDifficulty>())
-                mod.ApplyToDifficulty(originalDifficulty);
+            BeatmapDifficulty adjustedDifficulty = new BeatmapDifficulty(BeatmapInfo.Value.Difficulty);
 
-            Ruleset ruleset = gameRuleset.Value.CreateInstance();
-            BeatmapDifficulty adjustedDifficulty = ruleset.GetRateAdjustedDisplayDifficulty(originalDifficulty, rate);
+            foreach (var mod in mods.Value.OfType<IApplicableToDifficulty>())
+                mod.ApplyToDifficulty(adjustedDifficulty);
+
+            adjustedDifficulty = ruleset.GetRateAdjustedDisplayDifficulty(adjustedDifficulty, rate);
+
+            var adjustedConverter = ruleset.CreateBeatmapConverter(localBeatmap);
+
+            foreach (var mod in mods.Value.OfType<IApplicableToBeatmapConverter>())
+                mod.ApplyToBeatmapConverter(adjustedConverter);
+
+            var difficultySettings = ruleset
+                                     .GetDifficultySettings(localBeatmap.Difficulty, adjustedDifficulty, adjustedConverter)
+                                     .ToList();
 
             TooltipContent = new AdjustedAttributesTooltip.Data(originalDifficulty, adjustedDifficulty);
 
-            approachRateDisplay.AdjustType.Value = VerticalAttributeDisplay.CalculateEffect(originalDifficulty.ApproachRate, adjustedDifficulty.ApproachRate);
-            overallDifficultyDisplay.AdjustType.Value = VerticalAttributeDisplay.CalculateEffect(originalDifficulty.OverallDifficulty, adjustedDifficulty.OverallDifficulty);
+            if (rulesetInfoWhenUpdated?.OnlineID != rulesetInfo.OnlineID)
+            {
+                // only reconstruct difficulty settings if the ruleset changed
+                RightContent.Children = difficultySettings.Select(s => new VerticalAttributeDisplay(s) { Shear = new Vector2(-ShearedOverlayContainer.SHEAR, 0), }).ToList();
+            }
+            else
+            {
+                for (int i = 0; i < difficultySettings.Count; i++)
+                {
+                    ((VerticalAttributeDisplay)RightContent[i]).Current.Value = difficultySettings[i].Value.adjustedValue ?? difficultySettings[i].Value.baseValue;
+                    ((VerticalAttributeDisplay)RightContent[i]).AdjustType.Value = VerticalAttributeDisplay.CalculateEffect(difficultySettings[i].Value.baseValue,
+                        difficultySettings[i].Value.adjustedValue ?? difficultySettings[i].Value.baseValue);
+                }
+            }
 
-            circleSizeDisplay.Current.Value = adjustedDifficulty.CircleSize;
-            drainRateDisplay.Current.Value = adjustedDifficulty.DrainRate;
-            approachRateDisplay.Current.Value = adjustedDifficulty.ApproachRate;
-            overallDifficultyDisplay.Current.Value = adjustedDifficulty.OverallDifficulty;
+            rulesetInfoWhenUpdated = rulesetInfo;
         });
 
         private void updateCollapsedState()

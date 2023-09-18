@@ -286,7 +286,7 @@ namespace osu.Game.Screens.Select
                                                                 AutoSizeAxes = Axes.Y,
                                                                 Anchor = Anchor.Centre,
                                                                 Origin = Anchor.Centre,
-                                                                Padding = new MarginPadding(10)
+                                                                Padding = new MarginPadding { Vertical = 10, Horizontal = 5 }
                                                             },
                                                         }
                                                     },
