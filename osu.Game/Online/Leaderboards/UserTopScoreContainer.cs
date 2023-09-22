@@ -19,13 +19,13 @@ namespace osu.Game.Online.Leaderboards
         public Bindable<TScoreInfo?> Score = new Bindable<TScoreInfo?>();
 
         private readonly Container scoreContainer;
-        private readonly Func<TScoreInfo, LeaderboardScore> createScoreDelegate;
+        private readonly Func<TScoreInfo, LeaderboardScoreV2> createScoreDelegate;
 
         protected override bool StartHidden => true;
 
         private CancellationTokenSource? loadScoreCancellation;
 
-        public UserTopScoreContainer(Func<TScoreInfo, LeaderboardScore> createScoreDelegate)
+        public UserTopScoreContainer(Func<TScoreInfo, LeaderboardScoreV2> createScoreDelegate)
         {
             this.createScoreDelegate = createScoreDelegate;
 
