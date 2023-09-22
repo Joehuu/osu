@@ -41,7 +41,7 @@ namespace osu.Game.Screens.Select
 
         private const float transition_duration = 250;
 
-        private static readonly Vector2 wedged_container_shear = new Vector2(shear_width / SongSelect.WEDGE_HEIGHT, 0);
+        private static readonly Vector2 wedged_container_shear = new Vector2(shear_width / 245, 0);
 
         [Resolved]
         private IBindable<RulesetInfo> ruleset { get; set; }
@@ -384,7 +384,7 @@ namespace osu.Game.Screens.Select
                         {
                             AutoSizeAxes = Axes.Both,
                             Spacing = new Vector2(20, 0),
-                            Children = playableBeatmap.GetStatistics().Select(s => new InfoLabel(s)).ToArray()
+                            Children = ruleset.CreateInstance().GetObjectCount(playableBeatmap.HitObjects).Select(s => new InfoLabel(s)).ToArray(),
                         }
                     };
                 }

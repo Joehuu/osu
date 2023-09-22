@@ -74,7 +74,6 @@ namespace osu.Game.Screens.OnlinePlay
         [BackgroundDependencyLoader]
         private void load()
         {
-            LeftArea.Padding = new MarginPadding { Top = Header.HEIGHT };
             LoadComponent(freeModSelectOverlay);
         }
 

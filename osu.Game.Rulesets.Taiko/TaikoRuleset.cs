@@ -34,6 +34,7 @@ using osu.Game.Screens.Ranking.Statistics;
 using osu.Game.Skinning;
 using osu.Game.Rulesets.Configuration;
 using osu.Game.Configuration;
+using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Taiko.Configuration;
 
 namespace osu.Game.Rulesets.Taiko
@@ -263,5 +264,35 @@ namespace osu.Game.Rulesets.Taiko
                 }), true)
             };
         }
+
+        public override IEnumerable<BeatmapStatistic> GetObjectCount(IReadOnlyList<HitObject> hitObjects)
+        {
+            int hits = hitObjects.Count(s => s is Hit);
+            int drumRolls = hitObjects.Count(s => s is DrumRoll);
+            int swells = hitObjects.Count(s => s is Swell);
+
+            return new[]
+            {
+                new BeatmapStatistic
+                {
+                    Name = @"Hit Count",
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Circles),
+                    Content = hits.ToString(),
+                },
+                new BeatmapStatistic
+                {
+                    Name = @"Drumroll Count",
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Sliders),
+                    Content = drumRolls.ToString(),
+                },
+                new BeatmapStatistic
+                {
+                    Name = @"Swell Count",
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Spinners),
+                    Content = swells.ToString(),
+                }
+            };
+        }
     }
 }
+

@@ -328,7 +328,6 @@ namespace osu.Game.Rulesets.Difficulty
 
             public List<BreakPeriod> Breaks => baseBeatmap.Breaks;
             public double TotalBreakTime => baseBeatmap.TotalBreakTime;
-            public IEnumerable<BeatmapStatistic> GetStatistics() => baseBeatmap.GetStatistics();
             public double GetMostCommonBeatLength() => baseBeatmap.GetMostCommonBeatLength();
             public IBeatmap Clone() => new ProgressiveCalculationBeatmap(baseBeatmap.Clone());
 

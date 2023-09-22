@@ -11,6 +11,7 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Testing;
 using osu.Game.Beatmaps;
+using osu.Game.Overlays;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Legacy;
@@ -18,11 +19,13 @@ using osu.Game.Rulesets.Objects.Types;
 using osu.Game.Screens.Select;
 using osuTK;
 
-namespace osu.Game.Tests.Visual.SongSelect
+namespace osu.Game.Tests.Visual.SongSelectV2
 {
-    [TestFixture]
     public partial class TestSceneBeatmapInfoWedgeV2 : OsuTestScene
     {
+        [Cached]
+        private readonly OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Aquamarine);
+
         private RulesetStore rulesets = null!;
         private TestBeatmapInfoWedgeV2 infoWedge = null!;
         private readonly List<IBeatmap> beatmaps = new List<IBeatmap>();
@@ -44,7 +47,7 @@ namespace osu.Game.Tests.Visual.SongSelect
                 {
                     Y = -20,
                     Colour = Colour4.Cornsilk.Darken(0.2f),
-                    Height = BeatmapInfoWedgeV2.WEDGE_HEIGHT + 40,
+                    Height = BeatmapInfoWedgeV2.WEDGE_HEIGHT_EXPANDED + 150,
                     Width = 0.65f,
                     RelativeSizeAxes = Axes.X,
                     Margin = new MarginPadding { Top = 20, Left = -10 }
@@ -55,7 +58,6 @@ namespace osu.Game.Tests.Visual.SongSelect
                     Padding = new MarginPadding { Top = 20 },
                     Child = infoWedge = new TestBeatmapInfoWedgeV2
                     {
-                        Width = 0.6f,
                         RelativeSizeAxes = Axes.X,
                     },
                 }
@@ -66,6 +68,19 @@ namespace osu.Game.Tests.Visual.SongSelect
                 foreach (var hasCurrentValue in infoWedge.ChildrenOfType<IHasCurrentValue<StarDifficulty>>())
                     hasCurrentValue.Current.Value = new StarDifficulty(v, 0);
             });
+
+            AddSliderStep("change relative width", 0, 1f, 0.6f, v =>
+            {
+                if (infoWedge != null)
+                    infoWedge.Width = v;
+            });
+
+            AddToggleStep("toggle expanded state", _ =>
+            {
+                if (infoWedge != null)
+                    infoWedge.Expanded.Toggle();
+            });
+
         }
 
         [Test]

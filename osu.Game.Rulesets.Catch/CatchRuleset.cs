@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using osu.Framework.Extensions.EnumExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Sprites;
@@ -15,6 +16,7 @@ using osu.Game.Rulesets.Catch.Beatmaps;
 using osu.Game.Rulesets.Catch.Difficulty;
 using osu.Game.Rulesets.Catch.Edit;
 using osu.Game.Rulesets.Catch.Mods;
+using osu.Game.Rulesets.Catch.Objects;
 using osu.Game.Rulesets.Catch.Replays;
 using osu.Game.Rulesets.Catch.Scoring;
 using osu.Game.Rulesets.Catch.Skinning.Argon;
@@ -23,6 +25,7 @@ using osu.Game.Rulesets.Catch.UI;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Edit;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Replays.Types;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.UI;
@@ -230,6 +233,35 @@ namespace osu.Game.Rulesets.Catch
                     RelativeSizeAxes = Axes.X,
                     AutoSizeAxes = Axes.Y
                 }),
+            };
+        }
+
+        public override IEnumerable<BeatmapStatistic> GetObjectCount(IReadOnlyList<HitObject> hitObjects)
+        {
+            int fruits = hitObjects.Count(s => s is Fruit);
+            int juiceStreams = hitObjects.Count(s => s is JuiceStream);
+            int bananaShowers = hitObjects.Count(s => s is BananaShower);
+
+            return new[]
+            {
+                new BeatmapStatistic
+                {
+                    Name = @"Fruit Count",
+                    Content = fruits.ToString(),
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Circles),
+                },
+                new BeatmapStatistic
+                {
+                    Name = @"Juice Stream Count",
+                    Content = juiceStreams.ToString(),
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Sliders),
+                },
+                new BeatmapStatistic
+                {
+                    Name = @"Banana Shower Count",
+                    Content = bananaShowers.ToString(),
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Spinners),
+                }
             };
         }
     }
