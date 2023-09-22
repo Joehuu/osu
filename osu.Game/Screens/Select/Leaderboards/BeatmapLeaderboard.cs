@@ -17,6 +17,7 @@ using osu.Game.Online.Leaderboards;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Scoring;
+using osuTK;
 using Realms;
 
 namespace osu.Game.Screens.Select.Leaderboards
@@ -169,14 +170,15 @@ namespace osu.Game.Screens.Select.Leaderboards
             return scoreRetrievalRequest = newRequest;
         }
 
-        protected override LeaderboardScoreV2 CreateDrawableScore(ScoreInfo model, int index) => new LeaderboardScoreV2(model, index, IsOnlineScope)
+        protected override LeaderboardScoreV2 CreateDrawableScore(ScoreInfo model, int index) => new LeaderboardScoreV2(model, index)
         {
-            Action = () => ScoreSelected?.Invoke(model)
+            Action = () => ScoreSelected?.Invoke(model),
+            Shear = Vector2.Zero,
         };
 
-        protected override LeaderboardScoreV2 CreateDrawableTopScore(ScoreInfo model) => new LeaderboardScoreV2(model, model.Position, false)
+        protected override LeaderboardScoreV2 CreateDrawableTopScore(ScoreInfo model) => new LeaderboardScoreV2(model, model.Position, true)
         {
-            Action = () => ScoreSelected?.Invoke(model)
+            Action = () => ScoreSelected?.Invoke(model),
         };
 
         private void subscribeToLocalScores(BeatmapInfo beatmapInfo, CancellationToken cancellationToken)
