@@ -281,7 +281,7 @@ namespace osu.Game.Screens.Select
                                                     RelativeSizeAxes = Axes.Both,
                                                     Padding = new MarginPadding
                                                     {
-                                                        Bottom = Footer.HEIGHT,
+                                                        Bottom = FooterV2.FooterV2.HEIGHT,
                                                         Left = left_area_padding,
                                                         Right = left_area_padding * 2,
                                                     },

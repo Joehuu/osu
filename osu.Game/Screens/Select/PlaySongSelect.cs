@@ -25,9 +25,6 @@ namespace osu.Game.Screens.Select
 {
     public partial class PlaySongSelect : SongSelect
     {
-        [Cached]
-        private readonly OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Aquamarine);
-
         private OsuScreen? playerLoader;
 
         // TODO: pick a different colour as this is using the same colour used in all figma designs
