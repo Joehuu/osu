@@ -22,6 +22,7 @@ using osu.Framework.Screens;
 using osu.Framework.Threading;
 using osu.Game.Beatmaps;
 using osu.Game.Configuration;
+using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Input.Bindings;
@@ -140,7 +141,7 @@ namespace osu.Game.Screens.Select
         private Bindable<bool> configBackgroundBlur { get; set; } = new BindableBool();
 
         [BackgroundDependencyLoader(true)]
-        private void load(AudioManager audio, DifficultyRecommender? recommender, OsuConfigManager config)
+        private void load(AudioManager audio, DifficultyRecommender? recommender, OsuConfigManager config, OsuColour colours)
         {
             configBackgroundBlur = config.GetBindable<bool>(OsuSetting.SongSelectBackgroundBlur);
             configBackgroundBlur.BindValueChanged(e =>
@@ -251,13 +252,14 @@ namespace osu.Game.Screens.Select
                                                 new Container
                                                 {
                                                     RelativeSizeAxes = Axes.X,
-                                                    Height = 50,
+                                                    Height = 70,
                                                     Child = toggleDetailsButton = new ShearedToggleButton(120)
                                                     {
                                                         Anchor = Anchor.CentreRight,
                                                         Origin = Anchor.CentreRight,
                                                         Text = "Details",
                                                         Height = 25,
+                                                        Font = OsuFont.GetFont(size: 12, weight: FontWeight.SemiBold),
                                                         Active = { Value = true },
                                                     }
                                                 }
@@ -347,7 +349,8 @@ namespace osu.Game.Screens.Select
 
             toggleDetailsButton.Active.BindValueChanged(d =>
             {
-                beatmapInfoWedge.Expanded.Value = !toggleDetailsButton.Active.Value;
+                beatmapInfoWedge.Expanded.Value = !d.NewValue;
+                toggleDetailsButton.Font = OsuFont.GetFont(size: 12, weight: d.NewValue ? FontWeight.SemiBold : FontWeight.Regular);
             });
         }
 

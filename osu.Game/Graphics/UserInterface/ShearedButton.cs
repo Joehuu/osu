@@ -6,6 +6,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
 using osu.Game.Graphics.Containers;
@@ -27,10 +28,10 @@ namespace osu.Game.Graphics.UserInterface
             set => text.Text = value;
         }
 
-        public float TextSize
+        public FontUsage Font
         {
-            get => text.Font.Size;
-            set => text.Font = OsuFont.TorusAlternate.With(size: value);
+            get => text.Font;
+            set => text.Font = value;
         }
 
         public Colour4 DarkerColour

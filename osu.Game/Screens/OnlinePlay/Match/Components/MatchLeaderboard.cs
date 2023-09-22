@@ -49,9 +49,9 @@ namespace osu.Game.Screens.OnlinePlay.Match.Components
             return req;
         }
 
-        protected override LeaderboardScore CreateDrawableScore(APIUserScoreAggregate model, int index) => new MatchLeaderboardScore(model, index);
+        protected override LeaderboardScoreV2 CreateDrawableScore(APIUserScoreAggregate model, int index) => new MatchLeaderboardScore(model, index);
 
-        protected override LeaderboardScore CreateDrawableTopScore(APIUserScoreAggregate model) => new MatchLeaderboardScore(model, model.Position, false);
+        protected override LeaderboardScoreV2 CreateDrawableTopScore(APIUserScoreAggregate model) => new MatchLeaderboardScore(model, model.Position, false);
     }
 
     public enum MatchLeaderboardScope

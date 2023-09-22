@@ -51,7 +51,7 @@ namespace osu.Game.Online.Leaderboards
         private readonly Container placeholderContainer;
         private readonly UserTopScoreContainer<TScoreInfo> userScoreContainer;
 
-        private FillFlowContainer<LeaderboardScore>? scoreFlowContainer;
+        private FillFlowContainer<LeaderboardScoreV2>? scoreFlowContainer;
 
         private readonly LoadingSpinner loading;
 
@@ -212,9 +212,9 @@ namespace osu.Game.Online.Leaderboards
         /// <returns>An <see cref="APIRequest"/> responsible for the fetch operation. This will be queued and performed automatically.</returns>
         protected abstract APIRequest? FetchScores(CancellationToken cancellationToken);
 
-        protected abstract LeaderboardScore CreateDrawableScore(TScoreInfo model, int index);
+        protected abstract LeaderboardScoreV2 CreateDrawableScore(TScoreInfo model, int index);
 
-        protected abstract LeaderboardScore CreateDrawableTopScore(TScoreInfo model);
+        protected abstract LeaderboardScoreV2 CreateDrawableTopScore(TScoreInfo model);
 
         private void refetchScores()
         {
@@ -265,7 +265,7 @@ namespace osu.Game.Online.Leaderboards
                 return;
             }
 
-            LoadComponentAsync(new FillFlowContainer<LeaderboardScore>
+            LoadComponentAsync(new FillFlowContainer<LeaderboardScoreV2>
             {
                 RelativeSizeAxes = Axes.X,
                 AutoSizeAxes = Axes.Y,
