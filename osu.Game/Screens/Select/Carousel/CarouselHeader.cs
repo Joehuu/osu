@@ -7,6 +7,7 @@ using osu.Framework.Audio.Sample;
 using osu.Framework.Bindables;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Shapes;
@@ -21,34 +22,56 @@ namespace osu.Game.Screens.Select.Carousel
 {
     public partial class CarouselHeader : Container
     {
+        public Container AlphaContainer;
+        public Container EffectContainer;
         public Container BorderContainer;
 
         public readonly Bindable<CarouselItemState> State = new Bindable<CarouselItemState>(CarouselItemState.NotSelected);
-
-        private readonly HoverLayer hoverLayer;
+        public static readonly Vector2 SHEAR = new Vector2(0.15f, 0);
 
         protected override Container<Drawable> Content { get; } = new Container { RelativeSizeAxes = Axes.Both };
 
+        public bool HasCustomBorder;
+
         private const float corner_radius = 10;
-        private const float border_thickness = 2.5f;
+        private const float border_thickness = 2;
 
         public CarouselHeader()
         {
             RelativeSizeAxes = Axes.X;
             Height = DrawableCarouselItem.MAX_HEIGHT;
+            Shear = SHEAR;
 
-            InternalChild = BorderContainer = new Container
+            InternalChild = AlphaContainer = new Container
             {
                 RelativeSizeAxes = Axes.Both,
-                Masking = true,
-                CornerRadius = corner_radius,
-                BorderColour = new Color4(221, 255, 255, 255),
                 Children = new Drawable[]
                 {
-                    Content,
-                    hoverLayer = new HoverLayer(),
-                    new HeaderSounds(),
-                }
+                    EffectContainer = new Container
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Masking = true,
+                        CornerRadius = corner_radius,
+                        Children = new Drawable[]
+                        {
+                            Content,
+                            new HoverLayer(),
+                            new HeaderSounds(),
+                        }
+                    },
+                    BorderContainer = new Container
+                    {
+                        RelativeSizeAxes = Axes.Both,
+                        Masking = true,
+                        CornerRadius = corner_radius,
+                        BorderColour = ColourInfo.GradientHorizontal(Colour4.White, Colour4.White.Opacity(0)),
+                        Child = new Box
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Colour = Colour4.Transparent,
+                        }
+                    },
+                },
             };
         }
 
@@ -65,28 +88,35 @@ namespace osu.Game.Screens.Select.Carousel
             {
                 case CarouselItemState.Collapsed:
                 case CarouselItemState.NotSelected:
-                    hoverLayer.InsetForBorder = false;
-
                     BorderContainer.BorderThickness = 0;
-                    BorderContainer.EdgeEffect = new EdgeEffectParameters
+                    EffectContainer.EdgeEffect = new EdgeEffectParameters
                     {
                         Type = EdgeEffectType.Shadow,
                         Offset = new Vector2(1),
                         Radius = 10,
                         Colour = Color4.Black.Opacity(100),
                     };
+
+                    BorderContainer.EdgeEffect = new EdgeEffectParameters();
                     break;
 
                 case CarouselItemState.Selected:
-                    hoverLayer.InsetForBorder = true;
+                    if (HasCustomBorder) return;
 
                     BorderContainer.BorderThickness = border_thickness;
+                    EffectContainer.EdgeEffect = new EdgeEffectParameters
+                    {
+                        Type = EdgeEffectType.Shadow,
+                        Colour = Color4Extensions.FromHex(@"4EBFFF").Opacity(0.5f),
+                        Radius = 50,
+                    };
+
                     BorderContainer.EdgeEffect = new EdgeEffectParameters
                     {
-                        Type = EdgeEffectType.Glow,
-                        Colour = new Color4(130, 204, 255, 150),
-                        Radius = 20,
-                        Roundness = 10,
+                        Type = EdgeEffectType.Shadow,
+                        Colour = Color4Extensions.FromHex(@"4EBFFF").Opacity(0.5f),
+                        Radius = 15,
+                        Hollow = true,
                     };
                     break;
             }
@@ -111,26 +141,6 @@ namespace osu.Game.Screens.Select.Carousel
                     Blending = BlendingParameters.Additive,
                     RelativeSizeAxes = Axes.Both,
                 };
-            }
-
-            public bool InsetForBorder
-            {
-                set
-                {
-                    if (value)
-                    {
-                        // apply same border as above to avoid applying additive overlay to it (and blowing out the colour).
-                        Masking = true;
-                        CornerRadius = corner_radius;
-                        BorderThickness = border_thickness;
-                    }
-                    else
-                    {
-                        BorderThickness = 0;
-                        CornerRadius = 0;
-                        Masking = false;
-                    }
-                }
             }
 
             protected override bool OnHover(HoverEvent e)

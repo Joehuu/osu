@@ -1,8 +1,6 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-using System.Collections.Generic;
-using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -20,8 +18,6 @@ namespace osu.Game.Screens.Select.Carousel
         public override bool PropagatePositionalInputSubTree => carouselSet.State.Value == CarouselItemState.Selected;
 
         private readonly CarouselBeatmapSet carouselSet;
-
-        private FillFlowContainer<DifficultyIcon> iconFlow = null!;
 
         public SetPanelContent(CarouselBeatmapSet carouselSet)
         {
@@ -49,19 +45,22 @@ namespace osu.Game.Screens.Select.Carousel
                         Text = new RomanisableString(beatmapSet.Metadata.TitleUnicode, beatmapSet.Metadata.Title),
                         Font = OsuFont.GetFont(weight: FontWeight.Bold, size: 22, italics: true),
                         Shadow = true,
+                        Shear = -CarouselHeader.SHEAR,
                     },
                     new OsuSpriteText
                     {
                         Text = new RomanisableString(beatmapSet.Metadata.ArtistUnicode, beatmapSet.Metadata.Artist),
                         Font = OsuFont.GetFont(weight: FontWeight.SemiBold, size: 17, italics: true),
                         Shadow = true,
+                        Shear = -CarouselHeader.SHEAR,
                     },
                     new FillFlowContainer
                     {
                         Direction = FillDirection.Horizontal,
                         AutoSizeAxes = Axes.Both,
                         Margin = new MarginPadding { Top = 5 },
-                        Spacing = new Vector2(5),
+                        Spacing = new Vector2(0, 5),
+                        Shear = -CarouselHeader.SHEAR,
                         Children = new[]
                         {
                             beatmapSet.AllBeatmapsUpToDate
@@ -84,35 +83,16 @@ namespace osu.Game.Screens.Select.Carousel
                                 TextPadding = new MarginPadding { Horizontal = 8, Vertical = 2 },
                                 Status = beatmapSet.Status
                             },
-                            iconFlow = new FillFlowContainer<DifficultyIcon>
+                            new DifficultySpectrumDisplay(carouselSet.BeatmapSet)
                             {
-                                AutoSizeAxes = Axes.Both,
-                                Origin = Anchor.CentreLeft,
-                                Anchor = Anchor.CentreLeft,
-                                Spacing = new Vector2(3),
-                            },
-                        }
+                                Margin = new MarginPadding { Left = 5 },
+                                DotSize = new Vector2(5, 10),
+                                DotSpacing = 2
+                            }
+                        },
                     }
                 }
             };
-        }
-
-        protected override void LoadComplete()
-        {
-            base.LoadComplete();
-            iconFlow.ChildrenEnumerable = getDifficultyIcons();
-        }
-
-        private const int maximum_difficulty_icons = 18;
-
-        private IEnumerable<DifficultyIcon> getDifficultyIcons()
-        {
-            var beatmaps = carouselSet.Beatmaps.ToList();
-
-            return beatmaps.Count > maximum_difficulty_icons
-                ? beatmaps.GroupBy(b => b.BeatmapInfo.Ruleset)
-                          .Select(group => new GroupedDifficultyIcon(group.ToList(), group.Last().BeatmapInfo.Ruleset))
-                : beatmaps.Select(b => new FilterableDifficultyIcon(b));
         }
     }
 }
