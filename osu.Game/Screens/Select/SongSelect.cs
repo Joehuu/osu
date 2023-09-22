@@ -284,7 +284,7 @@ namespace osu.Game.Screens.Select
                                                     Padding = new MarginPadding
                                                     {
                                                         Bottom = FooterV2.FooterV2.HEIGHT,
-                                                        Left = left_area_padding,
+                                                        Left = BeatmapInfoWedgeV2.TEXT_MARGIN,
                                                         Right = left_area_padding * 2,
                                                     },
                                                     Child = BeatmapDetails = CreateBeatmapDetailArea().With(d =>

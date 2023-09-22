@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using osu.Framework.Allocation;
+using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Extensions.LocalisationExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -14,8 +15,6 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
-using osu.Framework.Platform;
-using osu.Game.Database;
 using osu.Game.Extensions;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
@@ -25,13 +24,13 @@ using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Overlays;
 using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets.Mods;
-using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.UI;
 using osu.Game.Scoring;
 using osu.Game.Screens.Select;
 using osu.Game.Users.Drawables;
 using osu.Game.Utils;
 using osuTK;
+using osuTK.Graphics;
 
 namespace osu.Game.Online.Leaderboards
 {
@@ -62,7 +61,7 @@ namespace osu.Game.Online.Leaderboards
         private IDialogOverlay? dialogOverlay { get; set; }
 
         [Resolved]
-        private Storage storage { get; set; } = null!;
+        private ScoreManager scoreManager { get; set; } = null!;
 
         private Container content = null!;
         private Box background = null!;
@@ -89,6 +88,7 @@ namespace osu.Game.Online.Leaderboards
             this.score = score;
             this.rank = rank;
             this.isPersonalBest = isPersonalBest;
+            Shear = shear;
         }
 
         [BackgroundDependencyLoader]
@@ -101,7 +101,6 @@ namespace osu.Game.Online.Leaderboards
 
             statisticsLabels = GetStatistics(score).Select(s => new ScoreComponentLabel(s, score)).ToList();
 
-            Shear = shear;
             RelativeSizeAxes = Axes.X;
             Height = height;
             Child = content = new Container
@@ -159,6 +158,13 @@ namespace osu.Game.Online.Leaderboards
                 Masking = true,
                 CornerRadius = corner_radius,
                 RelativeSizeAxes = Axes.Both,
+                EdgeEffect = new EdgeEffectParameters
+                {
+                    Colour = Color4.Black.Opacity(0.25f),
+                    Type = EdgeEffectType.Shadow,
+                    Radius = 1,
+                    Offset = new Vector2(5, 0)
+                },
                 Children = new[]
                 {
                     foreground = new Box
@@ -291,7 +297,6 @@ namespace osu.Game.Online.Leaderboards
         {
             (BeatmapsetsStrings.ShowScoreboardHeadersCombo.ToUpper(), model.MaxCombo.ToString().Insert(model.MaxCombo.ToString().Length, "x")),
             (BeatmapsetsStrings.ShowScoreboardHeadersAccuracy.ToUpper(), model.DisplayAccuracy),
-            (getResultNames(score).ToUpper(), getResults(score).ToUpper())
         };
 
         public override void Show()
@@ -482,31 +487,11 @@ namespace osu.Game.Online.Leaderboards
 
                 if (score.Files.Count <= 0) return items.ToArray();
 
-                // items.Add(new OsuMenuItem("Export", MenuItemType.Standard, () => scoreManager.Export(score)));
+                items.Add(new OsuMenuItem("Export", MenuItemType.Standard, () => scoreManager.Export(score)));
                 items.Add(new OsuMenuItem(CommonStrings.ButtonsDelete, MenuItemType.Destructive, () => dialogOverlay?.Push(new LocalScoreDeleteDialog(score))));
 
                 return items.ToArray();
             }
-        }
-
-        private LocalisableString getResults(ScoreInfo score)
-        {
-            string resultString = score.GetStatisticsForDisplay()
-                                       .Where(s => s.Result.IsBasic())
-                                       .Aggregate(string.Empty, (current, result) =>
-                                           current.Insert(current.Length, $"{result.Count}/"));
-
-            return resultString.Remove(resultString.Length - 1);
-        }
-
-        private LocalisableString getResultNames(ScoreInfo score)
-        {
-            string resultName = score.GetStatisticsForDisplay()
-                                     .Where(s => s.Result.IsBasic())
-                                     .Aggregate(string.Empty, (current, hitResult) =>
-                                         current.Insert(current.Length, $"{hitResult.DisplayName.ToString().ToUpperInvariant()}/"));
-
-            return resultName.Remove(resultName.Length - 1);
         }
     }
 }
