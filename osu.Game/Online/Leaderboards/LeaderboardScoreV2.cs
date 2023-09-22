@@ -14,8 +14,6 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
-using osu.Framework.Platform;
-using osu.Game.Database;
 using osu.Game.Extensions;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
@@ -62,7 +60,7 @@ namespace osu.Game.Online.Leaderboards
         private IDialogOverlay? dialogOverlay { get; set; }
 
         [Resolved]
-        private Storage storage { get; set; } = null!;
+        private ScoreManager scoreManager { get; set; } = null!;
 
         private Container content = null!;
         private Box background = null!;
@@ -482,7 +480,7 @@ namespace osu.Game.Online.Leaderboards
 
                 if (score.Files.Count <= 0) return items.ToArray();
 
-                items.Add(new OsuMenuItem("Export", MenuItemType.Standard, () => new LegacyScoreExporter(storage).Export(score)));
+                items.Add(new OsuMenuItem("Export", MenuItemType.Standard, () => scoreManager.Export(score)));
                 items.Add(new OsuMenuItem(CommonStrings.ButtonsDelete, MenuItemType.Destructive, () => dialogOverlay?.Push(new LocalScoreDeleteDialog(score))));
 
                 return items.ToArray();
