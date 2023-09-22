@@ -10,6 +10,7 @@ using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Shapes;
 using osu.Game.Online.API;
 using osu.Game.Online.API.Requests;
 using osu.Game.Online.API.Requests.Responses;
@@ -17,6 +18,7 @@ using osu.Game.Overlays.BeatmapSet;
 using osu.Game.Overlays.BeatmapSet.Scores;
 using osu.Game.Overlays.Comments;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Screens.Select;
 using osu.Game.Screens.Select.Details;
 using osuTK;
 using osuTK.Graphics;
@@ -45,10 +47,12 @@ namespace osu.Game.Overlays
         [Cached(typeof(IBindable<IReadOnlyList<Mod>>))]
         protected readonly Bindable<IReadOnlyList<Mod>> SelectedMods = new Bindable<IReadOnlyList<Mod>>(Array.Empty<Mod>());
 
+        private readonly BasicDifficultyInfoContent basicInfo;
+
         public BeatmapSetOverlay()
             : base(OverlayColourScheme.Blue)
         {
-            Info info;
+            ExtendedBeatmapDetailsContent info;
             CommentsSection comments;
 
             Child = new FillFlowContainer
@@ -59,7 +63,32 @@ namespace osu.Game.Overlays
                 Spacing = new Vector2(0, 20),
                 Children = new Drawable[]
                 {
-                    info = new Info(),
+                    new Container
+                    {
+                        RelativeSizeAxes = Axes.X,
+                        AutoSizeAxes = Axes.Y,
+                        Children = new Drawable[]
+                        {
+                            new Box
+                            {
+                                RelativeSizeAxes = Axes.Both,
+                                Colour = ColourProvider.Background5
+                            },
+                            new FillFlowContainer
+                            {
+                                RelativeSizeAxes = Axes.X,
+                                AutoSizeAxes = Axes.Y,
+                                Direction = FillDirection.Vertical,
+                                Padding = new MarginPadding { Horizontal = HORIZONTAL_PADDING, Vertical = 10 },
+                                Spacing = new Vector2(10),
+                                Children = new Drawable[]
+                                {
+                                    basicInfo = new BasicDifficultyInfoContent(),
+                                    info = new ExtendedBeatmapDetailsContent(),
+                                }
+                            }
+                        },
+                    },
                     new ScoresContainer
                     {
                         Beatmap = { BindTarget = Header.HeaderContent.Picker.Beatmap }
@@ -69,14 +98,20 @@ namespace osu.Game.Overlays
             };
 
             Header.BeatmapSet.BindTo(beatmapSet);
-            info.BeatmapSet.BindTo(beatmapSet);
             comments.BeatmapSet.BindTo(beatmapSet);
 
             Header.HeaderContent.Picker.Beatmap.ValueChanged += b =>
             {
-                info.BeatmapInfo = b.NewValue;
+                info.BeatmapInfo.Value = b.NewValue;
+                basicInfo.BeatmapInfo.Value = b.NewValue;
                 ScrollFlow.ScrollToStart();
             };
+
+            beatmapSet.BindValueChanged(s =>
+            {
+                info.BeatmapSetInfo.Value = s.NewValue;
+                basicInfo.BeatmapSetInfo.Value = s.NewValue;
+            });
         }
 
         [BackgroundDependencyLoader]

@@ -38,28 +38,6 @@ namespace osu.Game.Rulesets.Mania.Beatmaps
             OriginalTotalColumns = originalTotalColumns ?? defaultStage.Columns;
         }
 
-        public override IEnumerable<BeatmapStatistic> GetStatistics()
-        {
-            int notes = HitObjects.Count(s => s is Note);
-            int holdNotes = HitObjects.Count(s => s is HoldNote);
-
-            return new[]
-            {
-                new BeatmapStatistic
-                {
-                    Name = @"Note Count",
-                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Circles),
-                    Content = notes.ToString(),
-                },
-                new BeatmapStatistic
-                {
-                    Name = @"Hold Note Count",
-                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Sliders),
-                    Content = holdNotes.ToString(),
-                },
-            };
-        }
-
         public StageDefinition GetStageForColumnIndex(int column)
         {
             foreach (var stage in Stages)

@@ -100,9 +100,6 @@ namespace osu.Game.Screens.Select
         /// Creates the tabs to be displayed.
         /// </summary>
         /// <returns>The tabs.</returns>
-        protected virtual BeatmapDetailAreaTabItem[] CreateTabItems() => new BeatmapDetailAreaTabItem[]
-        {
-            new BeatmapDetailAreaDetailTabItem(),
-        };
+        protected virtual BeatmapDetailAreaTabItem[] CreateTabItems() => Array.Empty<BeatmapDetailAreaTabItem>();
     }
 }
