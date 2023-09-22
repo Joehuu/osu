@@ -169,12 +169,12 @@ namespace osu.Game.Screens.Select.Leaderboards
             return scoreRetrievalRequest = newRequest;
         }
 
-        protected override LeaderboardScore CreateDrawableScore(ScoreInfo model, int index) => new LeaderboardScore(model, index, IsOnlineScope)
+        protected override LeaderboardScoreV2 CreateDrawableScore(ScoreInfo model, int index) => new LeaderboardScoreV2(model, index, IsOnlineScope)
         {
             Action = () => ScoreSelected?.Invoke(model)
         };
 
-        protected override LeaderboardScore CreateDrawableTopScore(ScoreInfo model) => new LeaderboardScore(model, model.Position, false)
+        protected override LeaderboardScoreV2 CreateDrawableTopScore(ScoreInfo model) => new LeaderboardScoreV2(model, model.Position, false)
         {
             Action = () => ScoreSelected?.Invoke(model)
         };
