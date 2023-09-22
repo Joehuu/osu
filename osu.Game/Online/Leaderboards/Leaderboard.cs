@@ -89,7 +89,6 @@ namespace osu.Game.Online.Leaderboards
                 new OsuContextMenuContainer
                 {
                     RelativeSizeAxes = Axes.Both,
-                    Masking = true,
                     Child = new GridContainer
                     {
                         RelativeSizeAxes = Axes.Both,
@@ -104,8 +103,11 @@ namespace osu.Game.Online.Leaderboards
                             {
                                 scrollContainer = new OsuScrollContainer
                                 {
+                                    Anchor = Anchor.TopRight,
+                                    Origin = Anchor.TopRight,
                                     RelativeSizeAxes = Axes.Both,
                                     ScrollbarVisible = false,
+                                    Shear = new Vector2(0.15f, 0),
                                 }
                             },
                             new Drawable[]
@@ -271,7 +273,7 @@ namespace osu.Game.Online.Leaderboards
                 AutoSizeAxes = Axes.Y,
                 Spacing = new Vector2(0f, 5f),
                 Padding = new MarginPadding { Top = 10, Bottom = 5 },
-                ChildrenEnumerable = scores.Select((s, index) => CreateDrawableScore(s, index + 1))
+                ChildrenEnumerable = scores.Select((s, index) => CreateDrawableScore(s, index + 1)),
             }, newFlow =>
             {
                 setState(LeaderboardState.Success);

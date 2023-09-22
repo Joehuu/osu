@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using osu.Framework.Allocation;
+using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Extensions.LocalisationExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -29,6 +30,7 @@ using osu.Game.Screens.Select;
 using osu.Game.Users.Drawables;
 using osu.Game.Utils;
 using osuTK;
+using osuTK.Graphics;
 
 namespace osu.Game.Online.Leaderboards
 {
@@ -86,6 +88,7 @@ namespace osu.Game.Online.Leaderboards
             this.score = score;
             this.rank = rank;
             this.isPersonalBest = isPersonalBest;
+            Shear = shear;
         }
 
         [BackgroundDependencyLoader]
@@ -98,7 +101,6 @@ namespace osu.Game.Online.Leaderboards
 
             statisticsLabels = GetStatistics(score).Select(s => new ScoreComponentLabel(s, score)).ToList();
 
-            Shear = shear;
             RelativeSizeAxes = Axes.X;
             Height = height;
             Child = content = new Container
@@ -156,6 +158,13 @@ namespace osu.Game.Online.Leaderboards
                 Masking = true,
                 CornerRadius = corner_radius,
                 RelativeSizeAxes = Axes.Both,
+                EdgeEffect = new EdgeEffectParameters
+                {
+                    Colour = Color4.Black.Opacity(0.25f),
+                    Type = EdgeEffectType.Shadow,
+                    Radius = 1,
+                    Offset = new Vector2(5, 0)
+                },
                 Children = new[]
                 {
                     foreground = new Box

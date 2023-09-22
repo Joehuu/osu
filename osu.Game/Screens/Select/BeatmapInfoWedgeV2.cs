@@ -30,7 +30,7 @@ namespace osu.Game.Screens.Select
         private const float colour_bar_width = 30;
 
         /// Todo: move this const out to song select when more new design elements are implemented for the beatmap details area, since it applies to text alignment of various elements
-        private const float text_margin = 62;
+        public const float TEXT_MARGIN = 62;
 
         private static readonly Vector2 wedged_container_shear = new Vector2(shear_width / WEDGE_HEIGHT, 0);
 
@@ -282,7 +282,7 @@ namespace osu.Game.Screens.Select
                 {
                     Name = "Top-left aligned metadata",
                     Direction = FillDirection.Vertical,
-                    Padding = new MarginPadding { Left = text_margin, Top = 12 },
+                    Padding = new MarginPadding { Left = TEXT_MARGIN, Top = 12 },
                     AutoSizeAxes = Axes.Y,
                     RelativeSizeAxes = Axes.X,
                     Children = new Drawable[]
@@ -321,8 +321,8 @@ namespace osu.Game.Screens.Select
 
                 // best effort to confine the auto-sized text to wedge bounds
                 // the artist label doesn't have an extra text_margin as it doesn't touch the right metadata
-                TitleLabel.MaxWidth = DrawWidth - text_margin * 2 - shear_width;
-                ArtistLabel.MaxWidth = DrawWidth - text_margin - shear_width;
+                TitleLabel.MaxWidth = DrawWidth - TEXT_MARGIN * 2 - shear_width;
+                ArtistLabel.MaxWidth = DrawWidth - TEXT_MARGIN - shear_width;
             }
         }
     }

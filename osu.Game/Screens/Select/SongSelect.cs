@@ -186,7 +186,7 @@ namespace osu.Game.Screens.Select
                             ColumnDimensions = new[]
                             {
                                 new Dimension(),
-                                new Dimension(GridSizeMode.Relative, 0.5f, maxSize: 850),
+                                new Dimension(GridSizeMode.Relative, 0.4f, maxSize: 650),
                             },
                             Content = new[]
                             {
@@ -229,7 +229,7 @@ namespace osu.Game.Screens.Select
                             RelativeSizeAxes = Axes.Both,
                             ColumnDimensions = new[]
                             {
-                                new Dimension(GridSizeMode.Relative, 0.5f, maxSize: 650),
+                                new Dimension(GridSizeMode.Relative, 0.6f, maxSize: 850),
                             },
                             Content = new[]
                             {
@@ -260,7 +260,7 @@ namespace osu.Game.Screens.Select
                                                 {
                                                     Bottom = Footer.HEIGHT,
                                                     Top = WEDGE_HEIGHT,
-                                                    Left = left_area_padding,
+                                                    Left = BeatmapInfoWedgeV2.TEXT_MARGIN,
                                                     Right = left_area_padding * 2,
                                                 },
                                                 Child = BeatmapDetails = CreateBeatmapDetailArea().With(d =>
