@@ -6,8 +6,13 @@ namespace osu.Game.Graphics.UserInterface
     /// <summary>
     /// A <see cref="SearchTextBox"/> which does not handle left/right arrow keys for seeking.
     /// </summary>
-    public partial class SeekLimitedSearchTextBox : BasicSearchTextBox
+    public partial class SeekLimitedSearchTextBox : ShearedSearchTextBox
     {
-        public override bool HandleLeftRightArrows => false;
+        public override InnerSearchTextBox CreateInnerTextBox() => new SeekLimitedInnerSearchTextBox();
+
+        private partial class SeekLimitedInnerSearchTextBox : InnerSearchTextBox
+        {
+            public override bool HandleLeftRightArrows => false;
+        }
     }
 }

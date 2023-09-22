@@ -254,9 +254,6 @@ namespace osu.Game.Screens.Select
 
             public OsuSpriteText FilterText { get; private set; }
 
-            // clipboard is disabled because one of the "cut" platform key bindings (shift-delete) conflicts with the beatmap deletion action.
-            protected override bool AllowClipboardExport => false;
-
             public FilterControlTextBox()
             {
                 Height += filter_text_size;
@@ -276,6 +273,16 @@ namespace osu.Game.Screens.Select
                     Margin = new MarginPadding { Top = 2, Left = 2 },
                     Colour = colours.Yellow
                 });
+            }
+
+            public override InnerSearchTextBox CreateInnerTextBox() => new FilterControlInnerSearchTextBox();
+
+            private partial class FilterControlInnerSearchTextBox : InnerSearchTextBox
+            {
+                public override bool HandleLeftRightArrows => false;
+
+                // clipboard is disabled because one of the "cut" platform key bindings (shift-delete) conflicts with the beatmap deletion action.
+                protected override bool AllowClipboardExport => false;
             }
         }
     }
