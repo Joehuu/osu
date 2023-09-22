@@ -22,7 +22,7 @@ namespace osu.Game.Graphics.UserInterface
         private const float corner_radius = 7;
 
         private readonly Box background;
-        private readonly SearchTextBox textBox;
+        private readonly InnerSearchTextBox textBox;
 
         public Bindable<string> Current
         {
@@ -36,11 +36,25 @@ namespace osu.Game.Graphics.UserInterface
             set => textBox.HoldFocus = value;
         }
 
+        public bool ReadOnly
+        {
+            get => textBox.ReadOnly;
+            set => textBox.ReadOnly = value;
+        }
+
         public LocalisableString PlaceholderText
         {
             get => textBox.PlaceholderText;
             set => textBox.PlaceholderText = value;
         }
+
+        public string Text
+        {
+            get => textBox.Text;
+            set => textBox.Text = value;
+        }
+
+        protected Container TextContainer => textBox.TextContainer;
 
         public new bool HasFocus => textBox.HasFocus;
 
@@ -68,13 +82,7 @@ namespace osu.Game.Graphics.UserInterface
                     {
                         new Drawable[]
                         {
-                            textBox = new InnerSearchTextBox
-                            {
-                                Anchor = Anchor.CentreLeft,
-                                Origin = Anchor.CentreLeft,
-                                RelativeSizeAxes = Axes.Both,
-                                Size = Vector2.One
-                            },
+                            textBox = CreateInnerTextBox(),
                             new SpriteIcon
                             {
                                 Icon = FontAwesome.Solid.Search,
@@ -94,6 +102,8 @@ namespace osu.Game.Graphics.UserInterface
             };
         }
 
+        public virtual InnerSearchTextBox CreateInnerTextBox() => new InnerSearchTextBox();
+
         [BackgroundDependencyLoader]
         private void load(OverlayColourProvider colourProvider)
         {
@@ -102,8 +112,18 @@ namespace osu.Game.Graphics.UserInterface
 
         public override bool HandleNonPositionalInput => textBox.HandleNonPositionalInput;
 
-        private partial class InnerSearchTextBox : SearchTextBox
+        public partial class InnerSearchTextBox : SearchTextBox
         {
+            public new Container TextContainer => base.TextContainer;
+
+            public InnerSearchTextBox()
+            {
+                Anchor = Anchor.CentreLeft;
+                Origin = Anchor.CentreLeft;
+                RelativeSizeAxes = Axes.Both;
+                Size = Vector2.One;
+            }
+
             [BackgroundDependencyLoader]
             private void load(OverlayColourProvider colourProvider)
             {
