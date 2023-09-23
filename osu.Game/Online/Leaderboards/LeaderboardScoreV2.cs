@@ -336,7 +336,7 @@ namespace osu.Game.Online.Leaderboards
                                 rightBackground = new Box
                                 {
                                     RelativeSizeAxes = Axes.Both,
-                                    Colour = backgroundColour
+                                    Colour = ColourInfo.GradientHorizontal(backgroundColour.Opacity(0), backgroundColour),
                                 },
                                 new Box
                                 {
@@ -449,9 +449,12 @@ namespace osu.Game.Online.Leaderboards
 
         private void updateState()
         {
+            var lightedGradient = ColourInfo.GradientHorizontal(backgroundColour.Opacity(0).Lighten(0.2f), backgroundColour.Lighten(0.2f));
+            var gradient = ColourInfo.GradientHorizontal(backgroundColour.Opacity(0), backgroundColour);
+
             foreground.FadeColour(IsHovered ? foregroundColour.Lighten(0.2f) : foregroundColour, transition_duration, Easing.OutQuint);
             background.FadeColour(IsHovered ? backgroundColour.Lighten(0.2f) : backgroundColour, transition_duration, Easing.OutQuint);
-            rightBackground.FadeColour(IsHovered ? backgroundColour.Lighten(0.2f) : backgroundColour, transition_duration, Easing.OutQuint);
+            rightBackground.FadeColour(IsHovered ? lightedGradient : gradient, transition_duration, Easing.OutQuint);
         }
 
         #region Subclasses
