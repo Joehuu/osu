@@ -29,11 +29,11 @@ namespace osu.Game.Tests.Visual.SongSelect
                 new ScoreInfo
                 {
                     Position = 999,
-                    Rank = ScoreRank.XH,
+                    Rank = ScoreRank.X,
                     Accuracy = 1,
                     MaxCombo = 244,
                     TotalScore = 1707827,
-                    Mods = new Mod[] { new OsuModHidden(), new OsuModHardRock(), new OsuModAlternate(), new OsuModFlashlight(), new OsuModFreezeFrame() },
+                    Mods = new Mod[] { new OsuModHidden(), new OsuModHardRock(), new OsuModAlternate(), new OsuModFlashlight() },
                     Ruleset = new OsuRuleset().RulesetInfo,
                     User = new APIUser
                     {
@@ -66,7 +66,7 @@ namespace osu.Game.Tests.Visual.SongSelect
                 new ScoreInfo
                 {
                     Position = 110000,
-                    Rank = ScoreRank.X,
+                    Rank = ScoreRank.A,
                     Accuracy = 1,
                     MaxCombo = 244,
                     TotalScore = 17078279,
