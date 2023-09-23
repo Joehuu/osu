@@ -473,6 +473,7 @@ namespace osu.Game.Online.Leaderboards
                 : base(mod)
             {
                 this.mod = mod;
+                Active.Value = true;
                 Masking = true;
                 EdgeEffect = new EdgeEffectParameters
                 {
@@ -482,12 +483,6 @@ namespace osu.Game.Online.Leaderboards
                     Radius = 3,
                     Offset = new Vector2(-2, 0)
                 };
-            }
-
-            protected override void UpdateState()
-            {
-                AcronymText.Colour = Colour4.FromHex("#555555");
-                Background.Colour = colours.Yellow;
             }
 
             public LocalisableString TooltipText => (mod as Mod)?.IconTooltip ?? mod.Name;
