@@ -44,7 +44,7 @@ namespace osu.Game.Tests.Visual.SongSelect
                         RelativeSizeAxes = Axes.Both,
                         Colour = Color4.DarkGreen,
                     },
-                    topScoreContainer = new UserTopScoreContainer<ScoreInfo>(s => new LeaderboardScore(s, s.Position, false))
+                    topScoreContainer = new UserTopScoreContainer<ScoreInfo>(s => new LeaderboardScoreV2(s, s.Position, false))
                     {
                         Origin = Anchor.BottomCentre,
                         Anchor = Anchor.BottomCentre,

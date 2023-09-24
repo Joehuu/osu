@@ -1,6 +1,7 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -18,6 +19,8 @@ namespace osu.Game.Tests.Visual.SongSelect
 {
     public partial class TestSceneLeaderboardScoreV2 : OsuTestScene
     {
+        private FillFlowContainer fillFlow = null!;
+
         [BackgroundDependencyLoader]
         private void load()
         {
@@ -26,18 +29,20 @@ namespace osu.Game.Tests.Visual.SongSelect
                 new ScoreInfo
                 {
                     Position = 999,
-                    Rank = ScoreRank.XH,
+                    Rank = ScoreRank.X,
                     Accuracy = 1,
                     MaxCombo = 244,
                     TotalScore = 1707827,
-                    Mods = new Mod[] { new OsuModHidden(), new OsuModHardRock(), new OsuModAlternate(), new OsuModFlashlight(), new OsuModFreezeFrame() },
+                    Mods = new Mod[] { new OsuModHidden(), new OsuModHardRock(), new OsuModAlternate(), new OsuModFlashlight() },
                     Ruleset = new OsuRuleset().RulesetInfo,
                     User = new APIUser
                     {
                         Id = 6602580,
                         Username = @"waaiiru",
                         CountryCode = CountryCode.ES,
+                        CoverUrl = @"https://osu.ppy.sh/images/headers/profile-covers/c1.jpg",
                     },
+                    Date = DateTimeOffset.Now.AddYears(-2),
                 },
                 new ScoreInfo
                 {
@@ -53,40 +58,51 @@ namespace osu.Game.Tests.Visual.SongSelect
                         Id = 1541390,
                         Username = @"Toukai",
                         CountryCode = CountryCode.CA,
+                        CoverUrl = @"https://osu.ppy.sh/images/headers/profile-covers/c2.jpg",
                     },
+                    Date = DateTimeOffset.Now.AddMonths(-6),
                 },
 
                 new ScoreInfo
                 {
                     Position = 110000,
-                    Rank = ScoreRank.X,
+                    Rank = ScoreRank.A,
                     Accuracy = 1,
                     MaxCombo = 244,
                     TotalScore = 17078279,
                     Ruleset = new ManiaRuleset().RulesetInfo,
                     User = new APIUser
                     {
-                        Id = 4608074,
-                        Username = @"Skycries",
+                        Username = @"No cover",
                         CountryCode = CountryCode.BR,
                     },
+                    Date = DateTimeOffset.Now,
                 },
             };
 
-            Child = new FillFlowContainer
+            Child = fillFlow = new FillFlowContainer
             {
-                Width = 900,
                 Anchor = Anchor.Centre,
                 Origin = Anchor.Centre,
                 Spacing = new Vector2(0, 10),
+                RelativeSizeAxes = Axes.X,
                 AutoSizeAxes = Axes.Y,
                 Children = new Drawable[]
                 {
                     new LeaderboardScoreV2(scores[0], 1),
                     new LeaderboardScoreV2(scores[1], null, true),
-                    new LeaderboardScoreV2(scores[2], null, true)
+                    new LeaderboardScoreV2(scores[2], null, true),
+                    new LeaderboardScoreV2(scores[2], null),
                 }
             };
+
+            foreach (var score in fillFlow.Children)
+                score.Show();
+
+            AddSliderStep("change relative width", 0, 1f, 0.6f, v =>
+            {
+                fillFlow.Width = v;
+            });
         }
     }
 }
