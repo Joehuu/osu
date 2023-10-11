@@ -3,17 +3,14 @@
 
 #nullable disable
 
-using System.Collections.Generic;
 using osu.Framework.Allocation;
-using osu.Framework.Graphics.Sprites;
 using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Online.Leaderboards;
-using osu.Game.Resources.Localisation.Web;
 using osu.Game.Scoring;
 
 namespace osu.Game.Screens.OnlinePlay.Match.Components
 {
-    public partial class MatchLeaderboardScore : LeaderboardScore
+    public partial class MatchLeaderboardScore : LeaderboardScoreV2
     {
         private readonly APIUserScoreAggregate score;
 
@@ -31,11 +28,11 @@ namespace osu.Game.Screens.OnlinePlay.Match.Components
             RankContainer.Alpha = 0;
         }
 
-        protected override IEnumerable<LeaderboardScoreStatistic> GetStatistics(ScoreInfo model) => new[]
-        {
-            new LeaderboardScoreStatistic(FontAwesome.Solid.Crosshairs, RankingsStrings.StatAccuracy, model.DisplayAccuracy),
-            new LeaderboardScoreStatistic(FontAwesome.Solid.Sync, RankingsStrings.StatPlayCount, score.TotalAttempts.ToString()),
-            new LeaderboardScoreStatistic(FontAwesome.Solid.Check, "Completed Beatmaps", score.CompletedBeatmaps.ToString()),
-        };
+        // protected override IEnumerable<LeaderboardScore.LeaderboardScoreStatistic> GetStatistics(ScoreInfo model) => new[]
+        // {
+        //     new LeaderboardScore.LeaderboardScoreStatistic(FontAwesome.Solid.Crosshairs, RankingsStrings.StatAccuracy, model.DisplayAccuracy),
+        //     new LeaderboardScore.LeaderboardScoreStatistic(FontAwesome.Solid.Sync, RankingsStrings.StatPlayCount, score.TotalAttempts.ToString()),
+        //     new LeaderboardScore.LeaderboardScoreStatistic(FontAwesome.Solid.Check, "Completed Beatmaps", score.CompletedBeatmaps.ToString()),
+        // };
     }
 }
