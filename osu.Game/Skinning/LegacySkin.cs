@@ -353,7 +353,8 @@ namespace osu.Game.Skinning
             switch (lookup)
             {
                 case SkinComponentsContainerLookup containerLookup:
-                    // Only handle global level defaults for now.
+                    // Only handle global level defaults here.
+                    // For ruleset-specific component defaults, put them in skin transformers.
                     if (containerLookup.Ruleset != null)
                         return null;
 
