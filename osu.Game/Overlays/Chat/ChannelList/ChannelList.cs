@@ -87,6 +87,30 @@ namespace osu.Game.Overlays.Chat.ChannelList
             channelMap.Add(channel, item);
             flow.Add(item);
 
+            if (item.Channel.Type == ChannelType.PM)
+            {
+                updatePMPosition(item.Channel.LastMessageId);
+
+                item.Channel.NewMessagesArrived += messages =>
+                {
+                    var messageList = messages.ToList();
+
+                    long? lastMessageId = messageList.Select(m => m.Id).Max();
+
+                    // initial (old) messages may not be loaded yet (i.e. channel was never opened)
+                    // and will trigger this action after newly created messages
+                    if (!messageList.Any(m => m is LocalMessage) && item.Channel.LastMessageId <= lastMessageId)
+                        updatePMPosition(lastMessageId);
+                };
+
+                item.Channel.PendingMessageResolved += (_, message) => updatePMPosition(message.Id);
+
+                void updatePMPosition(long? lastMessageId)
+                {
+                    if (lastMessageId != null) flow.SetLayoutPosition(item, (float)-lastMessageId);
+                }
+            }
+
             updateVisibility();
         }
 
