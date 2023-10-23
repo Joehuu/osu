@@ -27,8 +27,8 @@ namespace osu.Game.Rulesets.UI
         protected readonly IMod Mod;
         private readonly bool showExtendedInformation;
 
-        protected Box Background;
-        protected OsuSpriteText AcronymText;
+        private readonly Box background;
+        private readonly OsuSpriteText acronymText;
 
         private Color4 activeForegroundColour;
         private Color4 inactiveForegroundColour;
