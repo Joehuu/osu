@@ -14,10 +14,12 @@ using osu.Game.Beatmaps.Legacy;
 using osu.Game.Configuration;
 using osu.Game.Graphics;
 using osu.Game.Overlays.Settings;
+using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets.Configuration;
 using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Edit;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Osu.Beatmaps;
 using osu.Game.Rulesets.Osu.Configuration;
 using osu.Game.Rulesets.Osu.Difficulty;
@@ -331,5 +333,34 @@ namespace osu.Game.Rulesets.Osu
         }
 
         public override RulesetSetupSection CreateEditorSetupSection() => new OsuSetupSection();
+
+        public override IEnumerable<BeatmapStatistic> GetObjectCount(IReadOnlyList<HitObject> hitObjects)
+        {
+            int circles = hitObjects.Count(c => c is HitCircle);
+            int sliders = hitObjects.Count(s => s is Slider);
+            int spinners = hitObjects.Count(s => s is Spinner);
+
+            return new[]
+            {
+                new BeatmapStatistic
+                {
+                    Name = BeatmapsetsStrings.ShowStatsCountCircles,
+                    Content = circles.ToString(),
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Circles),
+                },
+                new BeatmapStatistic
+                {
+                    Name = BeatmapsetsStrings.ShowStatsCountSliders,
+                    Content = sliders.ToString(),
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Sliders),
+                },
+                new BeatmapStatistic
+                {
+                    Name = @"Spinner Count",
+                    Content = spinners.ToString(),
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Spinners),
+                }
+            };
+        }
     }
 }

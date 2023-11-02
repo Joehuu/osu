@@ -6,7 +6,9 @@
 using System;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
+using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Input;
@@ -92,16 +94,14 @@ namespace osu.Game.Screens.Select
             {
                 new Box
                 {
-                    Colour = Color4.Black,
-                    Alpha = 0.8f,
-                    Width = 2,
+                    Colour = ColourInfo.GradientVertical(Color4.Black, Color4.Black.Opacity(0)),
                     RelativeSizeAxes = Axes.Both,
                 },
                 new Container
                 {
                     Padding = new MarginPadding(side_margin),
                     RelativeSizeAxes = Axes.Both,
-                    Width = 0.5f,
+                    Width = 0.4f,
                     Anchor = Anchor.TopRight,
                     Origin = Anchor.TopRight,
                     // Reverse ChildID so that dropdowns in the top section appear on top of the bottom section.

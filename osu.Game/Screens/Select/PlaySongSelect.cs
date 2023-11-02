@@ -27,6 +27,9 @@ namespace osu.Game.Screens.Select
 {
     public partial class PlaySongSelect : SongSelect
     {
+        [Cached]
+        private readonly OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Aquamarine);
+
         private OsuScreen? playerLoader;
 
         [Resolved]

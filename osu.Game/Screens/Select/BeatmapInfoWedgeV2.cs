@@ -23,16 +23,14 @@ namespace osu.Game.Screens.Select
 {
     public partial class BeatmapInfoWedgeV2 : VisibilityContainer
     {
-        public const float WEDGE_HEIGHT = 120;
-        private const float shear_width = 21;
+        public const float WEDGE_HEIGHT_EXPANDED = 300;
+        private const float wedge_height_contracted = 120;
+        private const float shear_width_expanded = SongSelect.SHEAR_X * WEDGE_HEIGHT_EXPANDED;
+        private const float shear_width_contracted = SongSelect.SHEAR_X * wedge_height_contracted;
         private const float transition_duration = 250;
-        private const float corner_radius = 10;
-        private const float colour_bar_width = 30;
+        public const float COLOUR_BAR_WIDTH = 30;
 
-        /// Todo: move this const out to song select when more new design elements are implemented for the beatmap details area, since it applies to text alignment of various elements
-        private const float text_margin = 62;
-
-        private static readonly Vector2 wedged_container_shear = new Vector2(shear_width / WEDGE_HEIGHT, 0);
+        public readonly BindableBool Expanded = new BindableBool();
 
         [Resolved]
         private IBindable<RulesetInfo> ruleset { get; set; } = null!;
@@ -45,7 +43,7 @@ namespace osu.Game.Screens.Select
 
         protected Container? DisplayedContent { get; private set; }
 
-        protected WedgeInfoText? Info { get; private set; }
+        protected BeatmapInfoWedgeV2.WedgeInfoText? Info { get; private set; }
 
         private Container difficultyColourBar = null!;
         private StarCounter starCounter = null!;
@@ -58,91 +56,131 @@ namespace osu.Game.Screens.Select
 
         public BeatmapInfoWedgeV2()
         {
-            Height = WEDGE_HEIGHT;
-            Shear = wedged_container_shear;
-            Masking = true;
-            Margin = new MarginPadding { Left = -corner_radius };
-            EdgeEffect = new EdgeEffectParameters
-            {
-                Colour = Colour4.Black.Opacity(0.2f),
-                Type = EdgeEffectType.Shadow,
-                Radius = 3,
-            };
-            CornerRadius = corner_radius;
+            RelativeSizeAxes = Axes.X;
+            AutoSizeAxes = Axes.Y;
         }
 
         [BackgroundDependencyLoader]
         private void load()
         {
-            Child = content = new Container
+            Child = new FillFlowContainer
             {
-                RelativeSizeAxes = Axes.Both,
+                RelativeSizeAxes = Axes.X,
+                AutoSizeAxes = Axes.Y,
+                Direction = FillDirection.Vertical,
                 Children = new Drawable[]
                 {
-                    // These elements can't be grouped with the rest of the content, due to being present either outside or under the backgrounds area
-                    difficultyColourBar = new Container
+                    content = new Container
                     {
-                        Colour = Colour4.Transparent,
-                        Depth = float.MaxValue,
-                        Anchor = Anchor.TopRight,
-                        Origin = Anchor.TopRight,
-                        RelativeSizeAxes = Axes.Y,
+                        RelativeSizeAxes = Axes.X,
+                        Height = wedge_height_contracted,
+                        Shear = SongSelect.WEDGED_CONTAINER_SHEAR,
+                        Masking = true,
+                        Padding = new MarginPadding { Left = -SongSelect.WEDGE_CORNER_RADIUS },
+                        EdgeEffect = new EdgeEffectParameters
+                        {
+                            Colour = Colour4.Black.Opacity(0.2f),
+                            Type = EdgeEffectType.Shadow,
+                            Radius = 3,
+                        },
+                        CornerRadius = SongSelect.WEDGE_CORNER_RADIUS,
 
-                        // By limiting the width we avoid this box showing up as an outline around the drawables that are on top of it.
-                        Width = colour_bar_width + corner_radius,
-                        Child = new Box { RelativeSizeAxes = Axes.Both }
+                        Children = new Drawable[]
+                        {
+                            // These elements can't be grouped with the rest of the content, due to being present either outside or under the backgrounds area
+                            difficultyColourBar = new Container
+                            {
+                                Colour = Colour4.Transparent,
+                                Depth = float.MaxValue,
+                                Anchor = Anchor.TopRight,
+                                Origin = Anchor.TopRight,
+                                RelativeSizeAxes = Axes.Y,
+
+                                // By limiting the width we avoid this box showing up as an outline around the drawables that are on top of it.
+                                Width = COLOUR_BAR_WIDTH + SongSelect.WEDGE_CORNER_RADIUS,
+                                Child = new Box { RelativeSizeAxes = Axes.Both }
+                            },
+                            new Container
+                            {
+                                // Applying the shear to this container and nesting the starCounter inside avoids
+                                // the deformation that occurs if the shear is applied to the starCounter whilst rotated
+                                Shear = -SongSelect.WEDGED_CONTAINER_SHEAR,
+                                X = -COLOUR_BAR_WIDTH / 2,
+                                Anchor = Anchor.CentreRight,
+                                Origin = Anchor.Centre,
+                                RelativeSizeAxes = Axes.Y,
+                                Width = COLOUR_BAR_WIDTH,
+                                Child = starCounter = new StarCounter
+                                {
+                                    Rotation = (float)(Math.Atan(SongSelect.SHEAR_X) * (180 / Math.PI)),
+                                    Colour = Colour4.Transparent,
+                                    Anchor = Anchor.Centre,
+                                    Origin = Anchor.Centre,
+                                    Scale = new Vector2(0.35f),
+                                    Direction = FillDirection.Vertical
+                                }
+                            },
+                            new FillFlowContainer
+                            {
+                                Name = "Topright-aligned metadata",
+                                Anchor = Anchor.TopRight,
+                                Origin = Anchor.TopRight,
+                                Direction = FillDirection.Vertical,
+                                Padding = new MarginPadding { Top = 3, Right = COLOUR_BAR_WIDTH + 8 },
+                                AutoSizeAxes = Axes.Both,
+                                Spacing = new Vector2(0, 5),
+                                Depth = float.MinValue,
+                                Children = new Drawable[]
+                                {
+                                    starRatingDisplay = new StarRatingDisplay(default, animated: true)
+                                    {
+                                        Anchor = Anchor.TopRight,
+                                        Origin = Anchor.TopRight,
+                                        Shear = -SongSelect.WEDGED_CONTAINER_SHEAR,
+                                        Alpha = 0,
+                                    },
+                                    statusPill = new BeatmapSetOnlineStatusPill
+                                    {
+                                        AutoSizeAxes = Axes.Both,
+                                        Anchor = Anchor.TopRight,
+                                        Origin = Anchor.TopRight,
+                                        Shear = -SongSelect.WEDGED_CONTAINER_SHEAR,
+                                        TextSize = 11,
+                                        TextPadding = new MarginPadding { Horizontal = 8, Vertical = 2 },
+                                        Alpha = 0,
+                                    }
+                                }
+                            },
+                        }
                     },
                     new Container
                     {
-                        // Applying the shear to this container and nesting the starCounter inside avoids
-                        // the deformation that occurs if the shear is applied to the starCounter whilst rotated
-                        Shear = -wedged_container_shear,
-                        X = -colour_bar_width / 2,
-                        Anchor = Anchor.CentreRight,
-                        Origin = Anchor.Centre,
-                        RelativeSizeAxes = Axes.Y,
-                        Width = colour_bar_width,
-                        Child = starCounter = new StarCounter
+                        RelativeSizeAxes = Axes.X,
+                        AutoSizeAxes = Axes.Y,
+                        AutoSizeDuration = 500,
+                        AutoSizeEasing = Easing.OutQuint,
+                        Child = basicDifficultyInfoContainer = new DetailsWedgeContainer
                         {
-                            Rotation = (float)(Math.Atan(shear_width / WEDGE_HEIGHT) * (180 / Math.PI)),
-                            Colour = Colour4.Transparent,
-                            Anchor = Anchor.Centre,
-                            Origin = Anchor.Centre,
-                            Scale = new Vector2(0.35f),
-                            Direction = FillDirection.Vertical
-                        }
-                    },
-                    new FillFlowContainer
-                    {
-                        Name = "Topright-aligned metadata",
-                        Anchor = Anchor.TopRight,
-                        Origin = Anchor.TopRight,
-                        Direction = FillDirection.Vertical,
-                        Padding = new MarginPadding { Top = 3, Right = colour_bar_width + 8 },
-                        AutoSizeAxes = Axes.Both,
-                        Spacing = new Vector2(0, 5),
-                        Depth = float.MinValue,
-                        Children = new Drawable[]
-                        {
-                            starRatingDisplay = new StarRatingDisplay(default, animated: true)
+                            Child = basicDifficultyInfoContent = new BasicDifficultyInfoContent
                             {
-                                Anchor = Anchor.TopRight,
-                                Origin = Anchor.TopRight,
-                                Shear = -wedged_container_shear,
-                                Alpha = 0,
+                                Padding = new MarginPadding { Left = SongSelect.TEXT_MARGIN, Right = 30, Vertical = 10 }
                             },
-                            statusPill = new BeatmapSetOnlineStatusPill
-                            {
-                                AutoSizeAxes = Axes.Both,
-                                Anchor = Anchor.TopRight,
-                                Origin = Anchor.TopRight,
-                                Shear = -wedged_container_shear,
-                                TextSize = 11,
-                                TextPadding = new MarginPadding { Horizontal = 8, Vertical = 2 },
-                                Alpha = 0,
-                            }
-                        }
+                        },
                     },
+                    new Container
+                    {
+                        RelativeSizeAxes = Axes.X,
+                        AutoSizeAxes = Axes.Y,
+                        AutoSizeDuration = 500,
+                        AutoSizeEasing = Easing.OutQuint,
+                        Child = extendedDifficultyInfoContainer = new DetailsWedgeContainer
+                        {
+                            Child = extendedBeatmapDetailsContent = new ExtendedBeatmapDetailsContent
+                            {
+                                Padding = new MarginPadding { Left = SongSelect.TEXT_MARGIN, Right = 30, Vertical = 10 }
+                            },
+                        },
+                    }
                 }
             };
         }
@@ -164,6 +202,37 @@ namespace osu.Game.Screens.Select
                 // sync color with star rating display
                 starCounter.Colour = s.NewValue >= 6.5 ? colours.Orange1 : Colour4.Black.Opacity(0.75f);
                 difficultyColourBar.FadeColour(colours.ForStarDifficulty(s.NewValue));
+            }, true);
+
+            Expanded.BindValueChanged(e =>
+            {
+                content.ResizeHeightTo(e.NewValue
+                    ? WEDGE_HEIGHT_EXPANDED
+                    : wedge_height_contracted, 500, Easing.OutQuint);
+
+                if (e.NewValue)
+                {
+                    extendedDifficultyInfoContainer.AutoSizeAxes = Axes.None;
+                    extendedDifficultyInfoContainer.Height = 0;
+                    extendedDifficultyInfoContainer.Hide();
+                }
+                else
+                {
+                    extendedDifficultyInfoContainer.Show();
+                    extendedDifficultyInfoContainer.AutoSizeAxes = Axes.Y;
+                }
+
+                float rightPadding = (e.NewValue ? shear_width_expanded : shear_width_contracted) + COLOUR_BAR_WIDTH;
+
+                basicDifficultyInfoContainer.TransformTo(nameof(Padding), new MarginPadding
+                {
+                    Top = 10, Left = -SongSelect.WEDGE_CORNER_RADIUS, Right = rightPadding
+                }, 500, Easing.OutQuint);
+
+                extendedDifficultyInfoContainer.TransformTo(nameof(Padding), new MarginPadding
+                {
+                    Top = 10, Left = -SongSelect.WEDGE_CORNER_RADIUS, Right = rightPadding + BasicDifficultyInfoContent.SHEAR_WIDTH
+                }, 500, Easing.OutQuint);
             }, true);
         }
 
@@ -193,10 +262,20 @@ namespace osu.Game.Screens.Select
                 beatmap = value;
 
                 updateDisplay();
+
+                basicDifficultyInfoContainer.Show();
+                basicDifficultyInfoContent.BeatmapInfo.Value = value.BeatmapInfo;
+                basicDifficultyInfoContent.BeatmapSetInfo.Value = value.BeatmapSetInfo;
+                extendedBeatmapDetailsContent.BeatmapInfo.Value = value.BeatmapInfo;
+                extendedBeatmapDetailsContent.BeatmapSetInfo.Value = value.BeatmapSetInfo;
             }
         }
 
         private Container? loadingInfo;
+        private DetailsWedgeContainer basicDifficultyInfoContainer = null!;
+        private BasicDifficultyInfoContent basicDifficultyInfoContent = null!;
+        private DetailsWedgeContainer extendedDifficultyInfoContainer = null!;
+        private ExtendedBeatmapDetailsContent extendedBeatmapDetailsContent = null!;
 
         private void updateDisplay()
         {
@@ -215,20 +294,20 @@ namespace osu.Game.Screens.Select
             {
                 LoadComponentAsync(loadingInfo = new Container
                 {
-                    Padding = new MarginPadding { Right = colour_bar_width },
+                    Padding = new MarginPadding { Right = COLOUR_BAR_WIDTH },
                     RelativeSizeAxes = Axes.Both,
                     Depth = DisplayedContent?.Depth + 1 ?? 0,
                     Child = new Container
                     {
                         Masking = true,
-                        CornerRadius = corner_radius,
+                        CornerRadius = SongSelect.WEDGE_CORNER_RADIUS,
                         RelativeSizeAxes = Axes.Both,
                         Children = new Drawable[]
                         {
                             // TODO: New wedge design uses a coloured horizontal gradient for its background, however this lacks implementation information in the figma draft.
                             // pending https://www.figma.com/file/DXKwqZhD5yyb1igc3mKo1P?node-id=2980:3361#340801912 being answered.
-                            new BeatmapInfoWedgeBackground(beatmap) { Shear = -Shear },
-                            Info = new WedgeInfoText(beatmap) { Shear = -Shear }
+                            new BeatmapInfoWedgeBackground(beatmap) { Shear = -SongSelect.WEDGED_CONTAINER_SHEAR },
+                            Info = new WedgeInfoText(beatmap) { Shear = -SongSelect.WEDGED_CONTAINER_SHEAR }
                         }
                     }
                 }, d =>
@@ -282,9 +361,11 @@ namespace osu.Game.Screens.Select
                 {
                     Name = "Top-left aligned metadata",
                     Direction = FillDirection.Vertical,
-                    Padding = new MarginPadding { Left = text_margin, Top = 12 },
+                    Padding = new MarginPadding { Left = SongSelect.TEXT_MARGIN, Vertical = 12 },
                     AutoSizeAxes = Axes.Y,
                     RelativeSizeAxes = Axes.X,
+                    Anchor = Anchor.BottomLeft,
+                    Origin = Anchor.BottomLeft,
                     Children = new Drawable[]
                     {
                         new OsuHoverContainer
@@ -320,9 +401,8 @@ namespace osu.Game.Screens.Select
                 base.UpdateAfterChildren();
 
                 // best effort to confine the auto-sized text to wedge bounds
-                // the artist label doesn't have an extra text_margin as it doesn't touch the right metadata
-                TitleLabel.MaxWidth = DrawWidth - text_margin * 2 - shear_width;
-                ArtistLabel.MaxWidth = DrawWidth - text_margin - shear_width;
+                TitleLabel.MaxWidth = DrawWidth - SongSelect.TEXT_MARGIN - SongSelect.SHEAR_X * DrawHeight;
+                ArtistLabel.MaxWidth = DrawWidth - SongSelect.TEXT_MARGIN - SongSelect.SHEAR_X * DrawHeight;
             }
         }
     }

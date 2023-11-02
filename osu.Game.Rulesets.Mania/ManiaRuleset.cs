@@ -24,6 +24,7 @@ using osu.Game.Rulesets.Mania.Difficulty;
 using osu.Game.Rulesets.Mania.Edit;
 using osu.Game.Rulesets.Mania.Edit.Setup;
 using osu.Game.Rulesets.Mania.Mods;
+using osu.Game.Rulesets.Mania.Objects;
 using osu.Game.Rulesets.Mania.Replays;
 using osu.Game.Rulesets.Mania.Scoring;
 using osu.Game.Rulesets.Mania.Skinning.Argon;
@@ -31,6 +32,7 @@ using osu.Game.Rulesets.Mania.Skinning.Default;
 using osu.Game.Rulesets.Mania.Skinning.Legacy;
 using osu.Game.Rulesets.Mania.UI;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Replays.Types;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.Scoring.Legacy;
@@ -420,6 +422,29 @@ namespace osu.Game.Rulesets.Mania
         public override RulesetSetupSection CreateEditorSetupSection() => new ManiaSetupSection();
 
         public override DifficultySection CreateEditorDifficultySection() => new ManiaDifficultySection();
+
+        public override IEnumerable<BeatmapStatistic> GetObjectCount(IReadOnlyList<HitObject> hitObjects)
+        {
+            int notes = hitObjects.Count(s => s is Note);
+            int holdNotes = hitObjects.Count(s => s is HoldNote);
+
+            return new[]
+            {
+                new BeatmapStatistic
+                {
+                    Name = @"Note Count",
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Circles),
+                    Content = notes.ToString(),
+                },
+                new BeatmapStatistic
+                {
+                    Name = @"Hold Note Count",
+                    CreateIcon = () => new BeatmapStatisticIcon(BeatmapStatisticsIconType.Sliders),
+                    Content = holdNotes.ToString(),
+                },
+            };
+        }
+
     }
 
     public enum PlayfieldType

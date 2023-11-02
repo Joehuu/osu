@@ -22,6 +22,7 @@ using osu.Game.Rulesets.Difficulty;
 using osu.Game.Rulesets.Edit;
 using osu.Game.Rulesets.Filter;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Replays.Types;
 using osu.Game.Rulesets.Scoring;
 using osu.Game.Rulesets.UI;
@@ -391,5 +392,7 @@ namespace osu.Game.Rulesets
         /// Can be overridden to alter the difficulty section to the editor beatmap setup screen.
         /// </summary>
         public virtual DifficultySection? CreateEditorDifficultySection() => null;
+
+        public virtual IEnumerable<BeatmapStatistic> GetObjectCount(IReadOnlyList<HitObject> hitObjects) => Enumerable.Empty<BeatmapStatistic>();
     }
 }

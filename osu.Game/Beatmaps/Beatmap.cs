@@ -73,8 +73,6 @@ namespace osu.Game.Beatmaps
 
         IReadOnlyList<HitObject> IBeatmap.HitObjects => HitObjects;
 
-        public virtual IEnumerable<BeatmapStatistic> GetStatistics() => Enumerable.Empty<BeatmapStatistic>();
-
         public double GetMostCommonBeatLength()
         {
             double lastTime;
