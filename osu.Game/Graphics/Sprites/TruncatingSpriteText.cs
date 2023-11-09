@@ -4,6 +4,7 @@
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Localisation;
+using osu.Game.Graphics.Containers;
 
 namespace osu.Game.Graphics.Sprites
 {
@@ -24,6 +25,22 @@ namespace osu.Game.Graphics.Sprites
         public TruncatingSpriteText()
         {
             ((SpriteText)this).Truncate = true;
+        }
+
+        protected override void Update()
+        {
+            base.Update();
+
+            // find if this sprite text is a link (i.e. child of OsuHoverContainer)
+            // and confine the auto-sized text to the parent of the hover container's child width
+            // Parent => OsuHoverContainer.Content
+            if (Parent!.Parent is OsuHoverContainer hoverContainer)
+                MaxWidth = hoverContainer.Parent!.ChildSize.X;
+            else
+            {
+                // else just use the parent's child width
+                MaxWidth = Parent!.ChildSize.X;
+            }
         }
     }
 }

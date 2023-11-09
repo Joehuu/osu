@@ -201,15 +201,6 @@ namespace osu.Game.Screens.OnlinePlay
             refresh();
         }
 
-        protected override void UpdateAfterChildren()
-        {
-            base.UpdateAfterChildren();
-
-            // best effort to confine the auto-sized text to parent bounds
-            // TODO: remove when text/link flow can support truncation with ellipsis natively.
-            beatmapText.MaxWidth = mainFillFlow.DrawWidth;
-        }
-
         /// <summary>
         /// Whether this item can be selected.
         /// </summary>

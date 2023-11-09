@@ -195,7 +195,7 @@ namespace osu.Game.Tests.Visual.SongSelect
                         Author = { Username = "WWWWWWWWWWWWWWW" },
                         Artist = "Verrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrry long Artist",
                         Source = "Verrrrry long Source",
-                        Title = "Verrrrry long Title"
+                        Title = "Verrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrry long Title"
                     },
                     DifficultyName = "Verrrrrrrrrrrrrrrrrrrrrrrrrrrrry long Version",
                     Status = BeatmapOnlineStatus.Graveyard,
