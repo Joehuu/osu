@@ -3,11 +3,14 @@
 
 using System;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
+using osu.Framework.Extensions.LocalisationExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Localisation;
+using osu.Game.Configuration;
 using osu.Game.Graphics.Sprites;
 using osuTK;
 
@@ -17,6 +20,8 @@ namespace osu.Game.Graphics
     {
         private readonly OsuSpriteText dateText, timeText;
         private readonly Box background;
+
+        private readonly Bindable<bool> prefer24HourTime = new Bindable<bool>();
 
         public DateTooltip()
         {
@@ -55,10 +60,12 @@ namespace osu.Game.Graphics
         }
 
         [BackgroundDependencyLoader]
-        private void load(OsuColour colours)
+        private void load(OsuColour colours, OsuConfigManager configManager)
         {
             background.Colour = colours.GreySeaFoamDarker;
             timeText.Colour = colours.BlueLighter;
+
+            configManager.BindWith(OsuSetting.Prefer24HourTime, prefer24HourTime);
         }
 
         protected override void PopIn() => this.FadeIn(200, Easing.OutQuint);
@@ -69,7 +76,8 @@ namespace osu.Game.Graphics
             DateTimeOffset localDate = date.ToLocalTime();
 
             dateText.Text = LocalisableString.Interpolate($"{localDate:d MMMM yyyy} ");
-            timeText.Text = LocalisableString.Interpolate($"{localDate:HH:mm:ss \"UTC\"z}");
+
+            timeText.Text = localDate.ToLocalisableString(prefer24HourTime.Value ? @"HH:mm:ss ""UTC""z" : @"hh:mm:ss tt ""UTC""z");
         }
 
         public void Move(Vector2 pos) => Position = pos;
