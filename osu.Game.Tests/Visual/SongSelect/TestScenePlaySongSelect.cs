@@ -1229,7 +1229,7 @@ namespace osu.Game.Tests.Visual.SongSelect
 
             public new Bindable<RulesetInfo> Ruleset => base.Ruleset;
 
-            public new FilterControl FilterControl => base.FilterControl;
+            public new FilterControlV2 FilterControl => base.FilterControl;
 
             public WorkingBeatmap CurrentBeatmap => Beatmap.Value;
             public IWorkingBeatmap CurrentBeatmapDetailsBeatmap => BeatmapDetails.Beatmap;

@@ -6,6 +6,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
+using osu.Framework.Graphics.Sprites;
 using osu.Framework.Input.Events;
 using osu.Framework.Localisation;
 using osu.Game.Graphics.Containers;
@@ -20,6 +21,12 @@ namespace osu.Game.Graphics.UserInterface
         public const float HEIGHT = 50;
         public const float CORNER_RADIUS = 7;
         public const float BORDER_THICKNESS = 2;
+
+        public FontUsage Font
+        {
+            get => text.Font;
+            set => text.Font = value;
+        }
 
         public LocalisableString Text
         {
@@ -74,6 +81,7 @@ namespace osu.Game.Graphics.UserInterface
 
         private readonly Container backgroundLayer;
         private readonly Box flashLayer;
+        private bool hasGradientBorder = true;
 
         /// <summary>
         /// Creates a new <see cref="ShearedToggleButton"/>
@@ -202,12 +210,26 @@ namespace osu.Game.Graphics.UserInterface
             }
 
             background.FadeColour(colourDark, 150, Easing.OutQuint);
-            backgroundLayer.TransformTo(nameof(BorderColour), ColourInfo.GradientVertical(colourDark, colourLight), 150, Easing.OutQuint);
+
+            if (hasGradientBorder)
+                backgroundLayer.TransformTo(nameof(BorderColour), ColourInfo.GradientVertical(colourDark, colourLight), 150, Easing.OutQuint);
+            else
+                backgroundLayer.BorderColour = colourLight;
 
             if (!Enabled.Value)
                 colourText = colourText.Opacity(0.6f);
 
             text.FadeColour(colourText, 150, Easing.OutQuint);
+        }
+
+        public bool HasGradientBorder
+        {
+            get => hasGradientBorder;
+            set
+            {
+                hasGradientBorder = value;
+                Schedule(updateState);
+            }
         }
     }
 }

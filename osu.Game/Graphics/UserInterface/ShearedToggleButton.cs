@@ -52,7 +52,9 @@ namespace osu.Game.Graphics.UserInterface
 
         protected override void LoadComplete()
         {
-            Active.BindDisabledChanged(disabled => Action = disabled ? null : Active.Toggle, true);
+            Action ??= () => Active.Toggle();
+
+            Active.BindDisabledChanged(disabled => Enabled.Value = !disabled, true);
             Active.BindValueChanged(_ =>
             {
                 UpdateActiveState();

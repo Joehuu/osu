@@ -89,9 +89,6 @@ namespace osu.Game.Screens.Select
         {
             switch (type)
             {
-                case TabType.Details:
-                    return new BeatmapDetailAreaDetailTabItem();
-
                 case TabType.Local:
                     return new BeatmapDetailAreaLeaderboardTabItem<BeatmapLeaderboardScope>(BeatmapLeaderboardScope.Local);
 
@@ -113,9 +110,6 @@ namespace osu.Game.Screens.Select
         {
             switch (item)
             {
-                case BeatmapDetailAreaDetailTabItem:
-                    return TabType.Details;
-
                 case BeatmapDetailAreaLeaderboardTabItem<BeatmapLeaderboardScope> leaderboardTab:
                     switch (leaderboardTab.Scope)
                     {
@@ -142,10 +136,9 @@ namespace osu.Game.Screens.Select
 
         public enum TabType
         {
-            Details,
             Local,
-            Country,
             Global,
+            Country,
             Friends
         }
     }

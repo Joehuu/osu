@@ -39,13 +39,11 @@ namespace osu.Game.Overlays.BeatmapSet
 
         public bool DownloadButtonsVisible => downloadButtonsContainer.Any();
 
-        public readonly Details Details;
         public readonly BeatmapPicker Picker;
 
         private readonly UpdateableOnlineBeatmapSetCover cover;
         private readonly Box coverGradient;
         private readonly LinkFlowContainer title, artist;
-        private readonly AuthorInfo author;
 
         private ExternalLinkButton externalLink;
 
@@ -129,12 +127,6 @@ namespace osu.Game.Overlays.BeatmapSet
                                     {
                                         Margin = new MarginPadding { Bottom = 20 },
                                     },
-                                    new Container
-                                    {
-                                        RelativeSizeAxes = Axes.X,
-                                        AutoSizeAxes = Axes.Y,
-                                        Child = author = new AuthorInfo(),
-                                    },
                                     beatmapAvailability = new BeatmapAvailability(),
                                     new Container
                                     {
@@ -183,7 +175,6 @@ namespace osu.Game.Overlays.BeatmapSet
                                 TextSize = 14,
                                 TextPadding = new MarginPadding { Horizontal = 35, Vertical = 10 }
                             },
-                            Details = new Details(),
                         },
                     },
                 }
@@ -191,7 +182,6 @@ namespace osu.Game.Overlays.BeatmapSet
 
             Picker.Beatmap.ValueChanged += b =>
             {
-                Details.BeatmapInfo = b.NewValue;
                 updateExternalLink();
 
                 onlineStatusPill.Status = b.NewValue?.Status ?? BeatmapOnlineStatus.None;
@@ -210,7 +200,7 @@ namespace osu.Game.Overlays.BeatmapSet
 
             BeatmapSet.BindValueChanged(setInfo =>
             {
-                Picker.BeatmapSet = rulesetSelector.BeatmapSet = author.BeatmapSet = beatmapAvailability.BeatmapSet = Details.BeatmapSet = setInfo.NewValue;
+                Picker.BeatmapSet = rulesetSelector.BeatmapSet = beatmapAvailability.BeatmapSet = setInfo.NewValue;
                 cover.OnlineInfo = setInfo.NewValue;
 
                 downloadTracker?.RemoveAndDisposeImmediately();

@@ -10,10 +10,10 @@ using osu.Framework.Graphics.Shapes;
 
 namespace osu.Game.Graphics.UserInterface
 {
-    public partial class Bar : Container, IHasAccentColour
+    public partial class Bar : CompositeDrawable, IHasAccentColour
     {
-        private readonly Box background;
-        private readonly Box bar;
+        private readonly Container background;
+        private readonly Container bar;
 
         private const int resize_duration = 250;
 
@@ -22,14 +22,56 @@ namespace osu.Game.Graphics.UserInterface
         private float length;
 
         /// <summary>
-        /// Length of the bar, ranges from 0 to 1
+        /// Length of the bar, ranging from <see cref="MinLength"/> to <see cref="MaxLength"/>.
         /// </summary>
         public float Length
         {
             get => length;
             set
             {
-                length = Math.Clamp(value, 0, 1);
+                if (value == length)
+                    return;
+
+                length = value;
+
+                updateBarLength();
+            }
+        }
+
+        private float minLength;
+
+        /// <summary>
+        /// Minimum length of the bar.
+        /// </summary>
+        public float MinLength
+        {
+            get => minLength;
+            set
+            {
+                if (value == minLength)
+                    return;
+
+                minLength = value;
+
+                updateBarLength();
+            }
+        }
+
+        private float maxLength = 1f;
+
+        /// <summary>
+        /// Maximum length of the bar.
+        /// </summary>
+        public float MaxLength
+        {
+            get => maxLength;
+            set
+            {
+                if (value == maxLength)
+                    return;
+
+                maxLength = value;
+
                 updateBarLength();
             }
         }
@@ -53,43 +95,82 @@ namespace osu.Game.Graphics.UserInterface
             get => direction;
             set
             {
+                if (value == direction)
+                    return;
+
                 direction = value;
-                updateBarLength();
+
+                updateBarDirection();
+            }
+        }
+
+        public new MarginPadding Padding
+        {
+            get => base.Padding;
+            set => base.Padding = value;
+        }
+
+        /// <summary>
+        /// Sets the background and bar's corner radius. Also implicitly turns on masking if the value is not zero.
+        /// </summary>
+        public new float CornerRadius
+        {
+            get => bar.CornerRadius;
+            set
+            {
+                background.Masking = value != 0;
+                background.CornerRadius = value;
+
+                bar.Masking = value != 0;
+                bar.CornerRadius = value;
             }
         }
 
         public Bar()
         {
-            Children = new[]
+            InternalChildren = new Drawable[]
             {
-                background = new Box
+                background = new Container
                 {
                     RelativeSizeAxes = Axes.Both,
-                    Colour = new Color4(0, 0, 0, 0)
+                    Colour = new Color4(0, 0, 0, 0),
+                    Child = CreateBackground().With(d => d.RelativeSizeAxes = Axes.Both),
                 },
-                bar = new Box
+                bar = new Container
                 {
                     RelativeSizeAxes = Axes.Both,
                     Width = 0,
+                    Child = CreateBar().With(d => d.RelativeSizeAxes = Axes.Both),
                 },
             };
         }
 
+        /// <summary>
+        /// Updates the bar display with the current length and its ranges.
+        /// </summary>
         private void updateBarLength()
         {
+            float drawLength = Math.Clamp((length - minLength) / (maxLength - minLength), 0f, 1f);
+
             switch (direction)
             {
                 case BarDirection.LeftToRight:
                 case BarDirection.RightToLeft:
-                    bar.ResizeTo(new Vector2(length, 1), resize_duration, easing);
+                    bar.ResizeTo(new Vector2(drawLength, 1), resize_duration, easing);
                     break;
 
                 case BarDirection.TopToBottom:
                 case BarDirection.BottomToTop:
-                    bar.ResizeTo(new Vector2(1, length), resize_duration, easing);
+                    bar.ResizeTo(new Vector2(1, drawLength), resize_duration, easing);
                     break;
             }
+        }
 
+        /// <summary>
+        /// Updates the bar with the new direction and refreshes the displayed length.
+        /// </summary>
+        private void updateBarDirection()
+        {
             switch (direction)
             {
                 case BarDirection.LeftToRight:
@@ -104,14 +185,36 @@ namespace osu.Game.Graphics.UserInterface
                     bar.Origin = Anchor.BottomRight;
                     break;
             }
+
+            switch (direction)
+            {
+                case BarDirection.LeftToRight:
+                case BarDirection.RightToLeft:
+                    bar.Size = new Vector2((0 - minLength) / (maxLength - minLength), 1);
+                    break;
+
+                case BarDirection.TopToBottom:
+                case BarDirection.BottomToTop:
+                    bar.Size = new Vector2(1, (0 - minLength) / (maxLength - minLength));
+                    break;
+            }
+
+            updateBarLength();
         }
+
+        protected virtual Drawable CreateBackground() => new Box();
+        protected virtual Drawable CreateBar() => new Box();
     }
 
+    [Flags]
     public enum BarDirection
     {
-        LeftToRight,
-        RightToLeft,
-        TopToBottom,
-        BottomToTop
+        LeftToRight = 1,
+        RightToLeft = 1 << 1,
+        TopToBottom = 1 << 2,
+        BottomToTop = 1 << 3,
+
+        Vertical = TopToBottom | BottomToTop,
+        Horizontal = LeftToRight | RightToLeft,
     }
 }

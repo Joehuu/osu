@@ -11,6 +11,7 @@ using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Testing;
 using osu.Game.Beatmaps;
+using osu.Game.Overlays;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Objects;
 using osu.Game.Rulesets.Objects.Legacy;
@@ -20,9 +21,11 @@ using osuTK;
 
 namespace osu.Game.Tests.Visual.SongSelect
 {
-    [TestFixture]
     public partial class TestSceneBeatmapInfoWedgeV2 : OsuTestScene
     {
+        [Cached]
+        private readonly OverlayColourProvider colourProvider = new OverlayColourProvider(OverlayColourScheme.Aquamarine);
+
         private RulesetStore rulesets = null!;
         private TestBeatmapInfoWedgeV2 infoWedge = null!;
         private readonly List<IBeatmap> beatmaps = new List<IBeatmap>();
@@ -37,34 +40,32 @@ namespace osu.Game.Tests.Visual.SongSelect
         {
             base.LoadComplete();
 
-            AddRange(new Drawable[]
+            Add(new Container
             {
-                // This exists only to make the wedge more visible in the test scene
-                new Box
+                RelativeSizeAxes = Axes.Both,
+                Padding = new MarginPadding { Top = 20 },
+                Child = infoWedge = new TestBeatmapInfoWedgeV2
                 {
-                    Y = -20,
-                    Colour = Colour4.Cornsilk.Darken(0.2f),
-                    Height = BeatmapInfoWedgeV2.WEDGE_HEIGHT + 40,
-                    Width = 0.65f,
                     RelativeSizeAxes = Axes.X,
-                    Margin = new MarginPadding { Top = 20, Left = -10 }
                 },
-                new Container
-                {
-                    RelativeSizeAxes = Axes.Both,
-                    Padding = new MarginPadding { Top = 20 },
-                    Child = infoWedge = new TestBeatmapInfoWedgeV2
-                    {
-                        Width = 0.6f,
-                        RelativeSizeAxes = Axes.X,
-                    },
-                }
             });
 
             AddSliderStep("change star difficulty", 0, 11.9, 5.55, v =>
             {
                 foreach (var hasCurrentValue in infoWedge.ChildrenOfType<IHasCurrentValue<StarDifficulty>>())
                     hasCurrentValue.Current.Value = new StarDifficulty(v, 0);
+            });
+
+            AddSliderStep("change relative width", 0, 1f, 0.6f, v =>
+            {
+                if (infoWedge != null)
+                    infoWedge.Width = v;
+            });
+
+            AddToggleStep("toggle expanded state", _ =>
+            {
+                if (infoWedge != null)
+                    infoWedge.ShowDetails.Toggle();
             });
         }
 
@@ -151,7 +152,7 @@ namespace osu.Game.Tests.Visual.SongSelect
             AddStep($"select {b?.Metadata.Title ?? "null"} beatmap", () =>
             {
                 containerBefore = infoWedge.DisplayedContent;
-                infoWedge.Beatmap = Beatmap.Value = b == null ? Beatmap.Default : CreateWorkingBeatmap(b);
+                Beatmap.Value = b == null ? Beatmap.Default : CreateWorkingBeatmap(b);
                 infoWedge.Show();
             });
 
