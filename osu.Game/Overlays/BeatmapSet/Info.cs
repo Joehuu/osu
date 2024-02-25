@@ -12,6 +12,7 @@ using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Overlays.BeatmapListing;
+using osu.Game.Overlays.BeatmapSetV2;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
@@ -36,7 +37,7 @@ namespace osu.Game.Overlays.BeatmapSet
         public Info()
         {
             MetadataSectionNominators nominators;
-            MetadataSection source, tags;
+            MetadataSectionV2 source, tags;
             MetadataSectionGenre genre;
             MetadataSectionLanguage language;
             OsuSpriteText notRankedPlaceholder;

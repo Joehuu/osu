@@ -3,10 +3,11 @@
 
 using System;
 using osu.Game.Graphics.Containers;
+using osu.Game.Overlays.BeatmapSetV2;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
-    public partial class MetadataSectionDescription : MetadataSection
+    public partial class MetadataSectionDescription : MetadataSectionV2
     {
         public MetadataSectionDescription(Action<string>? searchAction = null)
             : base(MetadataType.Description, searchAction)

@@ -32,6 +32,8 @@ namespace osu.Game.Screens.OnlinePlay
 
         public override bool AllowEditing => false;
 
+        public override bool ShowHeader => false; // handled by main screen
+
         [Resolved(typeof(Room), nameof(Room.Playlist))]
         protected BindableList<PlaylistItem> Playlist { get; private set; } = null!;
 
@@ -74,7 +76,6 @@ namespace osu.Game.Screens.OnlinePlay
         [BackgroundDependencyLoader]
         private void load()
         {
-            LeftArea.Padding = new MarginPadding { Top = Header.HEIGHT };
             LoadComponent(freeModSelectOverlay);
         }
 

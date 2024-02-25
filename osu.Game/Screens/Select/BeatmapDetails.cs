@@ -15,6 +15,7 @@ using osu.Game.Online;
 using osu.Game.Online.API;
 using osu.Game.Online.API.Requests;
 using osu.Game.Overlays.BeatmapSet;
+using osu.Game.Overlays.BeatmapSetV2;
 using osu.Game.Resources.Localisation.Web;
 using osu.Game.Screens.Select.Details;
 using osuTK;
@@ -27,7 +28,7 @@ namespace osu.Game.Screens.Select
         private const float transition_duration = 250;
 
         private readonly UserRatings ratingsDisplay;
-        private readonly MetadataSection description, source, tags;
+        private readonly MetadataSectionV2 description, source, tags;
         private readonly Container failRetryContainer;
         private readonly FailRetryGraph failRetryGraph;
         private readonly LoadingLayer loading;

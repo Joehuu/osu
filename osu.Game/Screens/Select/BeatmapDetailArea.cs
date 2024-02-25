@@ -3,7 +3,6 @@
 
 #nullable disable
 
-using System;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
@@ -15,20 +14,7 @@ namespace osu.Game.Screens.Select
     {
         private const float details_padding = 10;
 
-        private WorkingBeatmap beatmap;
-
-        public virtual WorkingBeatmap Beatmap
-        {
-            get => beatmap;
-            set
-            {
-                beatmap = value;
-
-                Details.BeatmapInfo = value?.BeatmapInfo;
-            }
-        }
-
-        public readonly BeatmapDetails Details;
+        public virtual WorkingBeatmap Beatmap { get; set; }
 
         protected Bindable<BeatmapDetailAreaTabItem> CurrentTab => tabControl.Current;
 
@@ -47,12 +33,6 @@ namespace osu.Game.Screens.Select
                 {
                     RelativeSizeAxes = Axes.Both,
                     Padding = new MarginPadding { Top = BeatmapDetailAreaTabControl.HEIGHT },
-                    Child = Details = new BeatmapDetails
-                    {
-                        RelativeSizeAxes = Axes.X,
-                        Alpha = 0,
-                        Margin = new MarginPadding { Top = details_padding },
-                    }
                 },
                 tabControl = new BeatmapDetailAreaTabControl
                 {
@@ -70,13 +50,6 @@ namespace osu.Game.Screens.Select
         {
         }
 
-        protected override void UpdateAfterChildren()
-        {
-            base.UpdateAfterChildren();
-
-            Details.Height = Math.Min(DrawHeight - details_padding * 3 - BeatmapDetailAreaTabControl.HEIGHT, 450);
-        }
-
         /// <summary>
         /// Invoked when a new tab is selected.
         /// </summary>
@@ -84,16 +57,6 @@ namespace osu.Game.Screens.Select
         /// <param name="selectedMods">Whether the currently-selected mods should be considered.</param>
         protected virtual void OnTabChanged(BeatmapDetailAreaTabItem tab, bool selectedMods)
         {
-            switch (tab)
-            {
-                case BeatmapDetailAreaDetailTabItem:
-                    Details.Show();
-                    break;
-
-                default:
-                    Details.Hide();
-                    break;
-            }
         }
 
         /// <summary>
@@ -102,7 +65,6 @@ namespace osu.Game.Screens.Select
         /// <returns>The tabs.</returns>
         protected virtual BeatmapDetailAreaTabItem[] CreateTabItems() => new BeatmapDetailAreaTabItem[]
         {
-            new BeatmapDetailAreaDetailTabItem(),
         };
     }
 }

@@ -1,6 +1,7 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -30,7 +31,10 @@ namespace osu.Game.Screens.Play.HUD
                 int[] values = new int[display_granularity];
 
                 if (!objects.Any())
+                {
+                    Values = Array.Empty<int>();
                     return;
+                }
 
                 (double firstHit, double lastHit) = BeatmapExtensions.CalculatePlayableBounds(objects);
 

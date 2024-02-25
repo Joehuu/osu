@@ -976,7 +976,7 @@ namespace osu.Game.Tests.Visual.Navigation
             });
             AddStep("touch beatmap wedge", () =>
             {
-                var wedge = Game.ChildrenOfType<BeatmapInfoWedge>().Single();
+                var wedge = Game.ChildrenOfType<BeatmapInfoWedgeV2>().Single();
                 var touch = new Touch(TouchSource.Touch2, wedge.ScreenSpaceDrawQuad.Centre);
                 InputManager.BeginTouch(touch);
                 InputManager.EndTouch(touch);
@@ -992,7 +992,7 @@ namespace osu.Game.Tests.Visual.Navigation
             AddUntilStep("touch device mod not activated", () => Game.SelectedMods.Value, () => Has.None.InstanceOf<ModTouchDevice>());
             AddStep("touch beatmap wedge", () =>
             {
-                var wedge = Game.ChildrenOfType<BeatmapInfoWedge>().Single();
+                var wedge = Game.ChildrenOfType<BeatmapInfoWedgeV2>().Single();
                 var touch = new Touch(TouchSource.Touch2, wedge.ScreenSpaceDrawQuad.Centre);
                 InputManager.BeginTouch(touch);
                 InputManager.EndTouch(touch);
@@ -1009,7 +1009,7 @@ namespace osu.Game.Tests.Visual.Navigation
 
             AddStep("click beatmap wedge", () =>
             {
-                InputManager.MoveMouseTo(Game.ChildrenOfType<BeatmapInfoWedge>().Single());
+                InputManager.MoveMouseTo(Game.ChildrenOfType<BeatmapInfoWedgeV2>().Single());
                 InputManager.Click(MouseButton.Left);
             });
             AddUntilStep("touch device mod not activated", () => Game.SelectedMods.Value, () => Has.None.InstanceOf<ModTouchDevice>());

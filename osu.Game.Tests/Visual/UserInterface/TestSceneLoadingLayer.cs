@@ -90,7 +90,7 @@ namespace osu.Game.Tests.Visual.UserInterface
 
         private partial class TestLoadingLayer : LoadingLayer
         {
-            public new Box BackgroundDimLayer => base.BackgroundDimLayer;
+            public new Container BackgroundDimLayer => base.BackgroundDimLayer;
 
             public TestLoadingLayer(bool dimBackground = false, bool withBox = true)
                 : base(dimBackground, withBox)

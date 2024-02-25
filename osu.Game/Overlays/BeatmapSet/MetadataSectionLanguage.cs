@@ -7,10 +7,11 @@ using osu.Game.Beatmaps;
 using osu.Game.Graphics.Containers;
 using osu.Game.Online.Chat;
 using osu.Game.Overlays.BeatmapListing;
+using osu.Game.Overlays.BeatmapSetV2;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
-    public partial class MetadataSectionLanguage : MetadataSection<BeatmapSetOnlineLanguage>
+    public partial class MetadataSectionLanguage : MetadataSectionV2<BeatmapSetOnlineLanguage>
     {
         public MetadataSectionLanguage(Action<BeatmapSetOnlineLanguage>? searchAction = null)
             : base(MetadataType.Language, searchAction)

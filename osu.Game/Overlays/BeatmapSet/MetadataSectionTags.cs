@@ -2,16 +2,23 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
+using osu.Framework.Graphics;
 using osu.Game.Graphics.Containers;
 using osu.Game.Online.Chat;
+using osu.Game.Overlays.BeatmapSetV2;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
-    public partial class MetadataSectionTags : MetadataSection
+    public partial class MetadataSectionTags : MetadataSectionV2
     {
         public MetadataSectionTags(Action<string>? searchAction = null)
             : base(MetadataType.Tags, searchAction)
         {
+            // TODO: temporary until there is text/link flow truncation support
+            // only show two rows of tags for now to prevent overflowing
+            AutoSizeAxes = Axes.None;
+            Height = 24;
+            Masking = true;
         }
 
         protected override void AddMetadata(string metadata, LinkFlowContainer loaded)
