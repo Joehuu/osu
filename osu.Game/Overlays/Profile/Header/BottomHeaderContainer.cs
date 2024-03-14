@@ -11,10 +11,12 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Localisation;
+using osu.Framework.Platform;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
 using osu.Game.Online.API;
 using osu.Game.Online.API.Requests.Responses;
+using osu.Game.Overlays.OSD;
 using osu.Game.Resources.Localisation.Web;
 using osuTK;
 using osuTK.Graphics;
@@ -32,6 +34,12 @@ namespace osu.Game.Overlays.Profile.Header
 
         [Resolved]
         private IAPIProvider api { get; set; } = null!;
+
+        [Resolved]
+        private Clipboard clipboard { get; set; } = null!;
+
+        [Resolved]
+        private OnScreenDisplay? onScreenDisplay { get; set; }
 
         public BottomHeaderContainer()
         {
@@ -166,7 +174,7 @@ namespace osu.Game.Overlays.Profile.Header
 
         private void addSpacer(OsuTextFlowContainer textFlow) => textFlow.AddArbitraryDrawable(new Container { Width = 15 });
 
-        private bool tryAddInfo(IconUsage icon, string content, string? link = null)
+        private bool tryAddInfo(IconUsage icon, string content, string? link = null, Action? action = null, LocalisableString? tooltipText = null)
         {
             if (string.IsNullOrEmpty(content)) return false;
 
@@ -181,6 +189,8 @@ namespace osu.Game.Overlays.Profile.Header
 
             if (link != null)
                 bottomLinkContainer.AddLink(" " + content, link, creationParameters: embolden);
+            else if (action != null)
+                bottomLinkContainer.AddLink(" " + content, action, tooltipText, embolden);
             else
                 bottomLinkContainer.AddText(" " + content, embolden);
 
