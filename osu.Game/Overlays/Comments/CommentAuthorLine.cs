@@ -45,7 +45,7 @@ namespace osu.Game.Overlays.Comments
             }.With(username =>
             {
                 if (comment.UserId.HasValue)
-                    username.AddUserLink(comment.User);
+                    username.AddUserLink(comment.User!);
                 else
                     username.AddText(comment.LegacyName!);
             }));
