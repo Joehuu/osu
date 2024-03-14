@@ -98,7 +98,7 @@ namespace osu.Game.Graphics.UserInterface
             if (Link != null)
             {
                 clipboard.SetText(Link);
-                onScreenDisplay?.Display(new CopyUrlToast());
+                onScreenDisplay?.Display(new CopiedToClipboardToast());
             }
         }
     }
