@@ -33,6 +33,9 @@ namespace osu.Game.Overlays.Profile.Header
         [Resolved]
         private IAPIProvider api { get; set; } = null!;
 
+        [Resolved]
+        private OsuGame? game { get; set; }
+
         public BottomHeaderContainer()
         {
             AutoSizeAxes = Axes.Y;
@@ -153,7 +156,7 @@ namespace osu.Game.Overlays.Profile.Header
 
             if (!string.IsNullOrEmpty(user.Twitter))
                 anyInfoAdded |= tryAddInfo(FontAwesome.Brands.Twitter, "@" + user.Twitter, $@"https://twitter.com/{user.Twitter}");
-            anyInfoAdded |= tryAddInfo(FontAwesome.Brands.Discord, user.Discord);
+            anyInfoAdded |= tryAddInfoAction(FontAwesome.Brands.Discord, user.Discord, () => game?.CopyToClipboard(user.Discord), CommonStrings.ButtonsClickToCopy);
             anyInfoAdded |= tryAddInfo(FontAwesome.Solid.Link, websiteWithoutProtocol, user.Website);
 
             // If no information was added to the bottomLinkContainer, hide it to avoid unwanted padding
@@ -169,11 +172,7 @@ namespace osu.Game.Overlays.Profile.Header
             // newlines could be contained in API returned user content.
             content = content.Replace('\n', ' ');
 
-            bottomLinkContainer.AddIcon(icon, text =>
-            {
-                text.Font = text.Font.With(icon.Family, 10, icon.Weight);
-                text.Colour = iconColour;
-            });
+            addIcon(icon);
 
             if (link != null)
                 bottomLinkContainer.AddLink(" " + content, link, creationParameters: embolden);
@@ -182,6 +181,30 @@ namespace osu.Game.Overlays.Profile.Header
 
             addSpacer(bottomLinkContainer);
             return true;
+        }
+
+        private bool tryAddInfoAction(IconUsage icon, string content, Action action, LocalisableString tooltipText)
+        {
+            if (string.IsNullOrEmpty(content)) return false;
+
+            // newlines could be contained in API returned user content.
+            content = content.Replace('\n', ' ');
+
+            addIcon(icon);
+
+            bottomLinkContainer.AddLink(" " + content, action, tooltipText, embolden);
+
+            addSpacer(bottomLinkContainer);
+            return true;
+        }
+
+        private void addIcon(IconUsage icon)
+        {
+            bottomLinkContainer.AddIcon(icon, text =>
+            {
+                text.Font = text.Font.With(icon.Family, 10, icon.Weight);
+                text.Colour = iconColour;
+            });
         }
 
         private void embolden(SpriteText text) => text.Font = text.Font.With(weight: FontWeight.Bold);
