@@ -1,8 +1,6 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-#nullable disable
-
 using osu.Game.Online.Chat;
 using System;
 using System.Linq;
@@ -22,18 +20,18 @@ namespace osu.Game.Graphics.Containers
 {
     public partial class LinkFlowContainer : OsuTextFlowContainer
     {
-        public LinkFlowContainer(Action<SpriteText> defaultCreationParameters = null)
+        public LinkFlowContainer(Action<SpriteText>? defaultCreationParameters = null)
             : base(defaultCreationParameters)
         {
         }
 
-        [Resolved(CanBeNull = true)]
-        private ILinkHandler linkHandler { get; set; }
+        [Resolved]
+        private ILinkHandler? linkHandler { get; set; }
 
         [Resolved]
-        private GameHost host { get; set; }
+        private GameHost host { get; set; } = null!;
 
-        public void AddLinks(string text, List<Link> links)
+        public void AddLinks(string text, List<Link>? links)
         {
             if (string.IsNullOrEmpty(text) || links == null)
                 return;
@@ -59,7 +57,7 @@ namespace osu.Game.Graphics.Containers
                 AddText(text[previousLinkEnd..link.Index]);
 
                 object linkArgument = link.Argument;
-                string tooltip = displayText == link.Url ? null : link.Url;
+                string tooltip = displayText == link.Url ? string.Empty : link.Url;
 
                 AddLink(displayText, link.Action, linkArgument, tooltip);
                 previousLinkEnd = link.Index + link.Length;
@@ -68,13 +66,13 @@ namespace osu.Game.Graphics.Containers
             AddText(text.Substring(previousLinkEnd));
         }
 
-        public void AddLink(LocalisableString text, string url, Action<SpriteText> creationParameters = null) =>
+        public void AddLink(LocalisableString text, string url, Action<SpriteText>? creationParameters = null) =>
             createLink(CreateChunkFor(text, true, CreateSpriteText, creationParameters), new LinkDetails(LinkAction.External, url), url);
 
-        public void AddLink(LocalisableString text, Action action, LocalisableString? tooltipText = null, Action<SpriteText> creationParameters = null)
+        public void AddLink(LocalisableString text, Action action, LocalisableString? tooltipText = null, Action<SpriteText>? creationParameters = null)
             => createLink(CreateChunkFor(text, true, CreateSpriteText, creationParameters), new LinkDetails(LinkAction.Custom, string.Empty), tooltipText, action);
 
-        public void AddLink(LocalisableString text, LinkAction action, object argument, LocalisableString? tooltipText = null, Action<SpriteText> creationParameters = null)
+        public void AddLink(LocalisableString text, LinkAction action, object argument, LocalisableString? tooltipText = null, Action<SpriteText>? creationParameters = null)
             => createLink(CreateChunkFor(text, true, CreateSpriteText, creationParameters), new LinkDetails(action, argument), tooltipText);
 
         public void AddLink(IEnumerable<SpriteText> text, LinkAction action, object linkArgument, LocalisableString? tooltipText = null)
@@ -82,10 +80,10 @@ namespace osu.Game.Graphics.Containers
             createLink(new TextPartManual(text), new LinkDetails(action, linkArgument), tooltipText);
         }
 
-        public void AddUserLink(IUser user, Action<SpriteText> creationParameters = null)
+        public void AddUserLink(IUser user, Action<SpriteText>? creationParameters = null)
             => createLink(CreateChunkFor(user.Username, true, CreateSpriteText, creationParameters), new LinkDetails(LinkAction.OpenUserProfile, user), ContextMenuStrings.ViewProfile);
 
-        private void createLink(ITextPart textPart, LinkDetails link, LocalisableString? tooltipText, Action action = null)
+        private void createLink(ITextPart textPart, LinkDetails link, LocalisableString? tooltipText, Action? action = null)
         {
             Action onClickAction = () =>
             {
