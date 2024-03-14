@@ -329,7 +329,7 @@ namespace osu.Game.Overlays.Comments
             if (WasDeleted)
                 makeDeleted();
 
-            actionsContainer.AddLink(CommonStrings.ButtonsPermalink, copyUrl);
+            actionsContainer.AddLink(CommonStrings.ButtonsPermalink, copyUrl, CommonStrings.ButtonsClickToCopy);
             actionsContainer.AddArbitraryDrawable(Empty().With(d => d.Width = 10));
             actionsContainer.AddLink(CommonStrings.ButtonsReply.ToLower(), toggleReply);
             actionsContainer.AddArbitraryDrawable(Empty().With(d => d.Width = 10));
