@@ -8,7 +8,6 @@ using osu.Framework.Graphics.Effects;
 using osuTK.Graphics;
 using osu.Framework.Graphics.Shapes;
 using osu.Game.Graphics.Containers;
-using osu.Game.Graphics.Cursor;
 using osu.Game.Overlays.Login;
 using osu.Game.Overlays.Settings;
 
@@ -43,7 +42,7 @@ namespace osu.Game.Overlays
         {
             Children = new Drawable[]
             {
-                new OsuContextMenuContainer
+                new Container
                 {
                     Width = 360,
                     AutoSizeAxes = Axes.Y,

@@ -15,7 +15,6 @@ using osu.Framework.Input.Events;
 using osu.Game.Extensions;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
-using osu.Game.Graphics.Cursor;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Online;
@@ -126,20 +125,16 @@ namespace osu.Game.Overlays
                 Origin = Anchor.TopCentre,
             };
 
-            Add(new OsuContextMenuContainer
+            Add(sectionsContainer = new ProfileSectionsContainer
             {
-                RelativeSizeAxes = Axes.Both,
-                Child = sectionsContainer = new ProfileSectionsContainer
+                ExpandableHeader = Header,
+                FixedHeader = tabs,
+                HeaderBackground = new Box
                 {
-                    ExpandableHeader = Header,
-                    FixedHeader = tabs,
-                    HeaderBackground = new Box
-                    {
-                        // this is only visible as the ProfileTabControl background
-                        Colour = ColourProvider.Background5,
-                        RelativeSizeAxes = Axes.Both
-                    },
-                }
+                    // this is only visible as the ProfileTabControl background
+                    Colour = ColourProvider.Background5,
+                    RelativeSizeAxes = Axes.Both
+                },
             });
 
             sectionsContainer.SelectedSection.ValueChanged += section =>

@@ -22,7 +22,6 @@ using osu.Game.Beatmaps;
 using osu.Game.Configuration;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
-using osu.Game.Graphics.Cursor;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Input.Bindings;
 using osu.Game.Localisation;
@@ -204,38 +203,34 @@ namespace osu.Game.Overlays.Mods
                         Width = 300
                     }
                 },
-                new OsuContextMenuContainer
+                new PopoverContainer
                 {
-                    RelativeSizeAxes = Axes.Both,
-                    Child = new PopoverContainer
+                    Padding = new MarginPadding
                     {
-                        Padding = new MarginPadding
+                        Top = RankingInformationDisplay.HEIGHT + PADDING,
+                        Bottom = PADDING
+                    },
+                    RelativeSizeAxes = Axes.Both,
+                    RelativePositionAxes = Axes.Both,
+                    Children = new Drawable[]
+                    {
+                        columnScroll = new ColumnScrollContainer
                         {
-                            Top = RankingInformationDisplay.HEIGHT + PADDING,
-                            Bottom = PADDING
-                        },
-                        RelativeSizeAxes = Axes.Both,
-                        RelativePositionAxes = Axes.Both,
-                        Children = new Drawable[]
-                        {
-                            columnScroll = new ColumnScrollContainer
+                            RelativeSizeAxes = Axes.Both,
+                            Masking = false,
+                            ClampExtension = 100,
+                            ScrollbarOverlapsContent = false,
+                            Child = columnFlow = new ColumnFlowContainer
                             {
-                                RelativeSizeAxes = Axes.Both,
-                                Masking = false,
-                                ClampExtension = 100,
-                                ScrollbarOverlapsContent = false,
-                                Child = columnFlow = new ColumnFlowContainer
-                                {
-                                    Anchor = Anchor.BottomLeft,
-                                    Origin = Anchor.BottomLeft,
-                                    Direction = FillDirection.Horizontal,
-                                    Shear = new Vector2(SHEAR, 0),
-                                    RelativeSizeAxes = Axes.Y,
-                                    AutoSizeAxes = Axes.X,
-                                    Margin = new MarginPadding { Horizontal = 70 },
-                                    Padding = new MarginPadding { Bottom = 10 },
-                                    ChildrenEnumerable = createColumns()
-                                }
+                                Anchor = Anchor.BottomLeft,
+                                Origin = Anchor.BottomLeft,
+                                Direction = FillDirection.Horizontal,
+                                Shear = new Vector2(SHEAR, 0),
+                                RelativeSizeAxes = Axes.Y,
+                                AutoSizeAxes = Axes.X,
+                                Margin = new MarginPadding { Horizontal = 70 },
+                                Padding = new MarginPadding { Bottom = 10 },
+                                ChildrenEnumerable = createColumns()
                             }
                         }
                     }

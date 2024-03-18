@@ -11,7 +11,6 @@ using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
-using osu.Game.Graphics.Cursor;
 using osu.Game.Online.Chat;
 using osuTK.Graphics;
 
@@ -48,7 +47,7 @@ namespace osu.Game.Overlays.Chat
         [BackgroundDependencyLoader]
         private void load()
         {
-            Child = new OsuContextMenuContainer
+            Child = new Container
             {
                 RelativeSizeAxes = Axes.Both,
                 Masking = true,

@@ -6,7 +6,6 @@ using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Cursor;
-using osu.Game.Graphics.Cursor;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Online;
 
@@ -39,31 +38,26 @@ namespace osu.Game.Overlays
                 {
                     RelativeSizeAxes = Axes.Both,
                     ScrollbarVisible = false,
-                    Child = new OsuContextMenuContainer
+                    Child = new PopoverContainer
                     {
                         RelativeSizeAxes = Axes.X,
                         AutoSizeAxes = Axes.Y,
-                        Child = new PopoverContainer
+                        Child = new FillFlowContainer
                         {
                             RelativeSizeAxes = Axes.X,
                             AutoSizeAxes = Axes.Y,
-                            Child = new FillFlowContainer
+                            Direction = FillDirection.Vertical,
+                            Children = new Drawable[]
                             {
-                                RelativeSizeAxes = Axes.X,
-                                AutoSizeAxes = Axes.Y,
-                                Direction = FillDirection.Vertical,
-                                Children = new Drawable[]
+                                Header.With(h => h.Depth = float.MinValue),
+                                content = new Container
                                 {
-                                    Header.With(h => h.Depth = float.MinValue),
-                                    content = new Container
-                                    {
-                                        RelativeSizeAxes = Axes.X,
-                                        AutoSizeAxes = Axes.Y
-                                    }
+                                    RelativeSizeAxes = Axes.X,
+                                    AutoSizeAxes = Axes.Y
                                 }
                             }
-                        },
-                    }
+                        }
+                    },
                 },
                 loadingContainer = new Container
                 {

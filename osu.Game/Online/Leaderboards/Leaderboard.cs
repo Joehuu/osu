@@ -15,7 +15,6 @@ using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Sprites;
 using osu.Game.Graphics.Containers;
-using osu.Game.Graphics.Cursor;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Online.API;
 using osu.Game.Online.Placeholders;
@@ -86,7 +85,7 @@ namespace osu.Game.Online.Leaderboards
         {
             InternalChildren = new Drawable[]
             {
-                new OsuContextMenuContainer
+                new Container
                 {
                     RelativeSizeAxes = Axes.Both,
                     Masking = true,

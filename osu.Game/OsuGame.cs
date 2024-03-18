@@ -39,6 +39,7 @@ using osu.Game.Database;
 using osu.Game.Extensions;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
+using osu.Game.Graphics.Cursor;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Input;
 using osu.Game.Input.Bindings;
@@ -947,49 +948,56 @@ namespace osu.Game
                     ActionRequested = action => volume.Adjust(action),
                     ScrollActionRequested = (action, amount, isPrecise) => volume.Adjust(action, amount, isPrecise),
                 },
-                ScreenOffsetContainer = new Container
+                new OsuContextMenuContainer
                 {
                     RelativeSizeAxes = Axes.Both,
                     Children = new Drawable[]
                     {
-                        ScreenContainer = new ScalingContainer(ScalingMode.ExcludeOverlays)
+                        ScreenOffsetContainer = new Container
                         {
                             RelativeSizeAxes = Axes.Both,
-                            Anchor = Anchor.Centre,
-                            Origin = Anchor.Centre,
                             Children = new Drawable[]
                             {
-                                receptor = new BackButton.Receptor(),
-                                ScreenStack = new OsuScreenStack { RelativeSizeAxes = Axes.Both },
-                                BackButton = new BackButton(receptor)
+                                ScreenContainer = new ScalingContainer(ScalingMode.ExcludeOverlays)
                                 {
-                                    Anchor = Anchor.BottomLeft,
-                                    Origin = Anchor.BottomLeft,
-                                    Action = () =>
+                                    RelativeSizeAxes = Axes.Both,
+                                    Anchor = Anchor.Centre,
+                                    Origin = Anchor.Centre,
+                                    Children = new Drawable[]
                                     {
-                                        if (!(ScreenStack.CurrentScreen is IOsuScreen currentScreen))
-                                            return;
+                                        receptor = new BackButton.Receptor(),
+                                        ScreenStack = new OsuScreenStack { RelativeSizeAxes = Axes.Both },
+                                        BackButton = new BackButton(receptor)
+                                        {
+                                            Anchor = Anchor.BottomLeft,
+                                            Origin = Anchor.BottomLeft,
+                                            Action = () =>
+                                            {
+                                                if (!(ScreenStack.CurrentScreen is IOsuScreen currentScreen))
+                                                    return;
 
-                                        if (!((Drawable)currentScreen).IsLoaded || (currentScreen.AllowBackButton && !currentScreen.OnBackButton()))
-                                            ScreenStack.Exit();
+                                                if (!((Drawable)currentScreen).IsLoaded || (currentScreen.AllowBackButton && !currentScreen.OnBackButton()))
+                                                    ScreenStack.Exit();
+                                            }
+                                        },
+                                        logoContainer = new Container { RelativeSizeAxes = Axes.Both },
                                     }
                                 },
-                                logoContainer = new Container { RelativeSizeAxes = Axes.Both },
                             }
                         },
+                        overlayOffsetContainer = new Container
+                        {
+                            RelativeSizeAxes = Axes.Both,
+                            Children = new Drawable[]
+                            {
+                                overlayContent = new Container { RelativeSizeAxes = Axes.Both },
+                                leftFloatingOverlayContent = new Container { RelativeSizeAxes = Axes.Both },
+                                rightFloatingOverlayContent = new Container { RelativeSizeAxes = Axes.Both },
+                            }
+                        },
+                        topMostOverlayContent = new Container { RelativeSizeAxes = Axes.Both },
                     }
                 },
-                overlayOffsetContainer = new Container
-                {
-                    RelativeSizeAxes = Axes.Both,
-                    Children = new Drawable[]
-                    {
-                        overlayContent = new Container { RelativeSizeAxes = Axes.Both },
-                        leftFloatingOverlayContent = new Container { RelativeSizeAxes = Axes.Both },
-                        rightFloatingOverlayContent = new Container { RelativeSizeAxes = Axes.Both },
-                    }
-                },
-                topMostOverlayContent = new Container { RelativeSizeAxes = Axes.Both },
                 idleTracker,
                 new ConfineMouseTracker()
             });

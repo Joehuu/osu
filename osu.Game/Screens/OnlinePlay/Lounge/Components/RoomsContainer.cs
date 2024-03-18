@@ -15,7 +15,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Input.Bindings;
 using osu.Framework.Input.Events;
-using osu.Game.Graphics.Cursor;
 using osu.Game.Input.Bindings;
 using osu.Game.Online.Rooms;
 using osuTK;
@@ -46,17 +45,12 @@ namespace osu.Game.Screens.OnlinePlay.Lounge.Components
             // account for the fact we are in a scroll container and want a bit of spacing from the scroll bar.
             Padding = new MarginPadding { Right = 5 };
 
-            InternalChild = new OsuContextMenuContainer
+            InternalChild = roomFlow = new FillFlowContainer<DrawableLoungeRoom>
             {
                 RelativeSizeAxes = Axes.X,
                 AutoSizeAxes = Axes.Y,
-                Child = roomFlow = new FillFlowContainer<DrawableLoungeRoom>
-                {
-                    RelativeSizeAxes = Axes.X,
-                    AutoSizeAxes = Axes.Y,
-                    Direction = FillDirection.Vertical,
-                    Spacing = new Vector2(10),
-                }
+                Direction = FillDirection.Vertical,
+                Spacing = new Vector2(10),
             };
         }
 
