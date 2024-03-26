@@ -29,6 +29,31 @@ namespace osu.Game.Rulesets.Taiko.Skinning.Legacy
 
         public override Drawable? GetDrawableComponent(ISkinComponentLookup lookup)
         {
+            if (base.GetDrawableComponent(lookup) is Drawable c)
+                return c;
+
+            if (lookup is SkinComponentsContainerLookup containerLookup)
+            {
+                switch (containerLookup.Target)
+                {
+                    case SkinComponentsContainerLookup.TargetArea.MainHUDComponents:
+                        if (!IsProvidingLegacyResources) return null;
+
+                        return new DefaultSkinComponentsContainer(_ =>
+                        {
+                        })
+                        {
+                            Children = new Drawable[]
+                            {
+                                // TODO: remove once ruleset-specific combo counter is implemented, use HUD one for now
+                                new LegacyComboCounter(),
+                            }
+                        };
+                }
+
+                return null;
+            }
+
             if (lookup is GameplaySkinComponentLookup<HitResult>)
             {
                 // if a taiko skin is providing explosion sprites, hide the judgements completely

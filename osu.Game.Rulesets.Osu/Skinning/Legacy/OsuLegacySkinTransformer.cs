@@ -41,6 +41,30 @@ namespace osu.Game.Rulesets.Osu.Skinning.Legacy
 
         public override Drawable? GetDrawableComponent(ISkinComponentLookup lookup)
         {
+            if (base.GetDrawableComponent(lookup) is Drawable c)
+                return c;
+
+            if (lookup is SkinComponentsContainerLookup containerLookup)
+            {
+                switch (containerLookup.Target)
+                {
+                    case SkinComponentsContainerLookup.TargetArea.MainHUDComponents:
+                        if (!IsProvidingLegacyResources) return null;
+
+                        return new DefaultSkinComponentsContainer(_ =>
+                        {
+                        })
+                        {
+                            Children = new Drawable[]
+                            {
+                                new LegacyComboCounter(),
+                            }
+                        };
+                }
+
+                return null;
+            }
+
             if (lookup is OsuSkinComponentLookup osuComponent)
             {
                 switch (osuComponent.Component)

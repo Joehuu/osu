@@ -76,6 +76,31 @@ namespace osu.Game.Rulesets.Mania.Skinning.Legacy
 
         public override Drawable GetDrawableComponent(ISkinComponentLookup lookup)
         {
+            if (base.GetDrawableComponent(lookup) is Drawable c)
+                return c;
+
+            if (lookup is SkinComponentsContainerLookup containerLookup)
+            {
+                switch (containerLookup.Target)
+                {
+                    case SkinComponentsContainerLookup.TargetArea.MainHUDComponents:
+                        if (!IsProvidingLegacyResources) return null;
+
+                        return new DefaultSkinComponentsContainer(_ =>
+                        {
+                        })
+                        {
+                            Children = new Drawable[]
+                            {
+                                // TODO: remove once ruleset-specific combo counter is implemented, use HUD one for now
+                                new LegacyComboCounter(),
+                            }
+                        };
+                }
+
+                return null;
+            }
+
             switch (lookup)
             {
                 case GameplaySkinComponentLookup<HitResult> resultComponent:
