@@ -3,11 +3,13 @@
 
 using osu.Framework.Graphics;
 using osu.Game.Rulesets.Scoring;
+using osu.Game.Screens.Play.HUD;
 using osu.Game.Skinning;
+using osuTK;
 
 namespace osu.Game.Rulesets.Taiko.Skinning.Argon
 {
-    public class TaikoArgonSkinTransformer : SkinTransformer
+    public class TaikoArgonSkinTransformer : TaikoSkinTransformer
     {
         public TaikoArgonSkinTransformer(ISkin skin)
             : base(skin)
@@ -16,6 +18,30 @@ namespace osu.Game.Rulesets.Taiko.Skinning.Argon
 
         public override Drawable? GetDrawableComponent(ISkinComponentLookup component)
         {
+            if (component is SkinComponentsContainerLookup containerLookup)
+            {
+                switch (containerLookup.Target)
+                {
+                    case SkinComponentsContainerLookup.TargetArea.Playfield:
+                        return base.GetDrawableComponent(component).With(ct =>
+                        {
+                            var container = ct as DefaultSkinComponentsContainer;
+
+                            container?.Add(new ArgonComboCounter
+                            {
+                                Anchor = Anchor.CentreLeft,
+                                Origin = Anchor.Centre,
+                                Position = new Vector2(90, 0),
+                            });
+                        });
+                }
+
+                if (base.GetDrawableComponent(component) is Drawable c)
+                    return c;
+
+                return null;
+            }
+
             switch (component)
             {
                 case GameplaySkinComponentLookup<HitResult> resultComponent:

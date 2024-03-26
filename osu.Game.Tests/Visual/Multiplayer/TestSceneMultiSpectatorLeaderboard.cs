@@ -10,7 +10,6 @@ using osu.Framework.Graphics;
 using osu.Framework.Testing;
 using osu.Framework.Timing;
 using osu.Game.Online.API.Requests.Responses;
-using osu.Game.Online.Multiplayer;
 using osu.Game.Screens.OnlinePlay.Multiplayer.Spectate;
 using osu.Game.Screens.Play.HUD;
 
@@ -47,7 +46,7 @@ namespace osu.Game.Tests.Visual.Multiplayer
             {
                 Beatmap.Value = CreateWorkingBeatmap(Ruleset.Value);
 
-                LoadComponentAsync(leaderboard = new MultiSpectatorLeaderboard(clocks.Keys.Select(id => new MultiplayerRoomUser(id)).ToArray())
+                LoadComponentAsync(leaderboard = new MultiSpectatorLeaderboard
                 {
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,

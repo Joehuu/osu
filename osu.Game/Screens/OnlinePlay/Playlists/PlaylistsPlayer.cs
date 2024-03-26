@@ -14,6 +14,7 @@ using osu.Game.Online.Rooms;
 using osu.Game.Rulesets;
 using osu.Game.Scoring;
 using osu.Game.Screens.Play;
+using osu.Game.Screens.Play.HUD;
 using osu.Game.Screens.Ranking;
 using osu.Game.Users;
 
@@ -24,6 +25,7 @@ namespace osu.Game.Screens.OnlinePlay.Playlists
         public Action Exited;
 
         protected override UserActivity InitialActivity => new UserActivity.InPlaylistGame(Beatmap.Value.BeatmapInfo, Ruleset.Value);
+        public override GameplayLeaderboardType GameplayLeaderboardType => GameplayLeaderboardType.Solo;
 
         public PlaylistsPlayer(Room room, PlaylistItem playlistItem, PlayerConfiguration configuration = null)
             : base(room, playlistItem, configuration)

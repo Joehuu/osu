@@ -5,7 +5,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
@@ -35,11 +34,10 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer
 
         private readonly TaskCompletionSource<bool> resultsReady = new TaskCompletionSource<bool>();
 
+        [Cached]
         private readonly MultiplayerRoomUser[] users;
 
         private LoadingLayer loadingDisplay;
-
-        private MultiplayerGameplayLeaderboard multiplayerLeaderboard;
 
         /// <summary>
         /// Construct a multiplayer player.
@@ -77,24 +75,7 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer
             HUDOverlay.Add(loadingDisplay = new LoadingLayer(true) { Depth = float.MaxValue });
         }
 
-        protected override GameplayLeaderboard CreateGameplayLeaderboard() => multiplayerLeaderboard = new MultiplayerGameplayLeaderboard(users);
-
-        protected override void AddLeaderboardToHUD(GameplayLeaderboard leaderboard)
-        {
-            Debug.Assert(leaderboard == multiplayerLeaderboard);
-
-            HUDOverlay.LeaderboardFlow.Insert(0, leaderboard);
-
-            if (multiplayerLeaderboard.TeamScores.Count >= 2)
-            {
-                LoadComponentAsync(new GameplayMatchScoreDisplay
-                {
-                    Team1Score = { BindTarget = multiplayerLeaderboard.TeamScores.First().Value },
-                    Team2Score = { BindTarget = multiplayerLeaderboard.TeamScores.Last().Value },
-                    Expanded = { BindTarget = HUDOverlay.ShowHud },
-                }, scoreDisplay => HUDOverlay.LeaderboardFlow.Insert(1, scoreDisplay));
-            }
-        }
+        public override GameplayLeaderboardType GameplayLeaderboardType => GameplayLeaderboardType.Multiplayer;
 
         protected override void LoadAsyncComplete()
         {
@@ -198,15 +179,10 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer
         {
             Debug.Assert(Room.RoomID.Value != null);
 
-            return multiplayerLeaderboard.TeamScores.Count == 2
-                ? new MultiplayerTeamResultsScreen(score, Room.RoomID.Value.Value, PlaylistItem, multiplayerLeaderboard.TeamScores)
-                {
-                    ShowUserStatistics = true,
-                }
-                : new MultiplayerResultsScreen(score, Room.RoomID.Value.Value, PlaylistItem)
-                {
-                    ShowUserStatistics = true
-                };
+            return new MultiplayerResultsScreen(score, Room.RoomID.Value.Value, PlaylistItem)
+            {
+                ShowUserStatistics = true
+            };
         }
 
         protected override void Dispose(bool isDisposing)

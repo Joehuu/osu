@@ -27,7 +27,7 @@ namespace osu.Game.Tests.Visual.Multiplayer
 
         protected override MultiplayerGameplayLeaderboard CreateLeaderboard()
         {
-            return new TestLeaderboard(MultiplayerUsers.ToArray())
+            return new TestLeaderboard
             {
                 Anchor = Anchor.Centre,
                 Origin = Anchor.Centre,
@@ -48,11 +48,6 @@ namespace osu.Game.Tests.Visual.Multiplayer
         private partial class TestLeaderboard : MultiplayerGameplayLeaderboard
         {
             public Dictionary<int, IReadOnlyList<Mod>> UserMods => UserScores.ToDictionary(kvp => kvp.Key, kvp => kvp.Value.ScoreProcessor.Mods);
-
-            public TestLeaderboard(MultiplayerRoomUser[] users)
-                : base(users)
-            {
-            }
         }
     }
 }

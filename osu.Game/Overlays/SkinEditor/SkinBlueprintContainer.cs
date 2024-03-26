@@ -108,7 +108,7 @@ namespace osu.Game.Overlays.SkinEditor
 
         protected override void SelectAll()
         {
-            SelectedItems.AddRange(targetComponents.SelectMany(list => list).Except(SelectedItems).ToArray());
+            SelectedItems.AddRange(targetComponents.SelectMany(list => list).Where(c => c.IsEditable).Except(SelectedItems).ToArray());
         }
 
         /// <summary>

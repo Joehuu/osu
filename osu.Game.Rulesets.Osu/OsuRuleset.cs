@@ -27,6 +27,7 @@ using osu.Game.Rulesets.Osu.Mods;
 using osu.Game.Rulesets.Osu.Objects;
 using osu.Game.Rulesets.Osu.Replays;
 using osu.Game.Rulesets.Osu.Scoring;
+using osu.Game.Rulesets.Osu.Skinning;
 using osu.Game.Rulesets.Osu.Skinning.Argon;
 using osu.Game.Rulesets.Osu.Skinning.Default;
 using osu.Game.Rulesets.Osu.Skinning.Legacy;
@@ -260,7 +261,7 @@ namespace osu.Game.Rulesets.Osu
                     return new OsuTrianglesSkinTransformer(skin);
             }
 
-            return null;
+            return new OsuSkinTransformer(skin);
         }
 
         public int LegacyID => 0;

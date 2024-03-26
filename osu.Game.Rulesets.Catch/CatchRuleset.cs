@@ -210,7 +210,7 @@ namespace osu.Game.Rulesets.Catch
                     return new CatchArgonSkinTransformer(skin);
             }
 
-            return null;
+            return new CatchSkinTransformer(skin);
         }
 
         public override PerformanceCalculator CreatePerformanceCalculator() => new CatchPerformanceCalculator();

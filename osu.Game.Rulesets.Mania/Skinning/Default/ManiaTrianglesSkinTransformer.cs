@@ -10,7 +10,7 @@ using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.Mania.Skinning.Default
 {
-    public class ManiaTrianglesSkinTransformer : SkinTransformer
+    public class ManiaTrianglesSkinTransformer : ManiaSkinTransformer
     {
         private readonly ManiaBeatmap beatmap;
 

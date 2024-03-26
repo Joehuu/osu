@@ -463,6 +463,13 @@ namespace osu.Game.Overlays.SkinEditor
 
             foreach (var component in SelectedComponents.OfType<Drawable>())
                 settingsSidebar.Add(new SkinSettingsToolbox(component));
+
+            var targetContainer = getTarget(selectedTarget.Value);
+
+            if (targetContainer == null) return;
+
+            foreach (var component in targetContainer.Components.Where(c => !c.IsEditable).OfType<Drawable>())
+                settingsSidebar.Add(new SkinSettingsToolbox(component));
         }
 
         private IEnumerable<SkinComponentsContainer> availableTargets => targetScreen.ChildrenOfType<SkinComponentsContainer>();

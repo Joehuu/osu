@@ -127,7 +127,11 @@ namespace osu.Game.Screens.Play
                 InputCountController = new InputCountController(),
                 mainComponents = new HUDComponentsContainer { AlwaysPresent = true, },
                 drawableRuleset != null
-                    ? (rulesetComponents = new HUDComponentsContainer(drawableRuleset.Ruleset.RulesetInfo) { AlwaysPresent = true, })
+                    ? (rulesetComponents = new HUDComponentsContainer(drawableRuleset.Ruleset.RulesetInfo)
+                    {
+                        Name = @"Ruleset skinnable components",
+                        AlwaysPresent = true,
+                    })
                     : Empty(),
                 playfieldComponents = drawableRuleset != null
                     ? new SkinComponentsContainer(new SkinComponentsContainerLookup(SkinComponentsContainerLookup.TargetArea.Playfield, drawableRuleset.Ruleset.RulesetInfo)) { AlwaysPresent = true, }

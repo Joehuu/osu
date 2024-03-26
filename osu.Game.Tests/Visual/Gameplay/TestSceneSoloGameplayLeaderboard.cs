@@ -52,9 +52,8 @@ namespace osu.Game.Tests.Visual.Gameplay
                     Id = 2,
                 };
 
-                Child = leaderboard = new SoloGameplayLeaderboard(trackingUser)
+                Child = leaderboard = new SoloGameplayLeaderboard
                 {
-                    Scores = { BindTarget = scores },
                     Anchor = Anchor.Centre,
                     Origin = Anchor.Centre,
                     AlwaysVisible = { Value = false },

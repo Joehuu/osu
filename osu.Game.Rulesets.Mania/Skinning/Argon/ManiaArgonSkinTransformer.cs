@@ -12,7 +12,7 @@ using osuTK.Graphics;
 
 namespace osu.Game.Rulesets.Mania.Skinning.Argon
 {
-    public class ManiaArgonSkinTransformer : SkinTransformer
+    public class ManiaArgonSkinTransformer : ManiaSkinTransformer
     {
         private readonly ManiaBeatmap beatmap;
 

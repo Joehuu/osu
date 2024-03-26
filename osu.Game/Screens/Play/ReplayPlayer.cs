@@ -83,14 +83,10 @@ namespace osu.Game.Screens.Play
         // Don't re-import replay scores as they're already present in the database.
         protected override Task ImportScore(Score score) => Task.CompletedTask;
 
-        public readonly BindableList<ScoreInfo> LeaderboardScores = new BindableList<ScoreInfo>();
+        [Cached(typeof(IBindableList<ScoreInfo>))]
+        public readonly IBindableList<ScoreInfo> LeaderboardScores = new BindableList<ScoreInfo>();
 
-        protected override GameplayLeaderboard CreateGameplayLeaderboard() =>
-            new SoloGameplayLeaderboard(Score.ScoreInfo.User)
-            {
-                AlwaysVisible = { Value = true },
-                Scores = { BindTarget = LeaderboardScores }
-            };
+        public override GameplayLeaderboardType GameplayLeaderboardType => GameplayLeaderboardType.Solo;
 
         protected override ResultsScreen CreateResults(ScoreInfo score) => new SoloResultsScreen(score);
 

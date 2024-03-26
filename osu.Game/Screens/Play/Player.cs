@@ -871,27 +871,9 @@ namespace osu.Game.Screens.Play
         {
             HUDOverlay.HoldingForHUD.BindValueChanged(_ => updateLeaderboardExpandedState());
             LocalUserPlaying.BindValueChanged(_ => updateLeaderboardExpandedState(), true);
-
-            var gameplayLeaderboard = CreateGameplayLeaderboard();
-
-            if (gameplayLeaderboard != null)
-            {
-                LoadComponentAsync(gameplayLeaderboard, leaderboard =>
-                {
-                    if (!LoadedBeatmapSuccessfully)
-                        return;
-
-                    leaderboard.Expanded.BindTo(LeaderboardExpandedState);
-
-                    AddLeaderboardToHUD(leaderboard);
-                });
-            }
         }
 
-        [CanBeNull]
-        protected virtual GameplayLeaderboard CreateGameplayLeaderboard() => null;
-
-        protected virtual void AddLeaderboardToHUD(GameplayLeaderboard leaderboard) => HUDOverlay.LeaderboardFlow.Add(leaderboard);
+        public abstract GameplayLeaderboardType GameplayLeaderboardType { get; }
 
         private void updateLeaderboardExpandedState() =>
             LeaderboardExpandedState.Value = !LocalUserPlaying.Value || HUDOverlay.HoldingForHUD.Value;

@@ -11,7 +11,6 @@ using osu.Game.Rulesets.Scoring;
 using osu.Game.Scoring;
 using osu.Game.Scoring.Legacy;
 using osu.Game.Screens.Select;
-using osu.Game.Users;
 
 namespace osu.Game.Screens.Play.HUD
 {
@@ -23,23 +22,20 @@ namespace osu.Game.Screens.Play.HUD
 
         private readonly Bindable<PlayBeatmapDetailArea.TabType> scoreSource = new Bindable<PlayBeatmapDetailArea.TabType>();
 
-        private readonly IUser trackingUser;
-
-        public readonly IBindableList<ScoreInfo> Scores = new BindableList<ScoreInfo>();
+        [Resolved]
+        private IBindableList<ScoreInfo> scores { get; set; } = null!;
 
         [Resolved]
         private ScoreProcessor scoreProcessor { get; set; } = null!;
+
+        [Resolved]
+        private Player player { get; set; } = null!;
 
         /// <summary>
         /// Whether the leaderboard should be visible regardless of the configuration value.
         /// This is true by default, but can be changed.
         /// </summary>
         public readonly Bindable<bool> AlwaysVisible = new Bindable<bool>(true);
-
-        public SoloGameplayLeaderboard(IUser trackingUser)
-        {
-            this.trackingUser = trackingUser;
-        }
 
         [BackgroundDependencyLoader]
         private void load(OsuConfigManager config)
@@ -52,7 +48,7 @@ namespace osu.Game.Screens.Play.HUD
         {
             base.LoadComplete();
 
-            Scores.BindCollectionChanged((_, _) => Scheduler.AddOnce(showScores), true);
+            scores.BindCollectionChanged((_, _) => Scheduler.AddOnce(showScores), true);
 
             // Alpha will be updated via `updateVisibility` below.
             Alpha = 0;
@@ -65,10 +61,10 @@ namespace osu.Game.Screens.Play.HUD
         {
             Clear();
 
-            if (!Scores.Any())
+            if (!scores.Any())
                 return;
 
-            foreach (var s in Scores)
+            foreach (var s in scores)
             {
                 var score = Add(s.User, false);
 
@@ -79,7 +75,7 @@ namespace osu.Game.Screens.Play.HUD
                 score.DisplayOrder.Value = s.OnlineID > 0 ? s.OnlineID : s.Date.ToUnixTimeSeconds();
             }
 
-            ILeaderboardScore local = Add(trackingUser, true);
+            ILeaderboardScore local = Add(player.Score.ScoreInfo.User, true);
 
             local.GetDisplayScore = scoreProcessor.GetDisplayScore;
             local.TotalScore.BindTarget = scoreProcessor.TotalScore;

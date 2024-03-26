@@ -5,6 +5,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using osu.Framework.Audio.Sample;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
@@ -13,7 +14,9 @@ using osu.Game.Beatmaps;
 using osu.Game.Rulesets.Mania.Beatmaps;
 using osu.Game.Rulesets.Objects.Legacy;
 using osu.Game.Rulesets.Scoring;
+using osu.Game.Screens.Play.HUD;
 using osu.Game.Skinning;
+using osuTK;
 
 namespace osu.Game.Rulesets.Mania.Skinning.Legacy
 {
@@ -86,12 +89,19 @@ namespace osu.Game.Rulesets.Mania.Skinning.Legacy
                     case SkinComponentsContainerLookup.TargetArea.MainHUDComponents:
                         if (!IsProvidingLegacyResources) return null;
 
-                        return new DefaultSkinComponentsContainer(_ =>
+                        return new DefaultSkinComponentsContainer(container =>
                         {
+                            var leaderboard = container.OfType<SkinnableGameplayLeaderboard>().FirstOrDefault();
+
+                            if (leaderboard != null)
+                            {
+                                leaderboard.Position = new Vector2(44);
+                            }
                         })
                         {
                             Children = new Drawable[]
                             {
+                                new SkinnableGameplayLeaderboard(),
                                 // TODO: remove once ruleset-specific combo counter is implemented, use HUD one for now
                                 new LegacyComboCounter(),
                             }

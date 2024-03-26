@@ -6,6 +6,7 @@ using osu.Framework.Extensions.ObjectExtensions;
 using osu.Framework.Screens;
 using osu.Game.Online.Spectator;
 using osu.Game.Scoring;
+using osu.Game.Screens.Play.HUD;
 using osu.Game.Users;
 
 namespace osu.Game.Screens.Play
@@ -15,6 +16,7 @@ namespace osu.Game.Screens.Play
         private readonly Score score;
 
         protected override UserActivity InitialActivity => new UserActivity.SpectatingUser(Score.ScoreInfo);
+        public override GameplayLeaderboardType GameplayLeaderboardType => GameplayLeaderboardType.Solo;
 
         public SoloSpectatorPlayer(Score score)
             : base(score, new PlayerConfiguration { AllowUserInteraction = false })

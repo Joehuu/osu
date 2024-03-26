@@ -2,9 +2,11 @@
 // See the LICENCE file in the repository root for full licence text.
 
 using System;
+using System.Linq;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Game.Rulesets.Osu.Objects;
+using osu.Game.Screens.Play.HUD;
 using osu.Game.Skinning;
 using osuTK;
 
@@ -51,12 +53,19 @@ namespace osu.Game.Rulesets.Osu.Skinning.Legacy
                     case SkinComponentsContainerLookup.TargetArea.MainHUDComponents:
                         if (!IsProvidingLegacyResources) return null;
 
-                        return new DefaultSkinComponentsContainer(_ =>
+                        return new DefaultSkinComponentsContainer(container =>
                         {
+                            var leaderboard = container.OfType<SkinnableGameplayLeaderboard>().FirstOrDefault();
+
+                            if (leaderboard != null)
+                            {
+                                leaderboard.Position = new Vector2(44);
+                            }
                         })
                         {
                             Children = new Drawable[]
                             {
+                                new SkinnableGameplayLeaderboard(),
                                 new LegacyComboCounter(),
                             }
                         };

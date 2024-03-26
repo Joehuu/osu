@@ -7,7 +7,7 @@ using osu.Game.Skinning;
 
 namespace osu.Game.Rulesets.Osu.Skinning.Default
 {
-    public class OsuTrianglesSkinTransformer : SkinTransformer
+    public class OsuTrianglesSkinTransformer : OsuSkinTransformer
     {
         public OsuTrianglesSkinTransformer(ISkin skin)
             : base(skin)

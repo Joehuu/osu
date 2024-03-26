@@ -60,7 +60,7 @@ namespace osu.Game.Rulesets.Taiko
                     return new TaikoLegacySkinTransformer(skin);
             }
 
-            return null;
+            return new TaikoSkinTransformer(skin);
         }
 
         public const string SHORT_NAME = "taiko";

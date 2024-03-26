@@ -3,18 +3,12 @@
 
 using System;
 using osu.Framework.Timing;
-using osu.Game.Online.Multiplayer;
 using osu.Game.Screens.Play.HUD;
 
 namespace osu.Game.Screens.OnlinePlay.Multiplayer.Spectate
 {
     public partial class MultiSpectatorLeaderboard : MultiplayerGameplayLeaderboard
     {
-        public MultiSpectatorLeaderboard(MultiplayerRoomUser[] users)
-            : base(users)
-        {
-        }
-
         public void AddClock(int userId, IClock clock)
         {
             if (!UserScores.TryGetValue(userId, out var data))

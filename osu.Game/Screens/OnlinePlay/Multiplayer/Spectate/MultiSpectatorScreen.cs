@@ -57,6 +57,8 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer.Spectate
         private PlayerArea? currentAudioSource;
 
         private readonly Room room;
+
+        [Cached]
         private readonly MultiplayerRoomUser[] users;
 
         /// <summary>
@@ -132,7 +134,7 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer.Spectate
             for (int i = 0; i < Users.Count; i++)
                 grid.Add(instances[i] = new PlayerArea(Users[i], syncManager.CreateManagedClock()));
 
-            LoadComponentAsync(leaderboard = new MultiSpectatorLeaderboard(users)
+            LoadComponentAsync(leaderboard = new MultiSpectatorLeaderboard
             {
                 Expanded = { Value = true },
             }, _ =>

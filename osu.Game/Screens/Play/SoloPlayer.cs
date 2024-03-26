@@ -6,6 +6,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Game.Beatmaps;
 using osu.Game.Extensions;
@@ -43,14 +44,10 @@ namespace osu.Game.Screens.Play
             return new CreateSoloScoreRequest(Beatmap.Value.BeatmapInfo, rulesetId, Game.VersionHash);
         }
 
-        public readonly BindableList<ScoreInfo> LeaderboardScores = new BindableList<ScoreInfo>();
+        [Cached(typeof(IBindableList<ScoreInfo>))]
+        public readonly IBindableList<ScoreInfo> LeaderboardScores = new BindableList<ScoreInfo>();
 
-        protected override GameplayLeaderboard CreateGameplayLeaderboard() =>
-            new SoloGameplayLeaderboard(Score.ScoreInfo.User)
-            {
-                AlwaysVisible = { Value = false },
-                Scores = { BindTarget = LeaderboardScores }
-            };
+        public override GameplayLeaderboardType GameplayLeaderboardType => GameplayLeaderboardType.Solo;
 
         protected override bool ShouldExitOnTokenRetrievalFailure(Exception exception) => false;
 

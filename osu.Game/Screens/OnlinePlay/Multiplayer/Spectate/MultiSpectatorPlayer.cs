@@ -7,6 +7,7 @@ using osu.Framework.Audio;
 using osu.Game.Beatmaps;
 using osu.Game.Scoring;
 using osu.Game.Screens.Play;
+using osu.Game.Screens.Play.HUD;
 using osu.Game.Screens.Ranking;
 
 namespace osu.Game.Screens.OnlinePlay.Multiplayer.Spectate
@@ -64,6 +65,8 @@ namespace osu.Game.Screens.OnlinePlay.Multiplayer.Spectate
             // This is required because the frame stable clock is set to WaitingOnFrames = false for one frame.
             spectatorPlayerClock.WaitingOnFrames = DrawableRuleset.FrameStableClock.WaitingOnFrames.Value || Score.Replay.Frames.Count == 0;
         }
+
+        public override GameplayLeaderboardType GameplayLeaderboardType => GameplayLeaderboardType.MultiSpectator;
 
         protected override GameplayClockContainer CreateGameplayClockContainer(WorkingBeatmap beatmap, double gameplayStart)
         {

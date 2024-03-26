@@ -35,10 +35,6 @@ namespace osu.Game.Screens.Play.HUD
 
         public const float PANEL_HEIGHT = 35f;
 
-        public const float SHEAR_WIDTH = PANEL_HEIGHT * panel_shear;
-
-        private const float panel_shear = 0.15f;
-
         private const float rank_text_width = 35f;
 
         private const float avatar_size = 25f;
@@ -48,6 +44,7 @@ namespace osu.Game.Screens.Play.HUD
         private const double text_transition_duration = 200;
 
         public Bindable<bool> Expanded = new Bindable<bool>();
+        public Bindable<bool> HasShear = new Bindable<bool>();
 
         private OsuSpriteText positionText = null!, scoreText = null!, accuracyText = null!, comboText = null!, usernameText = null!;
 
@@ -153,7 +150,6 @@ namespace osu.Game.Screens.Play.HUD
                                     RelativeSizeAxes = Axes.Both,
                                     Masking = true,
                                     CornerRadius = 5f,
-                                    Shear = new Vector2(panel_shear, 0f),
                                     Children = new Drawable[]
                                     {
                                         new Box
@@ -183,7 +179,6 @@ namespace osu.Game.Screens.Play.HUD
                                 {
                                     positionText = new OsuSpriteText
                                     {
-                                        Padding = new MarginPadding { Right = SHEAR_WIDTH / 2 },
                                         Anchor = Anchor.Centre,
                                         Origin = Anchor.Centre,
                                         Colour = Color4.White,
@@ -192,7 +187,6 @@ namespace osu.Game.Screens.Play.HUD
                                     },
                                     new Container
                                     {
-                                        Padding = new MarginPadding { Horizontal = SHEAR_WIDTH / 3 },
                                         RelativeSizeAxes = Axes.Both,
                                         Children = new Drawable[]
                                         {
@@ -200,7 +194,6 @@ namespace osu.Game.Screens.Play.HUD
                                             {
                                                 Masking = true,
                                                 CornerRadius = 5f,
-                                                Shear = new Vector2(panel_shear, 0f),
                                                 RelativeSizeAxes = Axes.Both,
                                                 Children = new[]
                                                 {
@@ -214,7 +207,6 @@ namespace osu.Game.Screens.Play.HUD
                                             },
                                             new FillFlowContainer
                                             {
-                                                Padding = new MarginPadding { Left = SHEAR_WIDTH },
                                                 Anchor = Anchor.CentreLeft,
                                                 Origin = Anchor.CentreLeft,
                                                 RelativeSizeAxes = Axes.Both,

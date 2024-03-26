@@ -25,7 +25,6 @@ using osuTK.Graphics;
 
 namespace osu.Game.Screens.Play.HUD
 {
-    [LongRunningLoad]
     public partial class MultiplayerGameplayLeaderboard : GameplayLeaderboard
     {
         protected readonly Dictionary<int, TrackedUserData> UserScores = new Dictionary<int, TrackedUserData>();
@@ -46,20 +45,12 @@ namespace osu.Game.Screens.Play.HUD
 
         private Bindable<ScoringMode> scoringMode = null!;
 
-        private readonly MultiplayerRoomUser[] playingUsers;
+        [Resolved]
+        private MultiplayerRoomUser[] playingUsers { get; set; } = null!;
 
         private readonly IBindableList<int> playingUserIds = new BindableList<int>();
 
         private bool hasTeams => TeamScores.Count > 0;
-
-        /// <summary>
-        /// Construct a new leaderboard.
-        /// </summary>
-        /// <param name="users">IDs of all users in this match.</param>
-        public MultiplayerGameplayLeaderboard(MultiplayerRoomUser[] users)
-        {
-            playingUsers = users;
-        }
 
         [BackgroundDependencyLoader]
         private void load(OsuConfigManager config, IAPIProvider api, CancellationToken cancellationToken)
