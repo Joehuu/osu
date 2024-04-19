@@ -67,9 +67,6 @@ namespace osu.Game.Screens.Play
 
         private TextFlowContainer playInfoText = null!;
 
-        [Resolved]
-        private GlobalActionContainer globalAction { get; set; } = null!;
-
         protected GameplayMenuOverlay()
         {
             RelativeSizeAxes = Axes.Both;
@@ -265,20 +262,6 @@ namespace osu.Game.Screens.Play
                 State = SelectionState.Selected;
                 return base.OnMouseMove(e);
             }
-        }
-
-        protected override bool Handle(UIEvent e)
-        {
-            switch (e)
-            {
-                case ScrollEvent:
-                    if (ReceivePositionalInputAt(e.ScreenSpaceMousePosition))
-                        return globalAction.TriggerEvent(e);
-
-                    break;
-            }
-
-            return base.Handle(e);
         }
     }
 }
