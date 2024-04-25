@@ -1,8 +1,6 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
-#nullable disable
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +8,17 @@ using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Shapes;
+using osu.Game.Beatmaps;
 using osu.Game.Online.API;
 using osu.Game.Online.API.Requests;
 using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Overlays.BeatmapSet;
 using osu.Game.Overlays.BeatmapSet.Scores;
 using osu.Game.Overlays.Comments;
+using osu.Game.Rulesets;
 using osu.Game.Rulesets.Mods;
+using osu.Game.Screens.Select;
 using osu.Game.Screens.Select.Details;
 using osuTK;
 using osuTK.Graphics;
@@ -28,12 +30,10 @@ namespace osu.Game.Overlays
         public const float Y_PADDING = 25;
         public const float RIGHT_WIDTH = 275;
 
-        private readonly Bindable<APIBeatmapSet> beatmapSet = new Bindable<APIBeatmapSet>();
-
         [Resolved]
-        private IAPIProvider api { get; set; }
+        private IAPIProvider api { get; set; } = null!;
 
-        private IBindable<APIUser> apiUser;
+        private IBindable<APIUser> apiUser = null!;
 
         private (BeatmapSetLookupType type, int id)? lastLookup;
 
@@ -45,10 +45,21 @@ namespace osu.Game.Overlays
         [Cached(typeof(IBindable<IReadOnlyList<Mod>>))]
         protected readonly Bindable<IReadOnlyList<Mod>> SelectedMods = new Bindable<IReadOnlyList<Mod>>(Array.Empty<Mod>());
 
+        [Cached(typeof(IBindable<IBeatmapInfo?>))]
+        private readonly Bindable<IBeatmapInfo?> beatmapInfo = new Bindable<IBeatmapInfo?>();
+
+        [Cached(typeof(IBindable<IBeatmapSetInfo?>))]
+        private readonly Bindable<IBeatmapSetInfo?> beatmapSetInfo = new Bindable<IBeatmapSetInfo?>();
+
+        [Cached(typeof(IBindable<APIBeatmap?>))]
+        private readonly Bindable<APIBeatmap?> apiBeatmap = new Bindable<APIBeatmap?>();
+
+        [Cached(typeof(IBindable<RulesetInfo>))]
+        private readonly Bindable<RulesetInfo> ruleset = new Bindable<RulesetInfo>();
+
         public BeatmapSetOverlay()
             : base(OverlayColourScheme.Blue)
         {
-            Info info;
             CommentsSection comments;
 
             Child = new FillFlowContainer
@@ -59,7 +70,32 @@ namespace osu.Game.Overlays
                 Spacing = new Vector2(0, 20),
                 Children = new Drawable[]
                 {
-                    info = new Info(),
+                    new Container
+                    {
+                        RelativeSizeAxes = Axes.X,
+                        AutoSizeAxes = Axes.Y,
+                        Children = new Drawable[]
+                        {
+                            new Box
+                            {
+                                RelativeSizeAxes = Axes.Both,
+                                Colour = ColourProvider.Background5
+                            },
+                            new FillFlowContainer
+                            {
+                                RelativeSizeAxes = Axes.X,
+                                AutoSizeAxes = Axes.Y,
+                                Direction = FillDirection.Vertical,
+                                Padding = new MarginPadding { Horizontal = HORIZONTAL_PADDING, Vertical = 10 },
+                                Spacing = new Vector2(10),
+                                Children = new Drawable[]
+                                {
+                                    new BasicDifficultyInfoContent(),
+                                    new ExtendedBeatmapDetailsContent(),
+                                }
+                            }
+                        },
+                    },
                     new ScoresContainer
                     {
                         Beatmap = { BindTarget = Header.HeaderContent.Picker.Beatmap }
@@ -68,14 +104,19 @@ namespace osu.Game.Overlays
                 }
             };
 
-            Header.BeatmapSet.BindTo(beatmapSet);
-            info.BeatmapSet.BindTo(beatmapSet);
-            comments.BeatmapSet.BindTo(beatmapSet);
+            beatmapSetInfo.BindValueChanged(s =>
+            {
+                var setInfo = (APIBeatmapSet?)s.NewValue;
+                Header.BeatmapSet.Value = setInfo;
+                comments.BeatmapSet.Value = setInfo;
+            });
 
             Header.HeaderContent.Picker.Beatmap.ValueChanged += b =>
             {
-                info.BeatmapInfo = b.NewValue;
                 ScrollFlow.ScrollToStart();
+
+                beatmapInfo.Value = b.NewValue;
+                apiBeatmap.Value = b.NewValue;
             };
         }
 
@@ -97,13 +138,13 @@ namespace osu.Game.Overlays
         protected override void PopOutComplete()
         {
             base.PopOutComplete();
-            beatmapSet.Value = null;
+            beatmapSetInfo.Value = null;
         }
 
         public void FetchAndShowBeatmap(int beatmapId)
         {
             lastLookup = (BeatmapSetLookupType.BeatmapId, beatmapId);
-            beatmapSet.Value = null;
+            beatmapSetInfo.Value = null;
 
             performFetch();
             Show();
@@ -113,7 +154,7 @@ namespace osu.Game.Overlays
         {
             lastLookup = (BeatmapSetLookupType.SetId, beatmapSetId);
 
-            beatmapSet.Value = null;
+            beatmapSetInfo.Value = null;
 
             performFetch();
             Show();
@@ -123,9 +164,9 @@ namespace osu.Game.Overlays
         /// Show an already fully-populated beatmap set.
         /// </summary>
         /// <param name="set">The set to show.</param>
-        public void ShowBeatmapSet(APIBeatmapSet set)
+        public void ShowBeatmapSet(APIBeatmapSet? set)
         {
-            beatmapSet.Value = set;
+            beatmapSetInfo.Value = set;
             Show();
         }
 
@@ -140,7 +181,7 @@ namespace osu.Game.Overlays
             var req = new GetBeatmapSetRequest(lastLookup.Value.id, lastLookup.Value.type);
             req.Success += res =>
             {
-                beatmapSet.Value = res;
+                beatmapSetInfo.Value = res;
                 if (lastLookup.Value.type == BeatmapSetLookupType.BeatmapId)
                     Header.HeaderContent.Picker.Beatmap.Value = Header.BeatmapSet.Value.Beatmaps.First(b => b.OnlineID == lastLookup.Value.id);
             };
@@ -149,7 +190,7 @@ namespace osu.Game.Overlays
 
         private partial class CommentsSection : BeatmapSetLayoutSection
         {
-            public readonly Bindable<APIBeatmapSet> BeatmapSet = new Bindable<APIBeatmapSet>();
+            public readonly Bindable<APIBeatmapSet?> BeatmapSet = new Bindable<APIBeatmapSet?>();
 
             public CommentsSection()
             {

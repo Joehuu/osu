@@ -1,6 +1,7 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System.ComponentModel;
 using osu.Framework.Localisation;
 using osu.Game.Resources.Localisation.Web;
 
@@ -25,5 +26,15 @@ namespace osu.Game.Overlays.BeatmapSet
 
         [LocalisableDescription(typeof(BeatmapsetsStrings), nameof(BeatmapsetsStrings.ShowInfoNominators))]
         Nominators,
+
+        // TODO: replace when there is web localisation
+        [Description(@"Creator")]
+        Creator,
+
+        [Description(@"Submitted")]
+        DateSubmitted,
+
+        [Description(@"Ranked")]
+        DateRanked,
     }
 }

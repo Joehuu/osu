@@ -5,12 +5,16 @@ using osu.Framework.Bindables;
 using osu.Framework.Graphics.UserInterface;
 using osu.Game.Rulesets;
 using System.Linq;
+using osu.Framework.Allocation;
 using osu.Game.Online.API.Requests.Responses;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
     public partial class BeatmapRulesetSelector : OverlayRulesetSelector
     {
+        [Resolved]
+        private IBindable<RulesetInfo> ruleset { get; set; } = null!;
+
         private readonly Bindable<APIBeatmapSet?> beatmapSet = new Bindable<APIBeatmapSet?>();
 
         public APIBeatmapSet? BeatmapSet
@@ -23,6 +27,13 @@ namespace osu.Game.Overlays.BeatmapSet
 
                 Current.Value = TabContainer.TabItems.FirstOrDefault(t => t.Enabled.Value)?.Value;
             }
+        }
+
+        protected override void LoadComplete()
+        {
+            base.LoadComplete();
+
+            ruleset.BindTo(Current);
         }
 
         protected override TabItem<RulesetInfo> CreateTabItem(RulesetInfo value) => new BeatmapRulesetTabItem(value)

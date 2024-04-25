@@ -4,10 +4,11 @@
 using System;
 using osu.Game.Graphics.Containers;
 using osu.Game.Online.Chat;
+using osu.Game.Overlays.BeatmapSetV2;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
-    public partial class MetadataSectionSource : MetadataSection
+    public partial class MetadataSectionSource : MetadataSectionV2
     {
         public MetadataSectionSource(Action<string>? searchAction = null)
             : base(MetadataType.Source, searchAction)

@@ -7,11 +7,12 @@ using osu.Framework.Graphics;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics.Containers;
 using osu.Game.Online.API.Requests.Responses;
+using osu.Game.Overlays.BeatmapSetV2;
 using osu.Game.Resources.Localisation.Web;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
-    public partial class MetadataSectionNominators : MetadataSection<(BeatmapSetOnlineNomination[] CurrentNominations, APIUser[] RelatedUsers)>
+    public partial class MetadataSectionNominators : MetadataSectionV2<(BeatmapSetOnlineNomination[] CurrentNominations, APIUser[] RelatedUsers)>
     {
         public override (BeatmapSetOnlineNomination[] CurrentNominations, APIUser[] RelatedUsers) Metadata
         {

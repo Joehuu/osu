@@ -6,6 +6,7 @@
 using System;
 using JetBrains.Annotations;
 using osu.Framework.Graphics;
+using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Input.Events;
 using osuTK;
@@ -23,7 +24,7 @@ namespace osu.Game.Graphics.UserInterface
         private readonly bool blockInput;
 
         [CanBeNull]
-        protected Box BackgroundDimLayer { get; }
+        protected Container BackgroundDimLayer { get; }
 
         /// <summary>
         /// Construct a new loading spinner.
@@ -42,12 +43,16 @@ namespace osu.Game.Graphics.UserInterface
 
             if (dimBackground)
             {
-                AddInternal(BackgroundDimLayer = new Box
+                AddInternal(BackgroundDimLayer = new Container
                 {
                     Depth = float.MaxValue,
-                    Colour = Color4.Black,
                     Alpha = 0,
                     RelativeSizeAxes = Axes.Both,
+                    Child = new Box
+                    {
+                        Colour = Color4.Black,
+                        RelativeSizeAxes = Axes.Both,
+                    }
                 });
             }
         }

@@ -12,7 +12,6 @@ using osu.Framework.Localisation;
 using osu.Game.Graphics;
 using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Resources.Localisation.Web;
-using osu.Game.Rulesets;
 using osuTK;
 using osuTK.Graphics;
 
@@ -26,9 +25,6 @@ namespace osu.Game.Overlays.BeatmapSet
 
         [Cached]
         public BeatmapRulesetSelector RulesetSelector { get; private set; }
-
-        [Cached(typeof(IBindable<RulesetInfo>))]
-        private readonly Bindable<RulesetInfo> ruleset = new Bindable<RulesetInfo>();
 
         public BeatmapSetHeader()
         {
@@ -48,10 +44,7 @@ namespace osu.Game.Overlays.BeatmapSet
             BeatmapSet = { BindTarget = BeatmapSet }
         };
 
-        protected override Drawable CreateTabControlContent() => RulesetSelector = new BeatmapRulesetSelector
-        {
-            Current = ruleset
-        };
+        protected override Drawable CreateTabControlContent() => RulesetSelector = new BeatmapRulesetSelector();
 
         protected override OverlayTitle CreateTitle() => new BeatmapHeaderTitle();
 

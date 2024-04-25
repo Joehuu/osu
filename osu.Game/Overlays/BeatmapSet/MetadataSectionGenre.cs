@@ -7,10 +7,11 @@ using osu.Game.Beatmaps;
 using osu.Game.Graphics.Containers;
 using osu.Game.Online.Chat;
 using osu.Game.Overlays.BeatmapListing;
+using osu.Game.Overlays.BeatmapSetV2;
 
 namespace osu.Game.Overlays.BeatmapSet
 {
-    public partial class MetadataSectionGenre : MetadataSection<BeatmapSetOnlineGenre>
+    public partial class MetadataSectionGenre : MetadataSectionV2<BeatmapSetOnlineGenre>
     {
         public MetadataSectionGenre(Action<BeatmapSetOnlineGenre>? searchAction = null)
             : base(MetadataType.Genre, searchAction)
