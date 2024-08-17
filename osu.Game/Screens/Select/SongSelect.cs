@@ -49,6 +49,9 @@ namespace osu.Game.Screens.Select
 {
     public abstract partial class SongSelect : ScreenWithBeatmapBackground, IKeyBindingHandler<GlobalAction>
     {
+        [Cached]
+        private readonly OverlayColourProvider overlayColour = new OverlayColourProvider(OverlayColourScheme.Aquamarine);
+
         public static readonly float WEDGE_HEIGHT = 200;
 
         protected const float BACKGROUND_BLUR = 20;
