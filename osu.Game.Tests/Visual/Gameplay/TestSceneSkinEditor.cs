@@ -346,12 +346,7 @@ namespace osu.Game.Tests.Visual.Gameplay
         [Test]
         public void TestCopyPaste()
         {
-            AddStep("paste", () =>
-            {
-                InputManager.PressKey(Key.LControl);
-                InputManager.Key(Key.V);
-                InputManager.ReleaseKey(Key.LControl);
-            });
+            AddStep("paste", () => InputManager.Keys(PlatformAction.Paste));
             // no assertions. just make sure nothing crashes.
 
             AddStep("select bar hit error blueprint", () =>
@@ -360,18 +355,8 @@ namespace osu.Game.Tests.Visual.Gameplay
                 skinEditor.SelectedComponents.Clear();
                 skinEditor.SelectedComponents.Add(blueprint.Item);
             });
-            AddStep("copy", () =>
-            {
-                InputManager.PressKey(Key.LControl);
-                InputManager.Key(Key.C);
-                InputManager.ReleaseKey(Key.LControl);
-            });
-            AddStep("paste", () =>
-            {
-                InputManager.PressKey(Key.LControl);
-                InputManager.Key(Key.V);
-                InputManager.ReleaseKey(Key.LControl);
-            });
+            AddStep("copy", () => InputManager.Keys(PlatformAction.Copy));
+            AddStep("paste", () => InputManager.Keys(PlatformAction.Paste));
             AddAssert("three hit error meters present",
                 () => skinEditor.ChildrenOfType<SkinBlueprint>().Count(b => b.Item is BarHitErrorMeter),
                 () => Is.EqualTo(3));
