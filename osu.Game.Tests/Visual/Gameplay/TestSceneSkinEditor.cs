@@ -351,15 +351,18 @@ namespace osu.Game.Tests.Visual.Gameplay
 
             AddStep("select bar hit error blueprint", () =>
             {
-                var blueprint = skinEditor.ChildrenOfType<SkinBlueprint>().First(b => b.Item is BarHitErrorMeter);
+                var blueprint = skinEditor.ChildrenOfType<SkinBlueprint>().First(b => b.Item is ArgonScoreCounter);
                 skinEditor.SelectedComponents.Clear();
                 skinEditor.SelectedComponents.Add(blueprint.Item);
             });
             AddStep("copy", () => InputManager.Keys(PlatformAction.Copy));
             AddStep("paste", () => InputManager.Keys(PlatformAction.Paste));
-            AddAssert("three hit error meters present",
-                () => skinEditor.ChildrenOfType<SkinBlueprint>().Count(b => b.Item is BarHitErrorMeter),
-                () => Is.EqualTo(3));
+            AddAssert("two score counters present",
+                () => skinEditor.ChildrenOfType<SkinBlueprint>().Count(b => b.Item is ArgonScoreCounter),
+                () => Is.EqualTo(2));
+            AddAssert("pasted score counter retained origin",
+                () => Player.ChildrenOfType<ArgonScoreCounter>().ElementAt(1).Origin,
+                () => Is.EqualTo(Anchor.TopRight));
         }
 
         private SkinnableContainer globalHUDTarget => Player.ChildrenOfType<SkinnableContainer>()
