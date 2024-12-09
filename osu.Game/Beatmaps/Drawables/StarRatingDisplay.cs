@@ -14,6 +14,7 @@ using osu.Framework.Graphics.UserInterface;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
 using osu.Game.Overlays;
+using osu.Game.Utils;
 using osuTK;
 using osuTK.Graphics;
 
@@ -156,7 +157,7 @@ namespace osu.Game.Beatmaps.Drawables
 
             displayedStars.BindValueChanged(s =>
             {
-                starsText.Text = s.NewValue < 0 ? "-" : s.NewValue.ToLocalisableString("0.00");
+                starsText.Text = s.NewValue < 0 ? "-" : s.NewValue.FormatStarRating();
 
                 background.Colour = colours.ForStarDifficulty(s.NewValue);
 
