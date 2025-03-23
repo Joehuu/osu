@@ -1510,6 +1510,9 @@ namespace osu.Game
 
         public override bool OnPressed(KeyBindingPressEvent<PlatformAction> e)
         {
+            if (UserPlayingState.Value == LocalUserPlayingState.Playing)
+                return false;
+
             const float adjustment_increment = 0.05f;
 
             switch (e.Action)
