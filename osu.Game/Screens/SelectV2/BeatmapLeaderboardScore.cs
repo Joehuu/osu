@@ -535,10 +535,15 @@ namespace osu.Game.Screens.SelectV2
             totalScoreBackground.FadeColour(IsHovered ? lightenedGradient : totalScoreBackgroundGradient, transition_duration, Easing.OutQuint);
             personalBestIndicator.FadeColour(IsHovered ? personalBestLightenedGradient : personalBestGradient, transition_duration, Easing.OutQuint);
 
-            if (IsHovered && currentMode != DisplayMode.Full)
-                rankLabelOverlay.FadeIn(transition_duration, Easing.OutQuint);
+            updateRankLabelOverlayState(currentMode, transition_duration);
+        }
+
+        private void updateRankLabelOverlayState(DisplayMode? mode, double duration)
+        {
+            if (IsHovered && mode != DisplayMode.Full)
+                rankLabelOverlay.FadeIn(duration, Easing.OutQuint);
             else
-                rankLabelOverlay.FadeOut(transition_duration, Easing.OutQuint);
+                rankLabelOverlay.FadeOut(duration, Easing.OutQuint);
         }
 
         private DisplayMode? currentMode;
@@ -556,6 +561,8 @@ namespace osu.Game.Screens.SelectV2
                     rankLabelStandalone.FadeIn(duration, Easing.OutQuint).ResizeWidthTo(rank_label_width, duration, Easing.OutQuint);
                 else
                     rankLabelStandalone.FadeOut(duration, Easing.OutQuint).ResizeWidthTo(0, duration, Easing.OutQuint);
+
+                updateRankLabelOverlayState(mode, duration);
 
                 if (mode >= DisplayMode.Regular)
                 {
