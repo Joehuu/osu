@@ -1,10 +1,12 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
+using osu.Framework.Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Game.Beatmaps;
@@ -14,6 +16,7 @@ using osu.Game.Online.API;
 using osu.Game.Online.API.Requests;
 using osu.Game.Online.API.Requests.Responses;
 using osu.Game.Online.Chat;
+using osu.Game.Overlays.BeatmapListing;
 using osuTK;
 
 namespace osu.Game.Screens.SelectV2
@@ -354,8 +357,15 @@ namespace osu.Game.Screens.SelectV2
                 var onlineBeatmapSet = currentOnlineBeatmapSet;
                 var onlineBeatmap = onlineBeatmapSet.Beatmaps.SingleOrDefault(b => b.OnlineID == beatmapInfo.OnlineID);
 
-                genre.Data = (onlineBeatmapSet.Genre.Name, () => songSelect?.Search(onlineBeatmapSet.Genre.Name));
-                language.Data = (onlineBeatmapSet.Language.Name, () => songSelect?.Search(onlineBeatmapSet.Language.Name));
+                var genreId = (SearchGenre)onlineBeatmapSet.Genre.Id;
+                var genreName = Enum.IsDefined(genreId) ? genreId.GetLocalisableDescription() : onlineBeatmapSet.Genre.Name;
+
+                genre.Data = (genreName, null);
+
+                var languageId = (SearchLanguage)onlineBeatmapSet.Language.Id;
+                var languageName = Enum.IsDefined(languageId) ? languageId.GetLocalisableDescription() : onlineBeatmapSet.Language.Name;
+
+                language.Data = (languageName, null);
 
                 if (onlineBeatmap != null)
                 {
