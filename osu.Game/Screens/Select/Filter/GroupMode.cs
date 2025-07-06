@@ -46,6 +46,9 @@ namespace osu.Game.Screens.Select.Filter
         [Description("Ranked Status")]
         RankedStatus,
 
+        [Description("Ruleset")]
+        Ruleset,
+
         [Description("Last Played")]
         LastPlayed,
 

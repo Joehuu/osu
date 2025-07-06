@@ -177,6 +177,13 @@ namespace osu.Game.Screens.SelectV2
                 case GroupMode.RankedStatus:
                     return getGroupsBy(b => defineGroupByStatus(b.BeatmapSet!.Status), items);
 
+                case GroupMode.Ruleset:
+                    return getGroupsBy(b =>
+                    {
+                        var ruleset = b.Ruleset;
+                        return new GroupDefinition(ruleset.OnlineID, ruleset.Name);
+                    }, items);
+
                 case GroupMode.BPM:
                     return getGroupsBy(b =>
                     {
