@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using osu.Framework.Extensions;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Game.Beatmaps;
 using osu.Game.Graphics.Carousel;
@@ -48,12 +49,6 @@ namespace osu.Game.Tests.Visual.SongSelectV2
         #endregion
 
         #region Alphabetical grouping
-
-        [Test]
-        public async Task TestGroupingByArtist() => await testAlphabeticGroupingMode(GroupMode.Artist, applyArtist);
-
-        [Test]
-        public async Task TestGroupingByAuthor() => await testAlphabeticGroupingMode(GroupMode.Author, applyAuthor);
 
         [Test]
         public async Task TestGroupingByTitle() => await testAlphabeticGroupingMode(GroupMode.Title, applyTitle);
@@ -333,7 +328,13 @@ namespace osu.Game.Tests.Visual.SongSelectV2
 
         #endregion
 
-        #region Source grouping
+        #region Text grouping
+
+        [Test]
+        public async Task TestGroupingByArtist() => await testTextGroupingMode(GroupMode.Artist, applyArtist);
+
+        [Test]
+        public async Task TestGroupingByAuthor() => await testTextGroupingMode(GroupMode.Author, applyAuthor);
 
         [Test]
         public async Task TestGroupingBySource()
@@ -349,7 +350,31 @@ namespace osu.Game.Tests.Visual.SongSelectV2
             var results = await runGrouping(GroupMode.Source, beatmapSets);
             assertGroup(results, 0, "Cool Game", new[] { beatmapCoolGame, beatmapCoolGameB }, ref total);
             assertGroup(results, 1, "Nice Movie", new[] { beatmapNiceMovie }, ref total);
-            assertGroup(results, 2, "Unsourced", new[] { beatmapUnsourced }, ref total);
+            assertGroup(results, 2, "Unknown", new[] { beatmapUnsourced }, ref total);
+            assertTotal(results, total);
+        }
+
+        private async Task testTextGroupingMode(GroupMode mode, Func<char, Action<BeatmapSetInfo>> applyBeatmap)
+        {
+            int total = 0;
+            var beatmapSets = new List<BeatmapSetInfo>();
+
+            addBeatmapSet(applyBeatmap('4'), beatmapSets, out var fourBeatmap);
+            addBeatmapSet(applyBeatmap('5'), beatmapSets, out var fiveBeatmap);
+            addBeatmapSet(applyBeatmap('A'), beatmapSets, out var aBeatmap);
+            addBeatmapSet(applyBeatmap('F'), beatmapSets, out var fBeatmap);
+            addBeatmapSet(applyBeatmap('Z'), beatmapSets, out var zBeatmap);
+            addBeatmapSet(applyBeatmap('-'), beatmapSets, out var dashBeatmap);
+            addBeatmapSet(applyBeatmap('_'), beatmapSets, out var underscoreBeatmap);
+
+            var results = await runGrouping(mode, beatmapSets);
+            assertGroup(results, 0, $"_-{mode.GetDescription().ToLowerInvariant()}", new[] { underscoreBeatmap }, ref total);
+            assertGroup(results, 1, $"--{mode.GetDescription().ToLowerInvariant()}", new[] { dashBeatmap }, ref total);
+            assertGroup(results, 2, $"4-{mode.GetDescription().ToLowerInvariant()}", new[] { fourBeatmap }, ref total);
+            assertGroup(results, 3, $"5-{mode.GetDescription().ToLowerInvariant()}", new[] { fiveBeatmap }, ref total);
+            assertGroup(results, 4, $"A-{mode.GetDescription().ToLowerInvariant()}", new[] { aBeatmap }, ref total);
+            assertGroup(results, 5, $"F-{mode.GetDescription().ToLowerInvariant()}", new[] { fBeatmap }, ref total);
+            assertGroup(results, 6, $"Z-{mode.GetDescription().ToLowerInvariant()}", new[] { zBeatmap }, ref total);
             assertTotal(results, total);
         }
 

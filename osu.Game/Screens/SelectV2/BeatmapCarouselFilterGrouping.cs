@@ -146,10 +146,10 @@ namespace osu.Game.Screens.SelectV2
                     return new List<GroupMapping> { new GroupMapping(null, items) };
 
                 case GroupMode.Artist:
-                    return getGroupsBy(b => defineGroupAlphabetically(b.BeatmapSet!.Metadata.Artist), items);
+                    return getGroupsBy(b => defineGroupByText(b.BeatmapSet!.Metadata.Artist), items);
 
                 case GroupMode.Author:
-                    return getGroupsBy(b => defineGroupAlphabetically(b.BeatmapSet!.Metadata.Author.Username), items);
+                    return getGroupsBy(b => defineGroupByText(b.BeatmapSet!.Metadata.Author.Username), items);
 
                 case GroupMode.Title:
                     return getGroupsBy(b => defineGroupAlphabetically(b.BeatmapSet!.Metadata.Title), items);
@@ -203,7 +203,7 @@ namespace osu.Game.Screens.SelectV2
                     }, items);
 
                 case GroupMode.Source:
-                    return getGroupsBy(b => defineGroupBySource(b.BeatmapSet!.Metadata.Source), items);
+                    return getGroupsBy(b => defineGroupByText(b.BeatmapSet!.Metadata.Source), items);
 
                 // TODO: need implementation
                 //
@@ -359,12 +359,13 @@ namespace osu.Game.Screens.SelectV2
             return new GroupDefinition(11, "Over 10 minutes");
         }
 
-        private GroupDefinition defineGroupBySource(string source)
+        private GroupDefinition defineGroupByText(string text)
         {
-            if (string.IsNullOrEmpty(source))
-                return new GroupDefinition(1, "Unsourced");
+            // TODO: distinguish between empty and "Unknown" text so they don't get grouped together
+            if (string.IsNullOrEmpty(text))
+                return new GroupDefinition(1, "Unknown");
 
-            return new GroupDefinition(0, source);
+            return new GroupDefinition(0, text);
         }
 
         private static T? aggregateMax<T>(BeatmapInfo b, Func<BeatmapInfo, T> func)
