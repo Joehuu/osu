@@ -25,6 +25,8 @@ namespace osu.Game.Screens.SelectV2
     public partial class PanelGroup : Panel
     {
         public const float HEIGHT = CarouselItem.DEFAULT_HEIGHT * 1.2f;
+        private const float text_margin = 10;
+        private const float right_margin = 30;
 
         private Drawable iconContainer = null!;
         private OsuSpriteText titleText = null!;
@@ -82,20 +84,21 @@ namespace osu.Game.Screens.SelectV2
             AccentColour = colourProvider.Highlight1;
             Content.Children = new Drawable[]
             {
-                titleText = new OsuSpriteText
+                titleText = new TruncatingSpriteText
                 {
                     Anchor = Anchor.CentreLeft,
                     Origin = Anchor.CentreLeft,
                     Font = OsuFont.Style.Heading2,
                     UseFullGlyphHeight = false,
-                    X = 10f,
+                    X = text_margin,
+                    RelativeSizeAxes = Axes.X,
                 },
                 countPill = new CircularContainer
                 {
                     Anchor = Anchor.CentreRight,
                     Origin = Anchor.CentreRight,
                     Size = new Vector2(50f, 14f),
-                    Margin = new MarginPadding { Right = 30f },
+                    Margin = new MarginPadding { Right = right_margin },
                     Masking = true,
                     Children = new Drawable[]
                     {
@@ -156,6 +159,8 @@ namespace osu.Game.Screens.SelectV2
 
             // Move the count pill in the opposite direction to keep it pinned to the screen regardless of the X position of TopLevelContent.
             countPill.X = -TopLevelContent.X;
+
+            titleText.Width = (DrawWidth - TopLevelContent.X - text_margin * 2 - countPill.DrawWidth - right_margin) / DrawWidth;
         }
 
         public override MenuItem[] ContextMenuItems
