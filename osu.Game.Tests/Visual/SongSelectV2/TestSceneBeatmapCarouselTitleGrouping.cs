@@ -13,7 +13,7 @@ using osuTK;
 namespace osu.Game.Tests.Visual.SongSelectV2
 {
     [TestFixture]
-    public partial class TestSceneBeatmapCarouselArtistGrouping : BeatmapCarouselTestScene
+    public partial class TestSceneBeatmapCarouselTitleGrouping : BeatmapCarouselTestScene
     {
         [SetUpSteps]
         public void SetUpSteps()
@@ -21,7 +21,7 @@ namespace osu.Game.Tests.Visual.SongSelectV2
             RemoveAllBeatmaps();
             CreateCarousel();
 
-            SortAndGroupBy(SortMode.Artist, GroupMode.Artist);
+            SortAndGroupBy(SortMode.Title, GroupMode.Title);
 
             AddBeatmaps(10, 3, true);
             WaitForDrawablePanels();

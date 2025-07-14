@@ -84,9 +84,9 @@ namespace osu.Game.Tests.Visual.SongSelectV2
         /// Test random non-repeating algorithm
         /// </summary>
         [Test]
-        public void TestRandomArtistGrouping()
+        public void TestRandomTitleGrouping()
         {
-            SortAndGroupBy(SortMode.Artist, GroupMode.Artist);
+            SortAndGroupBy(SortMode.Title, GroupMode.Title);
 
             AddBeatmaps(10, 3, true);
             WaitForDrawablePanels();
