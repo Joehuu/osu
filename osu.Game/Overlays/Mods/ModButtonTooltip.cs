@@ -69,5 +69,6 @@ namespace osu.Game.Overlays.Mods
         }
 
         public void Move(Vector2 pos) => Position = pos;
+        public bool AllowCursorOverlap => true;
     }
 }

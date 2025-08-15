@@ -73,5 +73,6 @@ namespace osu.Game.Graphics
         }
 
         public void Move(Vector2 pos) => Position = pos;
+        public bool AllowCursorOverlap => false;
     }
 }

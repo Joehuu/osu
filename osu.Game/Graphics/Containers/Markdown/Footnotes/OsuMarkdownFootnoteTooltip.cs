@@ -46,6 +46,7 @@ namespace osu.Game.Graphics.Containers.Markdown.Footnotes
         }
 
         public void Move(Vector2 pos) => Position = pos;
+        public bool AllowCursorOverlap => false;
 
         public void SetContent(object content) => markdownContainer.SetContent((string)content);
 

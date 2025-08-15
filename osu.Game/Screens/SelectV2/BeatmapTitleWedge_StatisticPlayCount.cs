@@ -143,6 +143,7 @@ namespace osu.Game.Screens.SelectV2
                 }
 
                 public void Move(Vector2 pos) => Position = pos;
+                public bool AllowCursorOverlap => false;
 
                 protected override void PopIn() => this.FadeIn(300, Easing.OutQuint);
                 protected override void PopOut() => this.FadeOut(300, Easing.OutQuint);

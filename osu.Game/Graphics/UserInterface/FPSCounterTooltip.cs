@@ -95,5 +95,7 @@ namespace osu.Game.Graphics.UserInterface
         {
             Position = pos;
         }
+
+        public bool AllowCursorOverlap => false;
     }
 }

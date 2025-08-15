@@ -578,6 +578,7 @@ namespace osu.Game.Tests.Visual.Gameplay
                 }
 
                 public void Move(Vector2 pos) => this.MoveTo(pos);
+                public bool AllowCursorOverlap => false;
             }
         }
 

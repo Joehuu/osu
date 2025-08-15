@@ -286,6 +286,8 @@ namespace osu.Game.Overlays.Profile
                     this.MoveTo(pos, 200, Easing.OutQuint);
             }
 
+            public bool AllowCursorOverlap => false;
+
             protected override void PopIn()
             {
                 instantMove |= !IsPresent;

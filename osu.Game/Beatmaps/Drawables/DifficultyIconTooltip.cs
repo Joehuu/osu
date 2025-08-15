@@ -137,6 +137,7 @@ namespace osu.Game.Beatmaps.Drawables
         }
 
         public void Move(Vector2 pos) => Position = pos;
+        public bool AllowCursorOverlap => false;
 
         protected override void PopIn() => this.FadeIn(200, Easing.OutQuint);
 

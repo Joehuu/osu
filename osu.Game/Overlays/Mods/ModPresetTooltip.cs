@@ -89,5 +89,6 @@ namespace osu.Game.Overlays.Mods
         protected override void PopOut() => this.FadeOut(transition_duration, Easing.OutQuint);
 
         public void Move(Vector2 pos) => Position = pos;
+        public bool AllowCursorOverlap => true;
     }
 }

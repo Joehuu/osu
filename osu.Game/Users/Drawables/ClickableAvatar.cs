@@ -75,6 +75,7 @@ namespace osu.Game.Users.Drawables
             protected override void PopOut() => this.Delay(150).FadeOut(500, Easing.OutQuint);
 
             public void Move(Vector2 pos) => Position = pos;
+            public bool AllowCursorOverlap => false;
 
             private APIUser? user;
 
@@ -118,6 +119,7 @@ namespace osu.Game.Users.Drawables
             protected override void PopOut() => tooltip.Hide();
 
             public void Move(Vector2 pos) => Position = pos;
+            public bool AllowCursorOverlap => false;
 
             public void SetContent(APIUser? content)
             {
