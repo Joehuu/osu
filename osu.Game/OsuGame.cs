@@ -996,10 +996,14 @@ namespace osu.Game
             Add(performFromMainMenuTask = new PerformFromMenuRunner(action, validScreens, () => ScreenStack.CurrentScreen));
         }
 
-        public override void AttemptExit()
+        public override void AttemptExit(bool restart)
         {
             // The main menu exit implementation gives the user a chance to interrupt the exit process if needed.
-            PerformFromScreen(menu => menu.Exit(), new[] { typeof(MainMenu) });
+            PerformFromScreen(menu =>
+            {
+                ((MainMenu)menu).Restart = restart;
+                menu.Exit();
+            }, new[] { typeof(MainMenu) });
         }
 
         /// <summary>

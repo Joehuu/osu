@@ -522,12 +522,12 @@ namespace osu.Game
         /// By default, will keep persisting until an exit occurs (exit may be blocked multiple times).
         /// May be interrupted (see <see cref="OsuGame"/>'s override).
         /// </summary>
-        public virtual void AttemptExit()
+        public virtual void AttemptExit(bool restart)
         {
             if (!OnExiting())
                 Exit();
             else
-                Scheduler.AddDelayed(AttemptExit, 2000);
+                Scheduler.AddDelayed(() => AttemptExit(restart), 2000);
         }
 
         /// <summary>

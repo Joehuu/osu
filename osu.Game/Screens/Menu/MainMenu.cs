@@ -85,6 +85,9 @@ namespace osu.Game.Screens.Menu
         [Resolved(canBeNull: true)]
         private IDialogOverlay dialogOverlay { get; set; }
 
+        [Resolved(canBeNull: true)]
+        private OsuGameBase game { get; set; }
+
         // used to stop kiai fountain samples when navigating to other screens
         IBindable<bool> ISamplePlaybackDisabler.SamplePlaybackDisabled => samplePlaybackDisabled;
         private readonly Bindable<bool> samplePlaybackDisabled = new Bindable<bool>();
@@ -273,6 +276,11 @@ namespace osu.Game.Screens.Menu
         [CanBeNull]
         private ScheduledDelegate mobileDisclaimerSchedule;
 
+        /// <summary>
+        /// Whether the game restarts after exiting.
+        /// </summary>
+        public bool Restart;
+
         protected override void LogoArriving(OsuLogo logo, bool resuming)
         {
             base.LogoArriving(logo, resuming);
@@ -423,11 +431,16 @@ namespace osu.Game.Screens.Menu
                     dialogOverlay.Push(new ConfirmExitDialog(() =>
                     {
                         exitConfirmedViaDialog = true;
+
+                        if (Restart)
+                            game.RestartAppWhenExited();
+
                         this.Exit();
                     }, () =>
                     {
                         holdToExitGameOverlay.Abort();
-                    }));
+                        Restart = false;
+                    }, Restart));
                 }
 
                 return true;

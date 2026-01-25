@@ -15,22 +15,25 @@ namespace osu.Game.Screens.Menu
     {
         private readonly Action onConfirm;
         private readonly Action? onCancel;
+        private readonly bool restart;
 
         /// <summary>
         /// Construct a new exit confirmation dialog.
         /// </summary>
         /// <param name="onConfirm">An action to perform on confirmation.</param>
         /// <param name="onCancel">An optional action to perform on cancel.</param>
-        public ConfirmExitDialog(Action onConfirm, Action? onCancel = null)
+        /// <param name="restart">Whether the game is restarted after exiting.</param>
+        public ConfirmExitDialog(Action onConfirm, Action? onCancel = null, bool restart = false)
         {
             this.onConfirm = onConfirm;
             this.onCancel = onCancel;
+            this.restart = restart;
         }
 
         [BackgroundDependencyLoader]
         private void load(INotificationOverlay notifications)
         {
-            HeaderText = "Are you sure you want to exit osu!?";
+            HeaderText = restart ? "Are you sure you want to restart osu!?" : "Are you sure you want to exit osu!?";
 
             Icon = FontAwesome.Solid.ExclamationTriangle;
 

@@ -11,7 +11,6 @@ using osu.Framework.Platform;
 using osu.Game.Configuration;
 using osu.Game.Graphics.UserInterfaceV2;
 using osu.Game.Localisation;
-using osu.Game.Overlays.Dialog;
 
 namespace osu.Game.Overlays.Settings.Sections.Graphics
 {
@@ -74,17 +73,7 @@ namespace osu.Game.Overlays.Settings.Sections.Graphics
                 if (r.NewValue == RendererType.Automatic && automaticRendererInUse)
                     return;
 
-                if (game?.RestartAppWhenExited() == true)
-                {
-                    game.AttemptExit();
-                }
-                else
-                {
-                    dialogOverlay?.Push(new ConfirmDialog(GraphicsSettingsStrings.ChangeRendererConfirmation, () => game?.AttemptExit(), () =>
-                    {
-                        renderer.Value = automaticRendererInUse ? RendererType.Automatic : host.ResolvedRenderer;
-                    }));
-                }
+                game?.AttemptExit(true);
             });
         }
 

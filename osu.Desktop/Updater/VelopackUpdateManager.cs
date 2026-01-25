@@ -149,7 +149,7 @@ namespace osu.Desktop.Updater
         private void restartToApplyUpdate(Velopack.UpdateManager updateManager, UpdateInfo update) => Task.Run(async () =>
         {
             await updateManager.WaitExitThenApplyUpdatesAsync(update.TargetFullRelease).ConfigureAwait(false);
-            Schedule(() => game.AttemptExit());
+            Schedule(() => game.AttemptExit(true));
         });
 
         private static void log(string text) => Logger.Log($"VelopackUpdateManager: {text}");
