@@ -3,15 +3,17 @@
 
 using System;
 using System.Diagnostics;
-using System.Net;
-using System.Text.RegularExpressions;
+using Markdig.Syntax;
 using osu.Framework.Allocation;
 using osu.Framework.Extensions.Color4Extensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Containers.Markdown;
 using osu.Framework.Graphics.Sprites;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Containers;
+using osu.Game.Graphics.Containers.Markdown;
+using osu.Game.Graphics.Sprites;
 using osu.Game.Online;
 using osu.Game.Online.API.Requests.Responses;
 using osuTK;
@@ -180,21 +182,15 @@ namespace osu.Game.Overlays.Changelog
 
         private Drawable createMessage()
         {
-            if (string.IsNullOrEmpty(entry.MessageHtml))
+            if (string.IsNullOrEmpty(entry.Message))
                 return Empty();
 
-            var message = new TextFlowContainer
+            var message = new MessageMarkdownContainer
             {
                 AutoSizeAxes = Axes.Y,
                 RelativeSizeAxes = Axes.X,
+                Text = entry.Message,
             };
-
-            // todo: use markdown parsing once API returns markdown
-            message.AddText(WebUtility.HtmlDecode(Regex.Replace(entry.MessageHtml, @"<(.|\n)*?>", string.Empty)), t =>
-            {
-                t.Font = fontMedium;
-                t.Colour = colourProvider.Foreground1;
-            });
 
             return message;
         }
@@ -216,6 +212,27 @@ namespace osu.Game.Overlays.Changelog
                 default:
                     throw new ArgumentOutOfRangeException(nameof(entryType), $"Unrecognised entry type {entryType}");
             }
+        }
+
+        private partial class MessageMarkdownContainer : OsuMarkdownContainer
+        {
+            public MessageMarkdownContainer()
+            {
+                LineSpacing = 10;
+                DocumentMargin = new MarginPadding { Bottom = 10 };
+                DocumentPadding = new MarginPadding();
+            }
+
+            public override SpriteText CreateSpriteText() => new OsuSpriteText
+            {
+                Font = OsuFont.GetFont(size: 12),
+            };
+
+            protected override MarkdownList CreateList(ListBlock listBlock) => new MarkdownList
+            {
+                Padding = new MarginPadding(0),
+                Spacing = new Vector2(),
+            };
         }
     }
 }
