@@ -7,17 +7,19 @@ using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Input.Events;
 using osu.Game.Graphics;
 using osu.Game.Graphics.UserInterface;
+using osu.Game.Input.Bindings;
 using osuTK;
 
 namespace osu.Game.Overlays.Volume
 {
-    public partial class MuteButton : OsuButton, IHasCurrentValue<bool>
+    public partial class MuteButton : OsuButton, IHasCurrentValue<bool>, IHasCustomTooltip<Shortcut>
     {
         private readonly Bindable<bool> current = new Bindable<bool>();
 
@@ -85,6 +87,12 @@ namespace osu.Game.Overlays.Volume
                 icon.Icon = muted.NewValue ? FontAwesome.Solid.VolumeMute : FontAwesome.Solid.VolumeUp;
                 icon.Size = new Vector2(muted.NewValue ? 12 : 16);
                 icon.Margin = new MarginPadding { Right = muted.NewValue ? 2 : 0 };
+
+                TooltipContent = new Shortcut
+                {
+                    Name = muted.NewValue ? "Unmute" : "Mute",
+                    Hotkey = new Hotkey(GlobalAction.ToggleMute),
+                };
             }, true);
         }
 
@@ -106,5 +114,9 @@ namespace osu.Game.Overlays.Volume
             // Block mouse down to avoid dismissing overlays sitting behind the mute button
             return true;
         }
+
+        public ITooltip<Shortcut> GetCustomTooltip() => new ShortcutTooltip();
+
+        public Shortcut TooltipContent { get; set; }
     }
 }
