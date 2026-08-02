@@ -153,7 +153,7 @@ namespace osu.Game.Overlays.Profile.Sections
             }, cancellationTokenSource.Token);
         });
 
-        protected virtual int GetCount(APIUser user) => 0;
+        public virtual int GetCount(APIUser user) => 0;
 
         protected virtual void OnItemsReceived(List<TModel> items)
         {

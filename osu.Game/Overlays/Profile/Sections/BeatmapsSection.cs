@@ -1,6 +1,11 @@
 ﻿// Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
+using System.Collections.Generic;
+using osu.Framework.Allocation;
+using osu.Framework.Extensions;
+using osu.Framework.Graphics;
 using osu.Framework.Localisation;
 using osu.Game.Online.API.Requests;
 using osu.Game.Overlays.Profile.Sections.Beatmaps;
@@ -14,18 +19,22 @@ namespace osu.Game.Overlays.Profile.Sections
 
         public override string Identifier => @"beatmaps";
 
-        public BeatmapsSection()
+        [BackgroundDependencyLoader]
+        private void load()
         {
-            Children = new[]
+            ChildrenEnumerable = createSubSections();
+        }
+
+        private IEnumerable<Drawable> createSubSections()
+        {
+            foreach (var type in Enum.GetValues<BeatmapSetType>())
             {
-                new PaginatedBeatmapContainer(BeatmapSetType.Favourite, User, UsersStrings.ShowExtraBeatmapsFavouriteTitle),
-                new PaginatedBeatmapContainer(BeatmapSetType.Ranked, User, UsersStrings.ShowExtraBeatmapsRankedTitle),
-                new PaginatedBeatmapContainer(BeatmapSetType.Loved, User, UsersStrings.ShowExtraBeatmapsLovedTitle),
-                new PaginatedBeatmapContainer(BeatmapSetType.Guest, User, UsersStrings.ShowExtraBeatmapsGuestTitle),
-                new PaginatedBeatmapContainer(BeatmapSetType.Pending, User, UsersStrings.ShowExtraBeatmapsPendingTitle),
-                new PaginatedBeatmapContainer(BeatmapSetType.Graveyard, User, UsersStrings.ShowExtraBeatmapsGraveyardTitle),
-                new PaginatedBeatmapContainer(BeatmapSetType.Nominated, User, UsersStrings.ShowExtraBeatmapsNominatedTitle),
-            };
+                var subSection = new PaginatedBeatmapContainer(type, User, type.GetLocalisableDescription());
+                if (subSection.GetCount(User.Value!.User) == 0 && type != BeatmapSetType.Favourite)
+                    continue;
+
+                yield return subSection;
+            }
         }
     }
 }

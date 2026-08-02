@@ -34,7 +34,7 @@ namespace osu.Game.Overlays.Profile.Sections.Beatmaps
             ItemsContainer.Spacing = new Vector2(panel_padding);
         }
 
-        protected override int GetCount(APIUser user)
+        public override int GetCount(APIUser user)
         {
             switch (type)
             {

@@ -31,7 +31,7 @@ namespace osu.Game.Overlays.Profile.Sections.Ranks
             ItemsContainer.Direction = FillDirection.Vertical;
         }
 
-        protected override int GetCount(APIUser user)
+        public override int GetCount(APIUser user)
         {
             switch (type)
             {
