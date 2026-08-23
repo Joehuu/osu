@@ -185,6 +185,11 @@ namespace osu.Game.Localisation
         public static LocalisableString RevertToDefault => new TranslatableString(getKey(@"revert_to_default"), @"Revert to default");
 
         /// <summary>
+        /// "Revert to default..."
+        /// </summary>
+        public static LocalisableString RevertToDefaultWithConfirmation => new TranslatableString(getKey(@"revert_to_default_with_confirmation"), @"Revert to default...");
+
+        /// <summary>
         /// "General"
         /// </summary>
         public static LocalisableString General => new TranslatableString(getKey(@"general"), @"General");

@@ -151,7 +151,7 @@ namespace osu.Game.Overlays.Mods
         public MenuItem[] ContextMenuItems => new MenuItem[]
         {
             new OsuMenuItem(CommonStrings.ButtonsEdit, MenuItemType.Highlighted, this.ShowPopover),
-            new OsuMenuItem(CommonStrings.ButtonsDelete, MenuItemType.Destructive, () => dialogOverlay?.Push(new DeleteModPresetDialog(Preset))),
+            new OsuMenuItem(Localisation.CommonStrings.DeleteWithConfirmation, MenuItemType.Destructive, () => dialogOverlay?.Push(new DeleteModPresetDialog(Preset))),
         };
 
         #endregion
