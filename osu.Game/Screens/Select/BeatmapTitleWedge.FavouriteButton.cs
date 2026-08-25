@@ -151,7 +151,9 @@ namespace osu.Game.Screens.Select
 
             protected override bool OnHover(HoverEvent e)
             {
-                hoverLayer.FadeIn(500, Easing.OutQuint);
+                if (Enabled.Value)
+                    hoverLayer.FadeIn(500, Easing.OutQuint);
+
                 return true;
             }
 
@@ -161,7 +163,15 @@ namespace osu.Game.Screens.Select
                 hoverLayer.FadeOut(500, Easing.OutQuint);
             }
 
-            public override LocalisableString TooltipText => isFavourite.Value ? BeatmapsetsStrings.ShowDetailsUnfavourite.ToSentence() : BeatmapsetsStrings.ShowDetailsFavourite.ToSentence();
+            public override LocalisableString TooltipText
+            {
+                get
+                {
+                    if (!Enabled.Value) return api.IsLoggedIn ? string.Empty : BeatmapsetsStrings.ShowDetailsFavouriteLogin.ToSentence();
+
+                    return isFavourite.Value ? BeatmapsetsStrings.ShowDetailsUnfavourite.ToSentence() : BeatmapsetsStrings.ShowDetailsFavourite.ToSentence();
+                }
+            }
 
             // Note: `setLoading()` and `setBeatmapSet()` are called externally via their public counterparts by song select when the beatmap changes,
             // as well as internally in order to display the progress and result of the (un)favourite operation when the button is clicked.
