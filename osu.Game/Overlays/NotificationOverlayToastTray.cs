@@ -13,6 +13,8 @@ using osu.Framework.Graphics.Colour;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Effects;
 using osu.Framework.Graphics.Shapes;
+using osu.Framework.Platform;
+using osu.Framework.Threading;
 using osu.Framework.Utils;
 using osu.Game.Overlays.Notifications;
 using osuTK;
@@ -40,6 +42,9 @@ namespace osu.Game.Overlays
 
         [Resolved]
         private OverlayColourProvider colourProvider { get; set; } = null!;
+
+        [Resolved]
+        private GameHost host { get; set; } = null!;
 
         public required Action<Notification> ForwardNotificationToPermanentStore { get; init; }
 
@@ -109,9 +114,21 @@ namespace osu.Game.Overlays
 
             toastFlow.Insert(depth, notification);
 
-            scheduleDismissal();
+            ScheduledDelegate? dismissalSchedule = scheduleDismissal();
+            Scheduler.AddDelayed(dismissWhenReady, 0, true);
 
-            void scheduleDismissal() => Scheduler.AddDelayed(() =>
+            void dismissWhenReady()
+            {
+                // Notification hovered; delay dismissal.
+                if (notification.IsHovered || notification.IsDragged || (notification.Transient && !host.IsActive.Value))
+                {
+                    dismissalSchedule?.Cancel();
+                    dismissalSchedule = null;
+                    dismissalSchedule = scheduleDismissal();
+                }
+            }
+
+            ScheduledDelegate scheduleDismissal() => Scheduler.AddDelayed(() =>
             {
                 // Notification dismissed by user.
                 if (notification.WasClosed)
@@ -120,13 +137,6 @@ namespace osu.Game.Overlays
                 // Notification forwarded away.
                 if (notification.Parent != toastFlow)
                     return;
-
-                // Notification hovered; delay dismissal.
-                if (notification.IsHovered || notification.IsDragged)
-                {
-                    scheduleDismissal();
-                    return;
-                }
 
                 // All looks good, forward away!
                 forwardNotification(notification);
