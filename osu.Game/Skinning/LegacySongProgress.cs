@@ -1,11 +1,15 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Framework.Graphics.UserInterface;
+using osu.Framework.Input.Events;
+using osu.Framework.Logging;
+using osu.Game.Screens.Play;
 using osu.Game.Screens.Play.HUD;
 using osuTK;
 
@@ -15,9 +19,8 @@ namespace osu.Game.Skinning
     {
         private CircularProgress circularProgress = null!;
 
-        // Legacy song progress doesn't support interaction for now.
-        public override bool HandleNonPositionalInput => false;
-        public override bool HandlePositionalInput => false;
+        [Resolved]
+        private Player? player { get; set; }
 
         public LegacySongProgress()
         {
@@ -81,6 +84,20 @@ namespace osu.Game.Skinning
                 circularProgress.Colour = new Colour4(255, 255, 255, 153);
                 circularProgress.Progress = progress;
             }
+        }
+
+        protected override bool OnClick(ClickEvent e)
+        {
+            float dX = ToLocalSpace(e.ScreenSpaceMousePosition).X - (DrawWidth / 2);
+            float dY = ToLocalSpace(e.ScreenSpaceMousePosition).Y - (DrawHeight / 2);
+
+            Logger.Log($"{dX}, {dY}");
+            double radian = Math.Atan2(dY, dX) + Math.PI / 2;
+            if (radian < 0) radian += Math.PI * 2;
+            double percent = radian / (Math.PI * 2);
+            Logger.Log($"{percent}");
+            player?.Seek(percent);
+            return base.OnClick(e);
         }
     }
 }

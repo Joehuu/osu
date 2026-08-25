@@ -87,6 +87,7 @@ namespace osu.Game.Tests.Visual.Gameplay
             {
                 applyToDefaultProgress(s => s.Interactive.Value = b);
                 applyToArgonProgress(s => s.Interactive.Value = b);
+                applyToLegacyProgress(s => s.Interactive.Value = b);
             });
 
             AddToggleStep("toggle graph", b =>
@@ -114,6 +115,9 @@ namespace osu.Game.Tests.Visual.Gameplay
 
         private void applyToDefaultProgress(Action<DefaultSongProgress> action) =>
             this.ChildrenOfType<DefaultSongProgress>().ForEach(action);
+
+        private void applyToLegacyProgress(Action<LegacySongProgress> action) =>
+            this.ChildrenOfType<LegacySongProgress>().ForEach(action);
 
         protected override Drawable CreateDefaultImplementation() => new DefaultSongProgress();
 
