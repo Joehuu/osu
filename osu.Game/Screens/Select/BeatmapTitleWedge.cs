@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Localisation;
 using osu.Game.Beatmaps;
 using osu.Game.Beatmaps.Drawables;
+using osu.Game.Beatmaps.Drawables.Cards;
 using osu.Game.Configuration;
 using osu.Game.Database;
 using osu.Game.Extensions;
@@ -24,6 +26,7 @@ using osu.Game.Localisation;
 using osu.Game.Overlays;
 using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets;
+using osu.Game.Rulesets.Edit.Checks.Components;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Utils;
 using osuTK;
@@ -53,6 +56,9 @@ namespace osu.Game.Screens.Select
         private ModSettingChangeTracker? settingChangeTracker;
 
         private BeatmapSetOnlineStatusPill statusPill = null!;
+        private VideoIconPill videoIconPill;
+        private StoryboardIconPill storyboardIconPill;
+
         private OsuHoverContainer titleLink = null!;
         private MarqueeContainer titleLabel = null!;
         private OsuHoverContainer artistLink = null!;
@@ -105,12 +111,38 @@ namespace osu.Game.Screens.Select
                     Spacing = new Vector2(0f, 4f),
                     Children = new Drawable[]
                     {
-                        new ShearAligningWrapper(statusPill = new BeatmapSetOnlineStatusPill
+                        new ShearAligningWrapper(new FillFlowContainer
                         {
-                            Shear = -OsuGame.SHEAR,
-                            ShowUnknownStatus = true,
-                            TextSize = OsuFont.Style.Caption1.Size,
-                            TextPadding = new MarginPadding { Horizontal = 6, Vertical = 1 },
+                            RelativeSizeAxes = Axes.X,
+                            Height = 22,
+                            Direction = FillDirection.Horizontal,
+                            Spacing = new Vector2(4f),
+                            Children = new Drawable[]
+                            {
+                                statusPill = new BeatmapSetOnlineStatusPill
+                                {
+                                    Shear = -OsuGame.SHEAR,
+                                    ShowUnknownStatus = true,
+                                    TextSize = OsuFont.Style.Caption1.Size,
+                                    TextPadding = new MarginPadding { Horizontal = 6, Vertical = 1 },
+                                    Anchor = Anchor.CentreLeft,
+                                    Origin = Anchor.CentreLeft,
+                                },
+                                videoIconPill = new VideoIconPill
+                                {
+                                    Alpha = 0,
+                                    Shear = -OsuGame.SHEAR,
+                                    Anchor = Anchor.CentreLeft,
+                                    Origin = Anchor.CentreLeft,
+                                },
+                                storyboardIconPill = new StoryboardIconPill
+                                {
+                                    Alpha = 0,
+                                    Shear = -OsuGame.SHEAR,
+                                    Anchor = Anchor.CentreLeft,
+                                    Origin = Anchor.CentreLeft,
+                                }
+                            }
                         }),
                         new ShearAligningWrapper(new Container
                         {
@@ -223,6 +255,27 @@ namespace osu.Game.Screens.Select
 
             statusPill.Status = beatmapInfo.Status;
 
+            bool hasLocalVideo = working.Value.BeatmapSetInfo.Files.FirstOrDefault(f => SupportedExtensions.VIDEO_EXTENSIONS.Any(ex => f.Filename.EndsWith(ex, StringComparison.OrdinalIgnoreCase)))
+                                 != null;
+
+            videoIconPill.FadeTo(hasLocalVideo ? 1 : 0.05f, 250, Easing.OutQuint);
+
+            string getMainStoryboardFilename(IBeatmapMetadataInfo metadata)
+            {
+                // Matches stable implementation, because it's probably simpler than trying to do anything else.
+                // This may need to be reconsidered after we begin storing storyboards in the new editor.
+                string baseFilename = (metadata.Artist.Length > 0 ? metadata.Artist + @" - " + metadata.Title : Path.GetFileNameWithoutExtension(metadata.AudioFile))
+                                      + (metadata.Author.Username.Length > 0 ? @" (" + metadata.Author.Username + @")" : string.Empty)
+                                      + @".osb";
+                return baseFilename.GetValidFilename();
+            }
+
+            string mainStoryboardFilename = getMainStoryboardFilename(metadata);
+
+            bool hasLocalStoryboard = working.Value.BeatmapSetInfo?.Files.FirstOrDefault(f => f.Filename.Equals(mainStoryboardFilename, StringComparison.OrdinalIgnoreCase))?.Filename != null;
+
+            storyboardIconPill.FadeTo(hasLocalStoryboard ? 1 : 0.05f, 250, Easing.OutQuint);
+
             var titleText = new RomanisableString(metadata.TitleUnicode, metadata.Title);
             titleLabel.CreateContent = () => new OsuSpriteText
             {
@@ -244,7 +297,7 @@ namespace osu.Game.Screens.Select
             DisplayedArtist = artistText.ToString();
 
             updateLengthAndBpmStatistics();
-            updateOnlineDisplay();
+            updateOnlineDisplay(hasLocalVideo, hasLocalStoryboard);
         }
 
         private CancellationTokenSource? lengthBpmCancellationSource;
@@ -288,7 +341,7 @@ namespace osu.Game.Screens.Select
 
         private CancellationTokenSource? onlineDisplayCancellationSource;
 
-        private void updateOnlineDisplay()
+        private void updateOnlineDisplay(bool hasLocalVideo, bool hasLocalStoryboard)
         {
             onlineDisplayCancellationSource?.Cancel();
             onlineDisplayCancellationSource = null;
@@ -301,6 +354,13 @@ namespace osu.Game.Screens.Select
             else
             {
                 var onlineBeatmap = onlineLookupResult.Value.Result?.Beatmaps.SingleOrDefault(b => b.OnlineID == working.Value.BeatmapInfo.OnlineID);
+
+                if (!hasLocalVideo)
+                    videoIconPill.FadeTo(onlineBeatmap?.BeatmapSet?.HasVideo == true ? 0.5f : 0.05f, 250, Easing.OutQuint);
+
+                if (!hasLocalStoryboard)
+                    storyboardIconPill.FadeTo(onlineBeatmap?.BeatmapSet?.HasStoryboard == true ? 0.5f : 0.05f, 250, Easing.OutQuint);
+
                 playCount.Value = new StatisticPlayCount.Data(onlineBeatmap?.PlayCount ?? -1, onlineBeatmap?.UserPlayCount ?? -1);
                 favouriteButton.SetBeatmapSet(onlineLookupResult.Value.Result);
 
