@@ -26,6 +26,7 @@ using osu.Framework.Logging;
 using osu.Framework.Utils;
 using osu.Game.Input.Bindings;
 using osu.Game.Online.Multiplayer;
+using osu.Game.Overlays;
 using osuTK;
 using osuTK.Input;
 
@@ -496,12 +497,22 @@ namespace osu.Game.Graphics.Carousel
                     return true;
 
                 case GlobalAction.ActivatePreviousSet:
-                    Scheduler.AddOnce(traverseFromKey, new TraversalOperation(TraversalType.Set, -1));
-                    return true;
+                    if (!GetContainingInputManager()!.HoveredDrawables.OfType<IHandleLeftRightArrows>().Any())
+                    {
+                        Scheduler.AddOnce(traverseFromKey, new TraversalOperation(TraversalType.Set, -1));
+                        return true;
+                    }
+
+                    return false;
 
                 case GlobalAction.ActivateNextSet:
-                    Scheduler.AddOnce(traverseFromKey, new TraversalOperation(TraversalType.Set, 1));
-                    return true;
+                    if (!GetContainingInputManager()!.HoveredDrawables.OfType<IHandleLeftRightArrows>().Any())
+                    {
+                        Scheduler.AddOnce(traverseFromKey, new TraversalOperation(TraversalType.Set, 1));
+                        return true;
+                    }
+
+                    return false;
 
                 case GlobalAction.ExpandPreviousGroup:
                     Scheduler.AddOnce(traverseFromKey, new TraversalOperation(TraversalType.Group, -1));

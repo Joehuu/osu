@@ -24,8 +24,17 @@ using osuTK;
 
 namespace osu.Game.Graphics.UserInterface
 {
-    public partial class OsuTextBox : BasicTextBox
+    public partial class OsuTextBox : BasicTextBox, IHandleLeftRightArrows
     {
+        public override bool HandleLeftRightArrows
+        {
+            get
+            {
+                var hoveredDrawables = GetContainingInputManager()!.HoveredDrawables;
+                return !hoveredDrawables.OfType<IHandleLeftRightArrows>().Any() || IsHovered;
+            }
+        }
+
         /// <summary>
         /// Whether to allow playing a different samples based on the type of character.
         /// If set to false, the same sample will be used for all characters.

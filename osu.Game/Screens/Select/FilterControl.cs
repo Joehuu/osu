@@ -25,6 +25,7 @@ using osu.Game.Input.Bindings;
 using osu.Game.Localisation;
 using osu.Game.Online.API;
 using osu.Game.Online.API.Requests.Responses;
+using osu.Game.Overlays;
 using osu.Game.Rulesets;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Screens.Select.Filter;
@@ -384,9 +385,9 @@ namespace osu.Game.Screens.Select
 
             private partial class InnerTextBox : InnerFilterTextBox
             {
-                public IBindable<BeatmapSetInfo?> ScopedBeatmapSet { get; } = new Bindable<BeatmapSetInfo?>();
+                public override bool HandleLeftRightArrows => IsHovered;
 
-                public override bool HandleLeftRightArrows => false;
+                public IBindable<BeatmapSetInfo?> ScopedBeatmapSet { get; } = new Bindable<BeatmapSetInfo?>();
 
                 public override bool OnPressed(KeyBindingPressEvent<GlobalAction> e)
                 {

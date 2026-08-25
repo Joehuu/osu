@@ -10,10 +10,11 @@ using osu.Framework.Graphics.UserInterface;
 using osu.Framework.Localisation;
 using osu.Framework.Utils;
 using osu.Game.Extensions;
+using osu.Game.Overlays;
 
 namespace osu.Game.Graphics.UserInterface
 {
-    public abstract partial class OsuSliderBar<T> : SliderBar<T>, IHasTooltip
+    public abstract partial class OsuSliderBar<T> : SliderBar<T>, IHasTooltip, IHandleLeftRightArrows
         where T : struct, INumber<T>, IMinMaxValue<T>
     {
         public override bool AcceptsFocus => !Current.Disabled;

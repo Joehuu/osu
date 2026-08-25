@@ -2,12 +2,13 @@
 // See the LICENCE file in the repository root for full licence text.
 
 #nullable disable
+using System.Linq;
 using osu.Framework.Input.Events;
 using osu.Game.Graphics.UserInterface;
 
 namespace osu.Game.Overlays
 {
-    public partial class SettingsSearchTextBox : SeekLimitedSearchTextBox
+    public partial class SettingsSearchTextBox : BasicSearchTextBox
     {
         protected override void OnFocus(FocusEvent e)
         {
@@ -19,4 +20,6 @@ namespace osu.Game.Overlays
                 SelectAll();
         }
     }
+
+    public interface IHandleLeftRightArrows { }
 }
