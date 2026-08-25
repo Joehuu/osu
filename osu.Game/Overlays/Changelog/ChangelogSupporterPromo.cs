@@ -165,7 +165,7 @@ namespace osu.Game.Overlays.Changelog
             {
             }
 
-            protected override DrawableLinkCompiler CreateLinkCompiler(ITextPart textPart) => new SupporterPromoLinkCompiler(textPart);
+            protected override DrawableLinkCompiler CreateLinkCompiler(ITextPart textPart, LinkDetails link) => new SupporterPromoLinkCompiler(textPart);
 
             private partial class SupporterPromoLinkCompiler : DrawableLinkCompiler
             {

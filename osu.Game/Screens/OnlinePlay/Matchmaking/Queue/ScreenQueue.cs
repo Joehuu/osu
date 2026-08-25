@@ -864,7 +864,7 @@ namespace osu.Game.Screens.OnlinePlay.Matchmaking.Queue
             {
             }
 
-            protected override DrawableLinkCompiler CreateLinkCompiler(ITextPart textPart)
+            protected override DrawableLinkCompiler CreateLinkCompiler(ITextPart textPart, LinkDetails link)
                 => new LinkCompiler(textPart);
 
             private partial class LinkCompiler : DrawableLinkCompiler

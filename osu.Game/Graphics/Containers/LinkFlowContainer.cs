@@ -17,6 +17,7 @@ using osu.Framework.Platform;
 using osu.Game.Online;
 using osu.Game.Users;
 using osu.Game.Localisation;
+using osu.Game.Online.API.Requests.Responses;
 
 namespace osu.Game.Graphics.Containers
 {
@@ -98,7 +99,7 @@ namespace osu.Game.Graphics.Containers
                     host.OpenUrlExternally(link.Argument.ToString());
             };
 
-            AddPart(new TextLink(textPart, tooltipText, onClickAction));
+            AddPart(new TextLink(textPart, tooltipText, onClickAction, link));
         }
 
         private class TextLink : TextPart
@@ -106,12 +107,14 @@ namespace osu.Game.Graphics.Containers
             private readonly ITextPart innerPart;
             private readonly LocalisableString tooltipText;
             private readonly Action action;
+            private readonly LinkDetails link;
 
-            public TextLink(ITextPart innerPart, LocalisableString tooltipText, Action action)
+            public TextLink(ITextPart innerPart, LocalisableString tooltipText, Action action, LinkDetails link)
             {
                 this.innerPart = innerPart;
                 this.tooltipText = tooltipText;
                 this.action = action;
+                this.link = link;
             }
 
             protected override IEnumerable<Drawable> CreateDrawablesFor(TextFlowContainer textFlowContainer)
@@ -121,7 +124,7 @@ namespace osu.Game.Graphics.Containers
                 innerPart.RecreateDrawablesFor(linkFlowContainer);
                 var drawables = innerPart.Drawables.ToList();
 
-                drawables.Add(linkFlowContainer.CreateLinkCompiler(innerPart).With(c =>
+                drawables.Add(linkFlowContainer.CreateLinkCompiler(innerPart, link).With(c =>
                 {
                     c.RelativeSizeAxes = Axes.Both;
                     c.TooltipText = tooltipText;
@@ -132,7 +135,19 @@ namespace osu.Game.Graphics.Containers
             }
         }
 
-        protected virtual DrawableLinkCompiler CreateLinkCompiler(ITextPart textPart) => new DrawableLinkCompiler(textPart);
+        protected virtual DrawableLinkCompiler CreateLinkCompiler(ITextPart textPart, LinkDetails link)
+        {
+            switch (link.Action)
+            {
+                case LinkAction.OpenUserProfile:
+                    if (link.Argument is APIUser user)
+                        return new UserLinkCompiler(textPart, user);
+
+                    break;
+            }
+
+            return new DrawableLinkCompiler(textPart);
+        }
 
         protected override InnerFlow CreateFlow() => new LinkFlow();
 

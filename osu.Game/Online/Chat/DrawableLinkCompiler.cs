@@ -7,6 +7,7 @@ using osu.Framework.Allocation;
 using osu.Framework.Extensions.ListExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Framework.Graphics.Cursor;
 using osu.Framework.Graphics.Sprites;
 using osu.Framework.Lists;
 using osu.Game.Graphics;
@@ -20,7 +21,7 @@ namespace osu.Game.Online.Chat
     /// <summary>
     /// An invisible drawable that brings multiple <see cref="Drawable"/> pieces together to form a consumable clickable link.
     /// </summary>
-    public partial class DrawableLinkCompiler : OsuHoverContainer
+    public partial class DrawableLinkCompiler : OsuHoverContainer, IHasCustomTooltip
     {
         /// <summary>
         /// Each word part of a chat link (split for word-wrap support).
@@ -82,5 +83,12 @@ namespace osu.Game.Online.Chat
                 return false;
             }
         }
+
+        #region Tooltip implementation
+
+        public virtual ITooltip GetCustomTooltip() => null!;
+        public virtual object TooltipContent => null;
+
+        #endregion
     }
 }
