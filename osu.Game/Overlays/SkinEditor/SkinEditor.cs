@@ -165,8 +165,10 @@ namespace osu.Game.Overlays.SkinEditor
                                                     Items = new OsuMenuItem[]
                                                     {
                                                         new EditorMenuItem(Web.CommonStrings.ButtonsSave, MenuItemType.Standard, () => Save()) { Hotkey = new Hotkey(PlatformAction.Save) },
-                                                        new EditorMenuItem(CommonStrings.Export, MenuItemType.Standard, () => skins.ExportCurrentSkin()) { Action = { Disabled = !RuntimeInfo.IsDesktop } },
-                                                        new EditorMenuItem(EditorStrings.EditExternally, MenuItemType.Standard, () => _ = editExternally()) { Action = { Disabled = !RuntimeInfo.IsDesktop } },
+                                                        new EditorMenuItem(CommonStrings.Export, MenuItemType.Standard, () => skins.ExportCurrentSkin())
+                                                            { Action = { Disabled = !RuntimeInfo.IsDesktop } },
+                                                        new EditorMenuItem(EditorStrings.EditExternally, MenuItemType.Standard, () => _ = editExternally())
+                                                            { Action = { Disabled = !RuntimeInfo.IsDesktop } },
                                                         new OsuMenuItemSpacer(),
                                                         new EditorMenuItem(CommonStrings.RevertToDefault, MenuItemType.Destructive, () => dialogOverlay?.Push(new RevertConfirmDialog(revert))),
                                                         new OsuMenuItemSpacer(),
@@ -183,7 +185,8 @@ namespace osu.Game.Overlays.SkinEditor
                                                         cutMenuItem = new EditorMenuItem(CommonStrings.Cut, MenuItemType.Standard, Cut) { Hotkey = new Hotkey(PlatformAction.Cut) },
                                                         copyMenuItem = new EditorMenuItem(CommonStrings.Copy, MenuItemType.Standard, Copy) { Hotkey = new Hotkey(PlatformAction.Copy) },
                                                         pasteMenuItem = new EditorMenuItem(CommonStrings.Paste, MenuItemType.Standard, Paste) { Hotkey = new Hotkey(PlatformAction.Paste) },
-                                                        cloneMenuItem = new EditorMenuItem(CommonStrings.Clone, MenuItemType.Standard, Clone) { Hotkey = new Hotkey(GlobalAction.EditorCloneSelection) },
+                                                        cloneMenuItem = new EditorMenuItem(CommonStrings.Clone, MenuItemType.Standard, Clone)
+                                                            { Hotkey = new Hotkey(GlobalAction.EditorCloneSelection) },
                                                     }
                                                 },
                                             }
@@ -385,6 +388,12 @@ namespace osu.Game.Overlays.SkinEditor
 
             var skinComponentsContainer = getTarget(target.NewValue);
 
+            if (currentSkin.Value.SkinInfo.Value.Protected)
+            {
+                content.Child = new NonEditableSkinPlaceholder();
+                return;
+            }
+
             if (target.NewValue == null || skinComponentsContainer == null)
             {
                 content.Child = new NonSkinnableScreenPlaceholder();
@@ -454,10 +463,6 @@ namespace osu.Game.Overlays.SkinEditor
 
         private void skinChanged()
         {
-            if (skins.EnsureMutableSkin())
-                // Another skin changed event will arrive which will complete the process.
-                return;
-
             headerText.Clear();
 
             headerText.AddText(SkinEditorStrings.SkinEditor, cp => cp.Font = OsuFont.Default.With(size: 16));
@@ -473,6 +478,13 @@ namespace osu.Game.Overlays.SkinEditor
                 cp.Font = OsuFont.Default.With(size: 12, weight: FontWeight.Bold);
                 cp.Colour = colours.Yellow;
             });
+
+            if (currentSkin.Value.SkinInfo.Value.Protected)
+            {
+                content?.Child = new NonEditableSkinPlaceholder();
+                componentsSidebar.Clear();
+                return;
+            }
 
             changeHandler?.Dispose();
             changeHandler = null;
