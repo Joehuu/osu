@@ -10,6 +10,7 @@ using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.Shapes;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
+using osu.Game.Resources.Localisation.Web;
 using osu.Game.Screens.Ranking;
 using osuTK;
 
@@ -49,7 +50,7 @@ namespace osu.Game.Screens.OnlinePlay.Matchmaking.RankedPlay.Card
                     [
                         new OsuSpriteText
                         {
-                            Text = "User Tags",
+                            Text = BeatmapsetsStrings.ShowInfoUserTags,
                             Font = OsuFont.GetFont(size: 18, weight: FontWeight.SemiBold),
                         },
                         tagFlow = new FillFlowContainer<DrawableUserTag>
