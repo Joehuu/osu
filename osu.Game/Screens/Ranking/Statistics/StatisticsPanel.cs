@@ -22,6 +22,7 @@ using osu.Game.Graphics.Containers;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Online.API;
 using osu.Game.Online.Placeholders;
+using osu.Game.Resources.Localisation.Web;
 using osu.Game.Rulesets.Mods;
 using osu.Game.Scoring;
 using osu.Game.Screens.Ranking.Statistics.User;
@@ -243,17 +244,17 @@ namespace osu.Game.Screens.Ranking.Statistics
                      .FirstOrDefault());
 
                 if (localUserScore == null)
-                    preventTaggingReason = "Play the beatmap to contribute to beatmap tags!";
+                    preventTaggingReason = "Play the beatmap to contribute to user tags!";
                 else if (localUserScore.Ruleset.OnlineID != newScore.BeatmapInfo!.Ruleset.OnlineID)
-                    preventTaggingReason = "Play the beatmap in its original ruleset to contribute to beatmap tags!";
+                    preventTaggingReason = "Play the beatmap in its original ruleset to contribute to user tags!";
                 else if (localUserScore.Rank < ScoreRank.C)
-                    preventTaggingReason = "Set a better score to contribute to beatmap tags!";
+                    preventTaggingReason = "Set a better score to contribute to user tags!";
                 else if (localUserScore.Mods.Any(m => (m.Type == ModType.Conversion) && !(m is ModClassic)))
-                    preventTaggingReason = "Play this beatmap without conversion mods to contribute to beatmap tags!";
+                    preventTaggingReason = "Play this beatmap without conversion mods to contribute to user tags!";
 
                 if (preventTaggingReason == null)
                 {
-                    yield return new StatisticItem("Beatmap tags", () => new UserTagControl(newScore.BeatmapInfo)
+                    yield return new StatisticItem(BeatmapsetsStrings.ShowInfoUserTags, () => new UserTagControl(newScore.BeatmapInfo)
                     {
                         Writable = true,
                         RelativeSizeAxes = Axes.X,
@@ -263,7 +264,7 @@ namespace osu.Game.Screens.Ranking.Statistics
                 }
                 else
                 {
-                    yield return new StatisticItem("Beatmap tags", () => new Container
+                    yield return new StatisticItem(BeatmapsetsStrings.ShowInfoUserTags, () => new Container
                     {
                         Children = new Drawable[]
                         {
